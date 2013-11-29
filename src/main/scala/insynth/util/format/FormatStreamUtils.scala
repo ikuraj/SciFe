@@ -36,7 +36,7 @@ class FormatStreamUtils[_](node: Streamable[_], _level: Int) extends Formatable 
   def trans(node: Streamable[_], level: Int, visited: Set[Streamable[_]]): Document = {
     
     def header(node: Streamable[_]) = {
-      sqBrackets(node.toString + "[Inf?" + node.isInfinite + "]")
+      sqBrackets(node.toString)//+ "[Inf?" + node.isInfinite + "]")
     }
     
     if (level == 0)
@@ -51,7 +51,9 @@ class FormatStreamUtils[_](node: Streamable[_], _level: Int) extends Formatable 
       case _: Singleton[_] => "Singleton" :: header(node)
 
       case ss: SingleStream[_, _] => "SingleStream" :: header(node)// :: paren(trans(ss.stream, level - 1))
-      
+      case ss: ordered.SingleStream[_] => "ord.SingleStream" :: header(node)// :: paren(trans(ss.stream, level - 1))
+      case fs: ordered.FiniteStream[_] => "ord.FiniteStream" :: header(node)
+
       case us: ordered.UnaryStream[_, _] => "ord.UnaryStream" :: header(node) ::
       	paren(trans(us.streamable, level - 1, visited + node))
       case us: UnaryStream[_, _] => "UnaryStream" :: header(node) ::
@@ -98,7 +100,7 @@ class FormatStreamUtils[_](node: Streamable[_], _level: Int) extends Formatable 
 //        ((DocNil: Document) /: rr.streams) { (res, doc) => res :/: trans(doc, level - 1, visited + node) }
 //      )
         
-      case _ => throw new RuntimeException//"Dont know: " :: header(node)
+      case _ => throw new RuntimeException("Dont know: " + header(node))
     }
     
     resDocument// :: brackets("Inf?" + node.isInfinite)

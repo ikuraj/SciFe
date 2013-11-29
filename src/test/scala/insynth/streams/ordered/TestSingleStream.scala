@@ -4,7 +4,7 @@ import insynth.streams._
 import insynth.streams.unordered.{ SingleStream => UnSingleStream }
 
 class TestSingleStream[T](stream: => Stream[(T, Int)], isInfiniteFlag: Boolean)
-	extends SingleStream[T](stream, isInfiniteFlag) {
+	extends SingleStream[T](stream) {
   
   val itVal = (stream map { _._2 }).iterator.buffered
   val itStr = (stream map { _._1 }).iterator.buffered

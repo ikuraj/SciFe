@@ -120,8 +120,8 @@ class BinaryStreamTest extends JUnitSuite {
 	    val infiniteStream1: Stream[(Combination, Int)] = Stream.continually((randomInt1, randomInt1))
 	    val infiniteStream2: Stream[(Number, Int)] = Stream.continually((randomInt2, randomInt2))
 	    
-	    val streamable1 = new SingleStream(infiniteStream1, true)
-	    val streamable2 = new SingleStream(infiniteStream2, true)
+	    val streamable1 = SingleStream(infiniteStream1)
+	    val streamable2 = SingleStream(infiniteStream2)
 	    	    
 	    {
 		    val bs = BinaryStream(streamable1, streamable2) {
@@ -174,8 +174,8 @@ class BinaryStreamTest extends JUnitSuite {
 	    val infiniteStream2: Stream[(Number, Int)] =
 	      Stream.from(randomInt2, 2) map { int => (int: Number, int) }
 	    
-	    val streamable1 = new SingleStream(infiniteStream1, true)
-	    val streamable2 = new SingleStream(infiniteStream2, true)
+	    val streamable1 = new SingleStream(infiniteStream1)
+	    val streamable2 = new SingleStream(infiniteStream2)
 	    	    
 	    {
 		    val bs = BinaryStream(streamable1, streamable2) {

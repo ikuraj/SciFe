@@ -67,7 +67,10 @@ class RoundRobbin[T] protected[streams] (val streams: Seq[Streamable[T]])
     while (ind < valueIteratorsSize) {
       val indToCheck = (currentInd + ind) % valueIteratorsSize
       
-      fine("from " + this.toString + " checking ready" + streams(indToCheck).toString + " and is " + streams(indToCheck).nextReady(iteratorIndexes(indToCheck)))
+      fine("checking ready for indToCheck " + indToCheck + " for iteratorIndexes(indToCheck) "
+        + iteratorIndexes(indToCheck) + " and is "
+        + streams(indToCheck).nextReady(iteratorIndexes(indToCheck))
+      )
       if (streams(indToCheck).nextReady(iteratorIndexes(indToCheck))) {
         assert(valueIterators(indToCheck).hasNext, "valueIterators(indToCheck).hasNext for " + indToCheck)
 	      fine("checking index: " + indToCheck + ", valueIterators(indToCheck).hasNext: " + valueIterators(indToCheck).hasNext)

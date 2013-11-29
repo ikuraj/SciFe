@@ -13,8 +13,11 @@ class OrderedStreamFactory[T] extends StreamFactory[T] with HasLogger {
   
   override def makeSingletonList[U <: T](element: List[U]) = Singleton(element)
   
-//  override def makeSingleStream[U <: T](stream: => Stream[U], isInfiniteFlag: Boolean) =
-//    SingleStream(stream, isInfiniteFlag)
+  override def makeSingleStream[U <: T](stream: => Stream[U]) =    
+    SingleStream(stream zip Stream.from(1))
+
+  override def makeFiniteStream[U <: T](array: => Vector[U]) =
+    FiniteStream(array zip Vector.range(1, array.size + 1))
   
   override def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X=>Y, modifyVal: Option[Int => Int] = None) =
     UnaryStream(streamable.asInstanceOf[OrderedStreamable[X]], modify, modifyVal)
@@ -31,6 +34,9 @@ class OrderedStreamFactory[T] extends StreamFactory[T] with HasLogger {
   override def makeLazyRoundRobbin[U <: T](initStreams: List[Streamable[U]]) =
     LazyRoundRobbin[U](initStreams.asInstanceOf[List[OrderedStreamable[U]]])
       
+  def makeLazyRoundRobbinList[U <: T](initStreams: List[Streamable[List[U]]]) =    
+    LazyRoundRobbin[List[U]](initStreams.asInstanceOf[List[OrderedStreamable[List[U]]]])
+  
   def getFinalStream(streamable: Streamable[T]) = 
     streamable match {
       case os: OrderedStreamable[_] =>

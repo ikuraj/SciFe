@@ -11,8 +11,11 @@ class UnorderedStreamFactory[T] extends StreamFactory[T] {
   
   override def makeSingletonList[U <: T](element: List[U]) = Singleton(element)
   
-//  override def makeSingleStream[U <: T](stream: => Stream[U], isInfiniteFlag: Boolean) =
-//    SingleStream(stream, isInfiniteFlag)
+  override def makeSingleStream[U <: T](stream: => Stream[U]) =
+    SingleStream(stream, true)
+
+  override def makeFiniteStream[U <: T](array: => Vector[U]) =
+    SingleStream(array.toStream, false)
   
   override def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X=>Y, modifyVal: Option[Int => Int] = None) =
     UnaryStream(streamable, modify)
@@ -27,6 +30,9 @@ class UnorderedStreamFactory[T] extends StreamFactory[T] {
     RoundRobbin(streams)
   
   override def makeLazyRoundRobbin[U <: T](initStreams: List[Streamable[U]]) =
+    LazyRoundRobbin(initStreams)
+      
+  override def makeLazyRoundRobbinList[U <: T](initStreams: List[Streamable[List[U]]]) =    
     LazyRoundRobbin(initStreams)
         
   def getFinalStream(streamable: Streamable[T]) =

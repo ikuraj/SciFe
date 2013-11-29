@@ -1,4 +1,4 @@
-package insynth.util.streams.ordered
+package insynth
 
 import insynth._
 import insynth.testdomain._

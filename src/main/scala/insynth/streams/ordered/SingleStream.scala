@@ -4,13 +4,13 @@ import insynth.streams._
 import insynth.streams.unordered.{ SingleStream => UnSingleStream }
 
 // NOTE this would require ordered stream
-protected class SingleStream[T](stream: => Stream[(T, Int)], isInfiniteFlag: Boolean)
+class SingleStream[T](stream: => Stream[(T, Int)])
 	extends OrderedStreamable[T] {
   
-  override def isInfinite = isInfiniteFlag
+  override def isInfinite = true
   
-  override def isDepleted: Boolean = throw new RuntimeException // wtv
-  override def nextReady(ind: Int): Boolean = throw new RuntimeException
+  override def isDepleted: Boolean = false // wtv
+  override def nextReady(ind: Int): Boolean = true
   
   override def getStream = stream map { _._1 }
   
@@ -18,7 +18,7 @@ protected class SingleStream[T](stream: => Stream[(T, Int)], isInfiniteFlag: Boo
     
 }
 
-protected object SingleStream {
-  def apply[T](stream: => Stream[(T, Int)], isInfiniteFlag: Boolean = false) =
-    new SingleStream(stream, isInfiniteFlag)
+object SingleStream {
+  def apply[T](stream: => Stream[(T, Int)]) =
+    new SingleStream(stream)
 }

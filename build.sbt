@@ -30,3 +30,7 @@ libraryDependencies ++= Seq(
 seq(ScctPlugin.instrumentSettings : _*)
 
 seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
+
+libraryDependencies +=  "com.googlecode.kiama" %% "kiama" % "1.5.1"
+
+libraryDependencies +=  "com.googlecode.kiama" %% "kiama" % "1.5.1" % "test" classifier ("test")

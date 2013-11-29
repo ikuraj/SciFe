@@ -20,7 +20,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
   override def nextReady(ind: Int): Boolean = {
     fine("nextReady ind " + ind + " enumeratedSize " + enumeratedSize)
     assert(ind < enumeratedSize + 1, toString + " ind " + ind + " enumeratedSize " + enumeratedSize)
-    val res = ind < enumeratedSize || hasNextFromIndexes
+    val res = ind < enumeratedSize || hasNextFromIndexes || iterators.exists(_.hasNext)    
     // || getMinIterator(lastIndexCache) >= 0 //s1.nextReady && s2.nextReady
     fine("exiting nextReady ind " + ind + " ready " + res)
     res
@@ -32,7 +32,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
   
   var iteratorsToBeAdded = MutableList[BufferedIterator[(U, Int)]]()
   
-  // isLeft?, index
+  // (isLeft?, index) -> index
   var indexesToCheck: MutableMap[(Boolean, Int), Int] = MutableMap.empty
   // for checking when indexes are equal
   var indexesToCheckSet: MutableSet[Int] = MutableSet(0)
@@ -45,11 +45,11 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
         val ind = p._1._2
         val currentInd = p._2
         if (isLeft) {
-          fine("isLeft s2.nextReady(currentInd)=" + s2.nextReady(currentInd) + " currentInd=" + currentInd)
+          info("Left stream (ind, ind) = " + (ind, currentInd) + ", is ready =" + s2.nextReady(currentInd))
           res || s2.nextReady(currentInd)
         }
         else {
-          fine("!isLeft s1.nextReady(currentInd)=" + s1.nextReady(currentInd) + " currentInd=" + currentInd)
+          info("Right stream (ind, ind) = " + (currentInd, ind) + ", is ready =" + s1.nextReady(currentInd))
           res || s1.nextReady(currentInd)
         }
       }
@@ -62,7 +62,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
   }
   
   def addToIterators(it: => BufferedIterator[(U, Int)], isLeft: Boolean, ind: Int) = {//iterators append it    
-    fine("adding iterator " + (isLeft: Boolean, ind: Int))
+    info("adding iterator " + (isLeft: Boolean, ind: Int))
     indexesToCheck += ((isLeft, ind) -> (ind + 1))
     if (isLeft) {
       indexesToCheckSet += (ind + 1)
@@ -132,7 +132,8 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
 	      val (nextRightElem, nextRightSize) = rightIterator.head
 	      val nextSize = leftValue + nextRightSize
 	      
-	      if ( !produced && (ind2 - ind1 > 1) && producingPossible && nextSize > nextLeftSizeCombined ) { 
+	      if ( !produced && (ind2 - ind1 > 1) && producingPossible && nextSize > nextLeftSizeCombined )
+	      {
 		      // add a new iterator
 		      addToIterators( leftStream(ind1 + 1).iterator.buffered, true, ind1 + 1 )	   
 		      // set the flag
@@ -193,6 +194,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
    * 	It can produce a new iterator with higher ind1 if it can bring lower
    *  sum of values (cannot be equal as in the leftStream case) */
   def rightStream(ind2: Int): Stream[(U, Int)] = {
+    info("constructing rightStream with : " + ind2)
         
     // drop unused first parts of streams
     lazy val rightStreamPart = s2.getStream.drop(ind2)
