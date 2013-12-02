@@ -17,6 +17,8 @@ trait StreamFactory[T] {
   def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X => Y, modifyVal: Option[Int => Int] = None): Streamable[T]
   
   def makeUnaryStreamList[X, Y <: T](streamable: Streamable[X], modify: X => List[Y]): Streamable[List[T]]
+    
+  def makeFilterStream[U <: T](streamable: Streamable[U], filterFun: U => Boolean): Streamable[T]
   
   def makeBinaryStream[X, Y, Z <: T](s1: Streamable[X], s2: Streamable[Y])(combine: (X, Y) => List[Z]): Streamable[List[T]]
   
