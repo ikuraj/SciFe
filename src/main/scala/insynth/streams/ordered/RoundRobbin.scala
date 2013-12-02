@@ -13,7 +13,7 @@ class RoundRobbin[T] protected[streams] (val streams: Seq[Streamable[T]])
   
   override def isDepleted: Boolean = throw new RuntimeException//getNextIndex._2 == -1 // wtv
   override def nextReady(ind: Int): Boolean = {
-    assert(ind <= enumeratedCounter + 1)
+    assert(ind <= enumeratedCounter + 1, "ind=" + ind + ", enumeratedCounter=" + enumeratedCounter)
     if (ind <= enumeratedCounter) true
     else {
 	    val res = if (ind != enumeratingCounter) {
@@ -79,7 +79,7 @@ class RoundRobbin[T] protected[streams] (val streams: Seq[Streamable[T]])
 	      	fine("index passed: " + indToCheck + ", value: " + valueIterators(indToCheck).head)
 	      	min = valueIterators(indToCheck).head
 	  			minInd = indToCheck
-	      }        
+	      }
       }
         
       ind += 1

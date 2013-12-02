@@ -40,10 +40,12 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
     process: PartialFunction[(Class[_], T), T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[T], Boolean)],
-    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map()
+    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map(),
+    filters: Map[Filter, T => Boolean] = Map()
   ) = {
     
-    getStreamable(streamEl, process, combiner, injections, streamSpecificInjections) match {
+    getStreamable(streamEl, process, combiner, injections, streamSpecificInjections,
+      filters) match {
       case os: OrderedStreamable[_] =>
         fine("returning ordered streamable")
         os.getStream zip os.getValues.map(_.toFloat)
@@ -58,9 +60,11 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
     process: PartialFunction[(Class[_], T), T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[T], Boolean)],
-    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map()
+    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map(),
+    filters: Map[Filter, T => Boolean] = Map()
   ) = {
-    getStreamable(streamEl, process, combiner, injections, streamSpecificInjections).getStream
+    getStreamable(streamEl, process, combiner, injections, streamSpecificInjections,
+      filters).getStream
   }  
   
   def getStreamable(streamEl: StreamEl,
@@ -109,8 +113,11 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
         if (isInfinite) makeSingleStream( innerStream )
         else makeFiniteStream( innerStream.toVector )
         
-      case f: Filter =>
-        
+      case f@Filter(c, inner, _) =>
+        if (filters.contains(f))
+          makeFilterStream( inner->stream, filters(f) )
+        else
+          inner->stream        
 
       case a@Alternater(c, inner) => 
         // get node sets for both recursive and non-recursive edges

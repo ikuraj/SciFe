@@ -29,7 +29,7 @@ object StreamableAST {
     /** Allows injection of a stream of values at run-time */
     case class Injecter(c: Class[_], id: Int = 0) extends StreamEl
 
-    case class Filter(c: Class[_], id: Int = 0) extends StreamEl
+    case class Filter(c: Class[_], inner: StreamEl, id: Int = 0) extends StreamEl
     
     case object Empty extends StreamEl
     
@@ -52,6 +52,15 @@ object StreamableAST {
       def newInjecter(c: Class[_]) = {
         newId += 1
         new Injecter(c, newId)
+      }
+    }
+
+    object Filter {
+      var newId = 0
+      
+      def newFilter(c: Class[_], el: StreamEl) = {
+        newId += 1
+        new Filter(c, el, newId)
       }
     }
 

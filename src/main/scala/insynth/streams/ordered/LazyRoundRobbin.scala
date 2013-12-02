@@ -15,9 +15,48 @@ class LazyRoundRobbin[T](val initStreamsIn: List[OrderedStreamable[T]])
     if (initialized) innerRoundRobbin.isDepleted
     else false
     
-  override def nextReady(ind: Int): Boolean = 
+  override def nextReady(ind: Int): Boolean = { 
+    if (ind == 1) {
+      // TODO force stream evaluation, fix this
+      val stream = produceRoundRobbin.getStream
+    }
     if (initialized) innerRoundRobbin.nextReady(ind)
     else false
+  }
+    
+  private def getMinIndex = {
+    val valueIterators = initStreamsIn map { _.getValues.iterator.buffered }
+    
+    var min = Int.MaxValue
+    var minInd = -1
+    var ind = 0
+    while (ind < valueIterators.size) {
+      val indToCheck = ind % valueIterators.size
+      
+      if (valueIterators(indToCheck).hasNext && valueIterators(indToCheck).head < min) {
+        min = valueIterators(indToCheck).head
+        minInd = indToCheck
+      }        
+        
+      ind += 1
+    }
+    
+    assert(minInd > -1, "minInd > -1")
+    info("returning from getMinIndex with minInd=" + minInd)
+    (min, minInd)
+  }
+  
+  lazy val (minValue, minInd) = getMinIndex
+  
+//  def mappedInitStreams = initStreamsIn.zipWithIndex map {
+//    p =>
+//      if (false && p._2 == minInd) {
+////        if (p._1.isInfinite) SingleStream((p._1.getStream zip p._1.getValues).tail, p._1.isInfinite)
+////        else FiniteStream((p._1.getStream zip p._1.getValues).tail)
+//        SingleStream((p._1.getStream zip p._1.getValues).tail)
+//      }
+//      else p._1
+//  }
   
   var initialized = false
       
@@ -47,11 +86,23 @@ class LazyRoundRobbin[T](val initStreamsIn: List[OrderedStreamable[T]])
     initialized = true
   }
     
-  lazy val stream = produceRoundRobbin.getStream
+  lazy val stream = 
+    if (initialized && minInd > -1) initStreamsIn(minInd).getStream.head #:: produceRoundRobbin.getStream.tail
+    else Stream.empty    
   
-  override def getStream = stream
+  override def getStream = {
+    entering("getStream")
+    info("initialized " + initialized)
+    
+    stream
+  }
   
-  override def getValues = produceRoundRobbin.getValues
+  override def getValues = 
+    if (initialized && minInd > -1) {
+      assert(minInd > -1)
+      minValue #:: produceRoundRobbin.getValues.tail
+    }
+    else Stream.Empty
 }
 
 object LazyRoundRobbin {

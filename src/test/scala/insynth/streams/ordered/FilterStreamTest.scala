@@ -22,6 +22,41 @@ class FilterStreamTest extends FunSuite with ShouldMatchers {
       Vector(2)
     )
   }
+
+  test("simple stream filtering test") {
+    val stream = FilterStream(
+      SingleStream(Stream(1, 2).zipWithIndex), { (x: Int) => true }
+    )
+    
+    stream.getStream.head should be (
+      1
+    )
+  }
+
+  test("simple Scala stream with exception filtering test") {
+    {
+      val stream = (1 #:: (throw new RuntimeException) #:: Stream[Int]()) filter
+        { (x: Int) => true }
+          
+      stream.head should be (1)
+    }
+    {
+      intercept[RuntimeException] {
+      val stream = (1 #:: (throw new RuntimeException) #:: Stream[Int]()) filter
+        { (x: Int) => false }
+      }
+    }
+  }
+
+  test("simple stream with exception filtering test") {
+    val stream = FilterStream(
+      SingleStream((1 #:: (throw new RuntimeException) #:: Stream[Int]()).zipWithIndex), { (x: Int) => true }
+    )
+    
+    stream.getStream.head should be (
+      1
+    )
+  }
   
   ignore("infinite values test") {
   test("infinite values test") {
