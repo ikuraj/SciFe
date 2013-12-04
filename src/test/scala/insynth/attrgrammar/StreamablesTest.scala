@@ -12,12 +12,16 @@ import insynth.streams.{ ordered => ord }
 import util._
 import util.format._
 
+import scala.language.postfixOps
+
 class StreamablesTest extends FunSuite with ShouldMatchers {
 
   import StreamableAST._
   import CommonLambda._
   import Structures._
   
+  val fromOne = Stream.from(1)
+
   case object Type
   
   case class Program(classes: Seq[Class])
@@ -76,7 +80,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     
     val streamables = new StreamablesIml(streamFactory)
     
-    val methodStream = Stream( Method(1), Method(2), Method(3) )
+    val methodStream = Stream( Method(1), Method(2), Method(3) ) zip fromOne
     
     val resultStream = streamables.getStreamable(
       programNode,
@@ -94,7 +98,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
           case us: ord.UnaryStream[_, _] =>
             us.streamable match {
               case ss: ord.FiniteStream[_] => 
-                assert( ss.getStream.toList == methodStream.toList) 
+                assert( ss.getStream.toList == methodStream.map(_._1).toList) 
               case _ => fail          
             }            
           case _ => fail          
@@ -102,7 +106,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
       case _ => fail
     }
     
-    expectResult( methodStream.map(m => Program(Class(m))) ) {
+    expectResult( methodStream.map(m => Program(Class(m._1))) ) {
       resultStream.getStream
     }    
       
@@ -121,7 +125,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     
     val streamables = new StreamablesIml(streamFactory)
     
-    val methodStream = Stream( Method(1), Method(2), Method(3) )
+    val methodStream = Stream( Method(1), Method(2), Method(3) ) zip fromOne
     
     val resultStream = streamables.getStreamPairs(
       programNode,
@@ -167,7 +171,8 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
       },
       null,
       null,
-      Map( intValNode -> ( Stream(1, 2, 3), false ), intValNode2 -> ( Stream(3, 7, 8), false ) )
+      Map( intValNode -> ( Stream(1, 2, 3) zipWithIndex, false ),
+        intValNode2 -> ( Stream(3, 7, 8) zipWithIndex, false ) )
     )
     
     withClue(FormatStreamUtils(resultStream)) {
@@ -204,9 +209,10 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, e: Expression) if clazz == classOf[Method] => Method(e)
         case (clazz, e: Int) if clazz == classOf[Expression] => Expression(e)
       },
-      null,
-      null,
-      Map( intValNode -> ( Stream(1, 2, 3), false ), intValNode2 -> ( Stream(3, 7, 8), false ) )
+      Map.empty,
+      Map.empty,
+      Map( intValNode -> ( Stream(1, 2, 3) zip fromOne, false ),
+        intValNode2 -> ( Stream(3, 7, 8) zip fromOne, false ) )
     )
     
     val expected =
@@ -250,7 +256,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Int) :: (b: Int) :: Nil) if clazz == classOf[Add] =>
           Add(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) )
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zipWithIndex, false ) )
     )
     
     val expected: List[Expression] =
@@ -292,7 +298,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Expression) :: (b: Expression) :: Nil) if clazz == classOf[Add] =>
           Add(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) )
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zipWithIndex, false ) )
     )
     
     withClue(FormatStreamUtils(resultStream)) {
@@ -340,7 +346,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Expression) :: (b: Expression) :: Nil) if clazz == classOf[Add] =>
           Add(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) )
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zip fromOne, false ) )
     )
     
     withClue ( resultStream.take(50).mkString("\n") ) {
@@ -382,7 +388,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Expression) :: (b: Expression) :: Nil) if clazz == classOf[Mul] =>
           Mul(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) )
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zip fromOne, false ) )
     )
     
     withClue ( resultStream.take(100).mkString("\n") ) {
@@ -420,7 +426,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Expression) :: (b: Expression) :: Nil) if clazz == classOf[Add] =>
           Add(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) ),
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zipWithIndex, false ) ),
       Map(),
       Map( filterAddNode -> ( (e: Any) => 
 //        true
@@ -473,7 +479,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Expression) :: (b: Expression) :: Nil) if clazz == classOf[Add] =>
           Add(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) ),
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zipWithIndex, false ) ),
       Map(),
       Map( filterAddNode -> ( (e: Any) => 
 //        true
@@ -531,7 +537,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         case (clazz, (a: Expression) :: (b: Expression) :: Nil) if clazz == classOf[Mul] =>
           Mul(a, b)
       },
-      Map( classOf[Int] -> ( Stream(1, 2, 3), false ) ),
+      Map( classOf[Int] -> ( Stream(1, 2, 3) zip fromOne, false ) ),
       Map(),
       Map( filterAddNode -> ( (e: Any) => 
 //        true
@@ -542,19 +548,19 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
       ) )
     )
     
-    val numToTake = 100
+    val numToTake = 100000
     withClue ( resultStream.take(numToTake).mkString("\n") ) {
-      resultStream.take(numToTake).size should be (100)
+      resultStream.take(numToTake).size should be (numToTake)
       for(ex <- List(
         (Add(Mul(JustInt(1), JustInt(2)), Add(JustInt(1), JustInt(1))), 8.0),
         (Add(Mul(JustInt(1), JustInt(1)), Add(JustInt(2), JustInt(1))), 8.0)
       ))
-        assert( resultStream.take(100).toSet contains ex, "does not contain " + ex )
+        assert( resultStream.take(numToTake).toSet contains ex, "does not contain " + ex )
       for(ex <- List(
         Add(JustInt(1), JustInt(2)),
         Add(Add(JustInt(1), JustInt(2)), Mul(JustInt(1), JustInt(1)))
       ))
-        resultStream.take(100).map(_._1).toSet should not contain (ex)
+        resultStream.take(numToTake).map(_._1).toSet should not contain (ex)
     }    
     
   }

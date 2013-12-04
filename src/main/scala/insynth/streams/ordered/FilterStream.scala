@@ -14,8 +14,10 @@ class FilterStream[T](val streamable: OrderedStreamable[T], filterFun: T => Bool
   override def isDepleted: Boolean = streamable.isDepleted
   override def nextReady(ind: Int): Boolean =
     if (ind < numberOfEnumerated) true
-    else //streamable.nextReady(ind + numberOfFiltered)
+    else { //streamable.nextReady(ind + numberOfFiltered)
+      info("nextReady(%d)".format(ind) + "=" + valIterator.hasNext)
       valIterator.hasNext
+    }
     
   lazy val valIterator = streamable.getValues.iterator.buffered
   lazy val elIterator = streamable.getStream.iterator.buffered  
@@ -26,7 +28,7 @@ class FilterStream[T](val streamable: OrderedStreamable[T], filterFun: T => Bool
     else {
       val currEl = elIterator.head
       val isFine = filterFun(currEl)
-      fine("Evaluation of " + currEl + " resulted in " + isFine)      
+//      fine("Evaluation of " + currEl + " resulted in " + isFine)      
       
       if (isFine) {
         val res = (currEl, valIterator.head) #:: {

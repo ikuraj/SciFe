@@ -3,6 +3,8 @@ package attrgrammar
 
 import scala.collection._
 
+import scala.language.existentials
+
 /**
  * Language AST for streamables
  */
@@ -12,6 +14,8 @@ object StreamableAST {
     import org.kiama.util.Positioned
 
     trait StreamEl extends Attributable with Positioned
+    
+    // TODO make it single el
     
     case class Single(c: Class[_], inner: StreamEl) extends StreamEl
     

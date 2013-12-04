@@ -14,6 +14,8 @@ import util.logging._
 
 import StreamableAST._
 
+import scala.language.postfixOps
+
 trait Streamables[T] {
   
     // streamables that can be attached with recursive edges
@@ -35,32 +37,41 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
   with HasLogger {
 
   import streamBuilder._
+  
+  type InjectionStreamValue = (T, Int)
         
   def getStreamPairs(streamEl: StreamEl,
     process: PartialFunction[(Class[_], T), T],
     combiner: PartialFunction[(Class[_], List[T]), T],
-    injections: Map[Class[_], (Stream[T], Boolean)],
-    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map(),
+    injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
+    streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
     filters: Map[Filter, T => Boolean] = Map()
   ) = {
-    
-    getStreamable(streamEl, process, combiner, injections, streamSpecificInjections,
-      filters) match {
-      case os: OrderedStreamable[_] =>
-        fine("returning ordered streamable")
-        os.getStream zip os.getValues.map(_.toFloat)
-      case us: Streamable[_] =>
-        fine("returning unordered streamable")
-        us.getStream zip Stream.continually(0f)
-    }
-    
+    entering("getStreamPairs with injections: " + injections.map(_._2._1.mkString(",")))
+    extractPairStream(
+      getStreamable(streamEl, process, combiner, injections, streamSpecificInjections,
+        filters)
+    )
   }
   
+  def getStreamListPairs(streamEl: ListStreamEl,
+    process: PartialFunction[(Class[_], T), T],
+    combiner: PartialFunction[(Class[_], List[T]), T],
+    injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
+    streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
+    filters: Map[Filter, T => Boolean] = Map()
+  ) = {
+    extractPairStream(
+      getStreamableList(streamEl, process, combiner, injections, streamSpecificInjections,
+        filters)
+    )
+  }
+    
   def getStream(streamEl: StreamEl,
     process: PartialFunction[(Class[_], T), T],
     combiner: PartialFunction[(Class[_], List[T]), T],
-    injections: Map[Class[_], (Stream[T], Boolean)],
-    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map(),
+    injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
+    streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
     filters: Map[Filter, T => Boolean] = Map()
   ) = {
     getStreamable(streamEl, process, combiner, injections, streamSpecificInjections,
@@ -70,8 +81,32 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
   def getStreamable(streamEl: StreamEl,
     process: PartialFunction[(Class[_], T), T],
     combiner: PartialFunction[(Class[_], List[T]), T],
-    injections: Map[Class[_], (Stream[T], Boolean)],
-    streamSpecificInjections: Map[StreamEl, (Stream[T], Boolean)] = Map(),
+    injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
+    streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
+    filters: Map[Filter, T => Boolean] = Map()
+  ) = {
+    Attribution.resetMemo
+    Attribution.initTree(streamEl)
+          
+    initialize
+    this.combiner = combiner
+    this.process = process
+    this.injections = injections
+    this.specificInjections = streamSpecificInjections
+    this.filters = filters
+    
+    val transformed = stream(streamEl)
+    
+    postProcess
+    
+    transformed
+  }
+  
+  def getStreamableList(streamEl: ListStreamEl,
+    process: PartialFunction[(Class[_], T), T],
+    combiner: PartialFunction[(Class[_], List[T]), T],
+    injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
+    streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
     filters: Map[Filter, T => Boolean] = Map()
   ) = {
     Attribution.initTree(streamEl)
@@ -83,7 +118,7 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
     this.specificInjections = streamSpecificInjections
     this.filters = filters
     
-    val transformed = stream(streamEl)
+    val transformed = listStream(streamEl)
     
     postProcess
     
@@ -227,8 +262,8 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
   
   var combiner: PartialFunction[(Class[_], List[T]), T] = _
   var process: PartialFunction[(Class[_], T), T] = _
-  var injections: Map[Class[_], (Stream[T], Boolean)] = _
-  var specificInjections: Map[StreamEl, (Stream[T], Boolean)] = _
+  var injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)] = _
+  var specificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = _
   var filters: Map[Filter, T => Boolean] = _
     
   // initialize data for each traversal
@@ -252,6 +287,16 @@ class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
       paramInitStream.initialize
     }
   }
+  
+  def extractPairStream(s: Streamable[_]) = 
+    s match {
+      case os: OrderedStreamable[_] =>
+        fine("returning ordered streamable")
+        os.getStream zip os.getValues.map(_.toFloat)
+      case us: Streamable[_] =>
+        fine("returning unordered streamable")
+        us.getStream zip Stream.continually(0f)
+    }
   
 //    val recursiveParamsMap : StreamEl => Map[StreamEl, (LazyStreamable, Set[T])] =
 //      attr {

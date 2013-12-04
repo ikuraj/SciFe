@@ -10,9 +10,9 @@ trait StreamFactory[T] {
   
   def makeSingletonList[U <: T](element: List[U]): Streamable[List[T]]
   
-  def makeSingleStream[U <: T](stream: => Stream[U]): Streamable[T]
+  def makeSingleStream[U <: T](stream: => Stream[(U, Int)]): Streamable[T]
 
-  def makeFiniteStream[U <: T](array: => Vector[U]): Streamable[T]
+  def makeFiniteStream[U <: T](array: => Vector[(U, Int)]): Streamable[T]
   
   def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X => Y, modifyVal: Option[Int => Int] = None): Streamable[T]
   
