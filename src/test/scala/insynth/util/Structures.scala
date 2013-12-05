@@ -27,19 +27,6 @@ object Structures {
     
     rec(maxSize)
   }
-
-  object Binomial {
-    def main(args: Array[String]): Unit = {
-      val n = 5
-      val k = 3
-      val result = binomialCoefficient(n, k)
-      println("The Binomial Coefficient of %d and %d equals %d.".format(n, k, result))
-    }
-
-    def binomialCoefficient(n: Int, k: Int): Int = 
-      ( (BigInt(n - k + 1) to n).product / 
-      (BigInt(1) to k).product).intValue
-  }
   
   case class JustInt(a: Int)
   trait CusList
@@ -75,6 +62,43 @@ object Structures {
       
       rec(list)
     }
+  }
+  
+  object TreeShapes {
+    trait Tree
+    case object Leaf extends Tree
+    case class Node(l: Tree, r: Tree) extends Tree
+    
+    def size(tree: Tree) = {
+      def rec(t: Tree): Int = t match {
+        case Leaf => 1
+        case Node(l, r) => 1 + rec(l) + rec(r)
+      }
+      
+      rec(tree)
+    }
+
+    def sizeJustNodes(tree: Tree) = {
+      def rec(t: Tree): Int = t match {
+        case Leaf => 0
+        case Node(l, r) => 1 + rec(l) + rec(r)
+      }
+      
+      rec(tree)
+    }
+  }
+
+  object Binomial {
+    def main(args: Array[String]): Unit = {
+      val n = 5
+      val k = 3
+      val result = binomialCoefficient(n, k)
+      println("The Binomial Coefficient of %d and %d equals %d.".format(n, k, result))
+    }
+
+    def binomialCoefficient(n: Int, k: Int): Int = 
+      ( (BigInt(n - k + 1) to n).product / 
+      (BigInt(1) to k).product).intValue
   }
   
 }
