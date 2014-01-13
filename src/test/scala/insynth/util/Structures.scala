@@ -6,11 +6,16 @@ import insynth.reconstruction.stream._
 import org.scalatest._
 import org.scalatest.matchers._
 
+import org.scalacheck._
+import Gen._
+
 import scala.language.implicitConversions
 
 object Structures {
   
   import StreamableAST._
+  
+  val fromOne = Stream.from(1)
 
   def generateLists(maxSize: Int, integers: Range) = {
     def rec(sizeToGen: Int): List[List[Int]] = {
@@ -88,6 +93,66 @@ object Structures {
     }
   }
 
+  object RedBlackTrees {    
+    trait Tree
+    case object Leaf extends Tree
+    // if c == true then the node is black
+    case class Node(l: Tree, v: Int, r: Tree, c: Boolean) extends Tree
+    
+    def invariant(tree: Tree) =
+      blackInv(tree) && redDescHaveBlackChildren(tree) && valueOrdering(tree)
+        
+    // every path from the root to a leaf has the same number of black nodes
+    def blackInv(tree: Tree) = {
+      def rec(t : Tree) : (Boolean, Int) = t match {
+        case Node(l, _, r, c) =>
+          val (lRes, lHeight) = rec(l)
+          val (rRes, rHeight) = rec(r)
+          val newHeight =
+            if (c) lHeight + 1
+            else lHeight
+          
+          ((lRes && rRes && lHeight == rHeight), lHeight)
+        case Leaf => (true, 1)
+      }
+      
+      rec(tree)._1
+    }
+  
+    // no red node has a red child
+    def redDescHaveBlackChildren(t: Tree) : Boolean = {    
+      def isBlack(t: Tree) : Boolean = t match {
+        case Leaf => true
+        case Node(_,_,_, color) => color
+      }
+      def redNodesHaveBlackChildren(t: Tree) : Boolean = t match {
+        case Leaf => true
+        case Node(l, _, r, true) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
+        case Node(l, _, r, false) => isBlack(l) && isBlack(r)
+          redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
+        case _ => false
+      }
+      t match {
+        case Leaf => true
+        case Node(l,_,r, c) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
+      }
+    }
+    
+		// for every node n, all the nodes in the left (respectively, right) subtree of
+		// n, if any, have keys which are smaller (respectively, bigger) than the key
+  	// labeling n.
+    def valueOrdering(t: Tree) : Boolean = {
+      def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
+        case Leaf => true
+        case Node(l, v, r, c) => min <= v && max > v &&
+        	valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
+      }
+      
+      valuesInRange(t, Int.MinValue, Int.MaxValue)
+    }
+
+  }
+
   object Binomial {
     def main(args: Array[String]): Unit = {
       val n = 5
@@ -148,5 +213,29 @@ class StructuresTest extends FunSuite with ShouldMatchers {
       List(1, 1, 1, 1, 1, 2, 1)
     ): List[CusList])
       isSorted(ex) should be (false)
+  }
+    
+  test("generate RB trees") {
+    import RedBlackTrees._
+    
+    def rbMap2rbTree[V](rbMap: RBMap[Int, V]): Tree = rbMap match {
+      case leaf: L[Int, V] => Leaf
+      case T(c, l, k, v, r) =>
+        val color = c == RBTreeItems.B
+        Node(rbMap2rbTree(l), k, rbMap2rbTree(r), color)
+    }
+    
+    for {
+      size <- Gen.choose(1, 10)
+      values <- Gen.listOfN(size, Gen.choose(10, 50))
+    } yield {
+      val rbMap = RBMap(values map (x => (x, null)): _*)
+      
+      val rbTree = rbMap2rbTree(rbMap)
+      
+      assert( invariant(rbTree) )
+    }
+      
+    
   }
 }

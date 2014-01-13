@@ -34,3 +34,12 @@ seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
 libraryDependencies +=  "com.googlecode.kiama" %% "kiama" % "1.5.1"
 
 libraryDependencies +=  "com.googlecode.kiama" %% "kiama" % "1.5.1" % "test" classifier ("test")
+
+// ScalaCheck
+resolvers ++= Seq(
+  "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
+)
+
+libraryDependencies ++= Seq(
+  "org.scalacheck" %% "scalacheck" % "1.11.1" % "test"
+)
