@@ -3,6 +3,8 @@ package insynth.streams.ordered
 import insynth.streams._
 import insynth.streams.unordered.{ UnaryStream => UnUnaryStream }
 
+import scala.annotation.tailrec
+
 class FilterStream[T](val streamable: OrderedStreamable[T], filterFun: T => Boolean)
 	extends OrderedStreamable[T] {
   
@@ -23,12 +25,10 @@ class FilterStream[T](val streamable: OrderedStreamable[T], filterFun: T => Bool
   lazy val elIterator = streamable.getStream.iterator.buffered  
     
   def loop: Stream[(T, Int)] = {
-    if (!valIterator.hasNext)
-      Stream.empty
-    else {
+    while (valIterator.hasNext) {
       val currEl = elIterator.head
       val isFine = filterFun(currEl)
-//      fine("Evaluation of " + currEl + " resulted in " + isFine)      
+      finest("Evaluation of " + currEl + " resulted in " + isFine)      
       
       if (isFine) {
         val res = (currEl, valIterator.head) #:: {
@@ -37,15 +37,14 @@ class FilterStream[T](val streamable: OrderedStreamable[T], filterFun: T => Bool
           loop
         }
         numberOfEnumerated += 1
-        res
+        return res
       }
-      else {
-        numberOfFiltered += 1
-        elIterator.next
-        valIterator.next
-        loop
-      }     
-    }   
+      
+      numberOfFiltered += 1
+      elIterator.next
+      valIterator.next
+    }
+    Stream.empty
   }
       
   lazy val stream = loop

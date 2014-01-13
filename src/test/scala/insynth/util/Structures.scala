@@ -5,11 +5,13 @@ import insynth.reconstruction.stream._
 
 import org.scalatest._
 import org.scalatest.matchers._
+import org.scalatest.prop.Checkers
 
 import org.scalacheck._
 import Gen._
 
 import scala.language.implicitConversions
+import scala.language.postfixOps
 
 object Structures {
   
@@ -151,6 +153,13 @@ object Structures {
       valuesInRange(t, Int.MinValue, Int.MaxValue)
     }
 
+    // conversion from helper class rbtrees to these ones
+    def rbMap2rbTree[V](rbMap: RBMap[Int, V]): Tree = rbMap match {
+      case leaf: L[Int, V] => Leaf
+      case T(c, l, k, v, r) =>
+        val color = c == RBTreeItems.B
+        Node(rbMap2rbTree(l), k, rbMap2rbTree(r), color)
+    }
   }
 
   object Binomial {
@@ -218,24 +227,16 @@ class StructuresTest extends FunSuite with ShouldMatchers {
   test("generate RB trees") {
     import RedBlackTrees._
     
-    def rbMap2rbTree[V](rbMap: RBMap[Int, V]): Tree = rbMap match {
-      case leaf: L[Int, V] => Leaf
-      case T(c, l, k, v, r) =>
-        val color = c == RBTreeItems.B
-        Node(rbMap2rbTree(l), k, rbMap2rbTree(r), color)
-    }
-    
-    for {
-      size <- Gen.choose(1, 10)
-      values <- Gen.listOfN(size, Gen.choose(10, 50))
-    } yield {
-      val rbMap = RBMap(values map (x => (x, null)): _*)
+    val rbTreeGen =
+      for {
+        size <- Gen.choose(1, 10)
+        values <- Gen.listOfN(size, Gen.choose(10, 50))
+      } yield {
+        val rbMap = RBMap(values map (x => (x, null)): _*)
+        
+        rbMap2rbTree(rbMap)
+      }
       
-      val rbTree = rbMap2rbTree(rbMap)
-      
-      assert( invariant(rbTree) )
-    }
-      
-    
+    Prop.forAll(rbTreeGen)(invariant) check
   }
 }
