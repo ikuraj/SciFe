@@ -20,15 +20,6 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
   import CommonLambda._
   import Structures._
   
-  val fromOne = Stream.from(1)
-
-  case object Type
-  
-  case class Program(classes: Seq[Class])
-  case class Class(methods: Seq[Method])
-  case class Method(info: Int)
-//  case class Method(statements: Seq[Statement])
-  
   val streamFactory = new OrderedStreamFactory[Any]
   
   test("simpleConstruction") {
@@ -41,7 +32,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val classNode = Single(classOf[Class], methodNode)
     val programNode = Single(classOf[Program], classNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamable(
       programNode,
@@ -78,7 +69,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val classNode = Single(classOf[Class], methodNode)
     val programNode = Single(classOf[Program], classNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val methodStream = Stream( Method(1), Method(2), Method(3) ) zip fromOne
     
@@ -123,7 +114,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val classNode = Combiner(classOf[Class], aggregatedMethodNode)
     val programNode = Single(classOf[Program], classNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val methodStream = Stream( Method(1), Method(2), Method(3) ) zip fromOne
     
@@ -162,7 +153,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val exprNode = Alternater(classOf[Expression], Seq(intValNode, intValNode2))
     val methodNode = Single(classOf[Method], exprNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamable(
       methodNode,
@@ -201,7 +192,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val exprNode = Alternater(classOf[Expression], Seq(intValNode, intValNode2))
     val methodNode = Single(classOf[Method], exprNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       methodNode,
@@ -243,7 +234,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
 //    val exprNode = Alternater(classOf[Expression], Seq(addNode))
     val methodNode = Single(classOf[Method], exprNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       methodNode,
@@ -287,7 +278,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val addNode = Combiner(classOf[Add], exprsNode)
     exprNode.addStreamEl(addNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamable(
       addNode,
@@ -335,7 +326,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val addNode = Combiner(classOf[Add], exprsNode)
     exprNode.addStreamEl(addNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       addNode,
@@ -375,7 +366,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     exprNode.addStreamEl(addNode)
     exprNode.addStreamEl(mulNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       addNode,
@@ -415,7 +406,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val filterAddNode = Filter(classOf[Add], addNode)
     exprNode.addStreamEl(filterAddNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       filterAddNode,
@@ -468,7 +459,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     val filterAddNode = Filter(classOf[Add], addNode)
     exprNode.addStreamEl(addNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       filterAddNode,
@@ -524,7 +515,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     exprNode.addStreamEl(filterAddNode)
     exprNode.addStreamEl(mulNode)
     
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val resultStream = streamables.getStreamPairs(
       filterAddNode,

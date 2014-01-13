@@ -73,7 +73,7 @@ class SortedListTest extends FunSuite with ShouldMatchers {
 
     val streamFactory = new OrderedStreamFactory[Any]
 
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val intStream = Stream( 1, 2, 3 ) zip ones
     
@@ -105,7 +105,7 @@ class SortedListTest extends FunSuite with ShouldMatchers {
 
     val streamFactory = new OrderedStreamFactory[Any]
 
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     for (size <- 1 to 5) {
       val intStream = (1 to size toStream) zipWithIndex
@@ -142,7 +142,7 @@ class SortedListTest extends FunSuite with ShouldMatchers {
 
     val streamFactory = new OrderedStreamFactory[Any]
 
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
 
     val intStream = Stream( 1, 2, 3 ) zip ones
     val nilStream = Stream( (CusNil, 1) )
@@ -201,7 +201,7 @@ class SortedListTest extends FunSuite with ShouldMatchers {
   
     val streamFactory = new OrderedStreamFactory[Any]
   
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val nilStream = Stream( (CusNil, 1) )
 
@@ -250,7 +250,7 @@ class SortedListTest extends FunSuite with ShouldMatchers {
   
     val streamFactory = new OrderedStreamFactory[Any]
   
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val nilStream = Stream( CusNil ) zip ones
 
@@ -299,7 +299,7 @@ class SortedListTest extends FunSuite with ShouldMatchers {
   
     val streamFactory = new OrderedStreamFactory[Any]
   
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
     
     val nilStream = Stream( CusNil ) zip ones
     import CusList._

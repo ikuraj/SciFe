@@ -33,7 +33,7 @@ trait Streamables[T] {
     
 }
 
-class StreamablesIml[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
+class StreamablesImpl[T](streamBuilder: StreamFactory[T]) extends Streamables[T]
   with HasLogger {
 
   import streamBuilder._

@@ -38,7 +38,7 @@ class TreeShapesTest extends FunSuite with ShouldMatchers {
 
     val streamFactory = new OrderedStreamFactory[Any]
 
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
 
     val nilStream = Stream( (Leaf, 1) )
 
@@ -80,7 +80,7 @@ class TreeShapesTest extends FunSuite with ShouldMatchers {
 
     val streamFactory = new OrderedStreamFactory[Any]
 
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
 
     val nilStream = Stream( (Leaf, 1) )
 
@@ -114,7 +114,7 @@ class TreeShapesTest extends FunSuite with ShouldMatchers {
 
     val streamFactory = new OrderedStreamFactory[Any]
 
-    val streamables = new StreamablesIml(streamFactory)
+    val streamables = new StreamablesImpl(streamFactory)
 
     val nilStream = Stream( (Leaf, 1) )
 
