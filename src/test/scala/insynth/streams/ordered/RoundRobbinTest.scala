@@ -18,7 +18,7 @@ class RoundRobbinTest extends JUnitSuite {
     val streamable1 = getSingleStream(finiteStream1)
     val streamable2 = getSingleStream(finiteStream2)
 
-    val rr = RoundRobbin(Seq(streamable1, streamable2))
+    val rr = RoundRobbin(IndexedSeq(streamable1, streamable2))
 
     val stream = rr.getStream
 
@@ -41,7 +41,7 @@ class RoundRobbinTest extends JUnitSuite {
     val streamable1 = getSingleStream(finiteStream1)
     val streamable2 = getSingleStream(finiteStream2)
 
-    val rr = RoundRobbin(Seq(streamable1, streamable2))
+    val rr = RoundRobbin(IndexedSeq(streamable1, streamable2))
 
     val stream = rr.getStream
 
@@ -62,7 +62,7 @@ class RoundRobbinTest extends JUnitSuite {
     val streamable1 = getSingleStream(finiteStream1)
     val streamable2 = getSingleStream(finiteStream2)
 
-    val rr = RoundRobbin(Seq(streamable1, streamable2))
+    val rr = RoundRobbin(IndexedSeq(streamable1, streamable2))
 
     val stream = rr.getStream
 

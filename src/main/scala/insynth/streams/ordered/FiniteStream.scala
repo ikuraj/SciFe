@@ -6,14 +6,15 @@ import unordered.{ SingleStream => UnSingleStream }
 import util.logging._
 
 // NOTE this would require ordered stream
-class FiniteStream[T](arr: => Vector[(T, Int)])
+class FiniteStream[T](arr: => Seq[(T, Int)])
 	extends OrderedStreamable[T] with HasLogger {
   
   var nextInd = 0
+  val iterator = arr.iterator
   val stream = Stream.fill( arr.size )( {
     nextInd+=1;
     fine("nextInd is " + nextInd)
-    arr(nextInd-1)
+    iterator.next
   } )
   
   override def isInfinite = false
@@ -31,6 +32,6 @@ class FiniteStream[T](arr: => Vector[(T, Int)])
 }
 
 object FiniteStream {
-  def apply[T](stream: => Vector[(T, Int)]) =
+  def apply[T](stream: => Seq[(T, Int)]) =
     new FiniteStream(stream)
 }

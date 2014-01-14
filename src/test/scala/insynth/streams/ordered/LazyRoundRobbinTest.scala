@@ -6,9 +6,13 @@ import org.scalatest.junit.JUnitSuite
 import org.junit.Assert._
 import org.junit.{ Test, Ignore }
 
+import scala.language.implicitConversions
+
 class LazyRoundRobbinTest extends JUnitSuite {
 
   val rnd = new Random(System.currentTimeMillis())
+  
+  implicit def listToIndexedSeq[T](list: List[T]) = list.toIndexedSeq
 
   import Utils._
 
@@ -37,7 +41,7 @@ class LazyRoundRobbinTest extends JUnitSuite {
 //    val innerStream = (1, 1) #:: lazyPair #:: Stream[(Int, Int)]()
     
     val stream1 = getSingleStream(0)
-    val stream2 = RoundRobbin(Seq(Singleton[Int](throw new RuntimeException)))
+    val stream2 = RoundRobbin(IndexedSeq(Singleton[Int](throw new RuntimeException)))
     
     val lrr = LazyRoundRobbin(List(stream1))
 

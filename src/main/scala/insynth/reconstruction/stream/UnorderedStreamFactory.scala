@@ -32,11 +32,11 @@ class UnorderedStreamFactory[T] extends StreamFactory[T] {
   override def makeRoundRobbin[U <: T](streams: Seq[Streamable[U]]) =
     RoundRobbin(streams)
   
-  override def makeLazyRoundRobbin[U <: T](initStreams: List[Streamable[U]]) =
-    LazyRoundRobbin(initStreams)
+  override def makeLazyRoundRobbin[U <: T](initStreams: Seq[Streamable[U]]) =
+    LazyRoundRobbin(initStreams.toList)
       
-  override def makeLazyRoundRobbinList[U <: T](initStreams: List[Streamable[List[U]]]) =    
-    LazyRoundRobbin(initStreams)
+  override def makeLazyRoundRobbinList[U <: T](initStreams: Seq[Streamable[List[U]]]) =    
+    LazyRoundRobbin(initStreams.toList)
         
   def getFinalStream(streamable: Streamable[T]) =
     streamable.getStream zip Stream.continually(0f)

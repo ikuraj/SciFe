@@ -34,13 +34,13 @@ class OrderedStreamFactory[T] extends StreamFactory[T] with HasLogger {
     BinaryStream(s1.asInstanceOf[OrderedStreamable[X]], s2.asInstanceOf[OrderedStreamable[Y]])(combine)
   
   override def makeRoundRobbin[U <: T](streams: Seq[Streamable[U]]) =
-    RoundRobbin(streams.asInstanceOf[Seq[OrderedStreamable[U]]])
+    RoundRobbin(streams.asInstanceOf[Seq[OrderedStreamable[U]]].toIndexedSeq)
   
-  override def makeLazyRoundRobbin[U <: T](initStreams: List[Streamable[U]]) =
-    LazyRoundRobbin[U](initStreams.asInstanceOf[List[OrderedStreamable[U]]])
+  override def makeLazyRoundRobbin[U <: T](initStreams: Seq[Streamable[U]]) =
+    LazyRoundRobbin[U](initStreams.asInstanceOf[Seq[OrderedStreamable[U]]].toIndexedSeq)
       
-  def makeLazyRoundRobbinList[U <: T](initStreams: List[Streamable[List[U]]]) =    
-    LazyRoundRobbin[List[U]](initStreams.asInstanceOf[List[OrderedStreamable[List[U]]]])
+  def makeLazyRoundRobbinList[U <: T](initStreams: Seq[Streamable[List[U]]]) =    
+    LazyRoundRobbin[List[U]](initStreams.asInstanceOf[Seq[OrderedStreamable[List[U]]]].toIndexedSeq)
   
   def getFinalStream(streamable: Streamable[T]) = 
     streamable match {

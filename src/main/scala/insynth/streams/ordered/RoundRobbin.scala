@@ -6,7 +6,7 @@ import insynth.util.logging._
 import insynth.streams.{ OrderedStreamable => Streamable }
 import insynth.streams.unordered.{ RoundRobbin => UnRoundRobbin }
 
-class RoundRobbin[T] protected[streams] (val streams: Seq[Streamable[T]])
+class RoundRobbin[T] protected[streams] (val streams: IndexedSeq[Streamable[T]])
 	extends Streamable[T] with HasLogger {
   
   override def isInfinite = isInfiniteFlag
@@ -148,7 +148,7 @@ class RoundRobbin[T] protected[streams] (val streams: Seq[Streamable[T]])
 }
 
 object RoundRobbin {
-  def apply[T](streamsIn: => Seq[Streamable[T]]) = {
+  def apply[T](streamsIn: => IndexedSeq[Streamable[T]]) = {
 //    assert(streams.forall(!_.isInfinite))
 //  	val streams = streamsIn.sortWith(!_.isInfinite && _.isInfinite)
   	

@@ -4,7 +4,7 @@ import insynth.streams._
 
 import insynth.util.logging.HasLogger
 
-class LazyRoundRobbin[T](val initStreamsIn: List[OrderedStreamable[T]])
+class LazyRoundRobbin[T](val initStreamsIn: IndexedSeq[OrderedStreamable[T]])
 	extends OrderedStreamable[T] with AddStreamable[T] with HasLogger {
 
   override def isInfinite: Boolean = 
@@ -60,9 +60,9 @@ class LazyRoundRobbin[T](val initStreamsIn: List[OrderedStreamable[T]])
   
   var initialized = false
       
-  var streams: List[OrderedStreamable[T]] = initStreamsIn
+  var streams = initStreamsIn
   
-  override def getStreams = streams
+  override def getStreams = streams.toList
     
   var innerRoundRobbin: RoundRobbin[T] = _
   
@@ -77,7 +77,7 @@ class LazyRoundRobbin[T](val initStreamsIn: List[OrderedStreamable[T]])
     
   private def produceRoundRobbin = {
     if (innerRoundRobbin == null)
-    	innerRoundRobbin = RoundRobbin[T](getStreams)
+    	innerRoundRobbin = RoundRobbin[T](streams)
   	innerRoundRobbin
   } 
   
@@ -106,5 +106,5 @@ class LazyRoundRobbin[T](val initStreamsIn: List[OrderedStreamable[T]])
 }
 
 object LazyRoundRobbin {
-	def apply[T](initStreams: List[OrderedStreamable[T]]) = new LazyRoundRobbin(initStreams)
+	def apply[T](initStreams: IndexedSeq[OrderedStreamable[T]]) = new LazyRoundRobbin(initStreams)
 }

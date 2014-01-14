@@ -6,9 +6,13 @@ import org.scalatest.junit.JUnitSuite
 import org.junit.Assert._
 import org.junit.Test
 
+import scala.language.implicitConversions
+
 class StreamCombinationsTest extends JUnitSuite {
 
   val rnd = new Random(System.currentTimeMillis())
+
+  implicit def listToIndexedSeq[T](list: List[T]) = list.toIndexedSeq
 
   import Utils._
 
