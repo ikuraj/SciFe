@@ -152,6 +152,11 @@ object Structures {
       
       valuesInRange(t, Int.MinValue, Int.MaxValue)
     }
+    
+    def size(t: Tree): Int = t match {
+      case Leaf => 0
+      case Node(l, v, r, c) => 1 + size(l) + size(r)
+    }
 
     // conversion from helper class rbtrees to these ones
     def rbMap2rbTree[V](rbMap: RBMap[Int, V]): Tree = rbMap match {
