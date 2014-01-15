@@ -1,8 +1,7 @@
 package insynth
 package attrgrammar
 
-import org.scalatest._
-import org.scalatest.matchers._
+import org.kiama.attribution.Attribution
 
 import insynth.reconstruction.stream.Application
 import insynth.common._
@@ -11,6 +10,9 @@ import insynth.streams.{ ordered => ord }
 
 import util._
 import util.format._
+
+import org.scalatest._
+import org.scalatest.matchers._
 
 import scala.language.postfixOps
 
@@ -294,7 +296,7 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     
     withClue(FormatStreamUtils(resultStream)) {
       resultStream match {
-        case us: ord.UnaryStream[_, _] =>
+        case us: ord.UnaryStreamWithValueMod[_, _] =>
           us.streamable match {
             case bs: ord.BinaryStream[_, _, _] =>
               bs.s2 match {
@@ -554,6 +556,28 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
         resultStream.take(numToTake).map(_._1).toSet should not contain (ex)
     }    
     
+  }
+  
+  test("allRecursiveLinksDownTheTree attribute test") {
+    
+    val intValNode = Injecter(classOf[Int])
+    val intValNode2 = Injecter(classOf[Int])
+    val altNode = Alternater(classOf[Int], List(intValNode, intValNode2))
+    val modNode1 = Single(classOf[Int], altNode)
+    val modNode2 = Single(classOf[Int], modNode1)
+    altNode.addStreamEl(modNode1)
+    altNode.addStreamEl(modNode2)
+    
+    val streamables = new StreamablesImpl(streamFactory)
+    
+    Attribution.resetMemo
+    Attribution.initTree(modNode2)
+    
+    import Attribution._
+    
+    streamables.allRecursiveLinksDownTheTree(modNode2) should have size (2)
+    streamables.allRecursiveLinksDownTheTree(modNode2) should contain (modNode1: StreamEl)
+    streamables.allRecursiveLinksDownTheTree(modNode2) should contain (modNode2: StreamEl)
   }
   
 //  @Test

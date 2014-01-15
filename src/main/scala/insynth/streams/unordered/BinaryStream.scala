@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import insynth.streams.Streamable
 import scala.collection.immutable.Stream.consWrapper
@@ -13,6 +14,10 @@ import scala.collection.immutable.Stream.consWrapper
  */
 class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])(combine: (T, V) => U) extends Streamable[U] {
     
+  override def size =
+    if (s1.size <= -1 || s2.size <= -1) -1
+    else s1.size + s2.size
+
   // if one of the streams is infinite we will have an infinite stream
   lazy val isInfiniteFlag = s1.isInfinite || s2.isInfinite
   
@@ -94,4 +99,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])(combin
 object BinaryStream {
 	def apply[T, V, U](s1: Streamable[T], s2: Streamable[V])(combine: (T, V) => U) =
 	  new BinaryStream(s1, s2)(combine)
+
+	def memoized[T, V, U](s1: Streamable[T], s2: Streamable[V])(combine: (T, V) => U) =
+	  new BinaryStream(s1, s2)(combine) with Memoized[U]
 }

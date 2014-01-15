@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.util.Random
 
@@ -7,6 +8,8 @@ import org.junit.Assert._
 import org.junit.Test
 
 class MemoizationTest extends JUnitSuite {    
+  
+  import Utils._
   
   val random = new Random(System.currentTimeMillis())
   
@@ -40,5 +43,7 @@ class MemoizationTest extends JUnitSuite {
     us.getStream(2)
     
     assertEquals(threeElements.sum, myCount)
+      
+    compareCallsToGetStream( List(us) )
   }
 }

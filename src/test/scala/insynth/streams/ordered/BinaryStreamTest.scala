@@ -1,6 +1,6 @@
 package insynth.streams.ordered
 
-import insynth.streams.ordered.{ SingleStream => _ }
+import insynth.streams.ordered._
 
 import scala.util.Random
 
@@ -34,6 +34,8 @@ class BinaryStreamTest extends JUnitSuite {
     assertFalse(stream.isEmpty)
     assertEquals(2, stream.head)
     assertEquals(3, bs.getValues.head)
+    
+    compareCallsToGetStream(bs)
   }
   
   @Test
@@ -49,6 +51,8 @@ class BinaryStreamTest extends JUnitSuite {
     
     assertEquals(2, stream.head)
     assertEquals(2, bs.getValues.head)
+    
+    compareCallsToGetStream(bs)
   }
       
   trait Combination
@@ -75,14 +79,22 @@ class BinaryStreamTest extends JUnitSuite {
 //		      case (x: NumberList, y: Number) => NumberList(x.list :+ y)	      
 		      case (x: Number, y: Number) => NumberList(List(x, y))
 	      }
-		    
-		    val streamString = (bs.getStream zip bs.getValues).toList mkString (", ")
+    
+        compareCallsToGetStream(bs)
 		    
 		    val resultList = List(List(1,2), List(1,5), List(4,2), List(1,6), List(6,2), List(4,5), List(4,6), List(6,5), List(6,6))
 		    
 		    //val resultList = List(List(1,2), List(1,5), List(1,6), List(4,5), List(4,6), List(6,6))
 		    
 		    val resultValueList = List(3, 6, 6, 7, 8, 9, 10, 11, 12)
+		         		    
+		        	    
+		    assertEquals(
+	        resultList map
+	        	{ x => NumberList(x map { Number(_) }) } zip resultValueList,
+	        bs.getValuedStream
+	      )
+		    val streamString = (bs.getStream zip bs.getValues).toList mkString (", ")
 		    
 		    assertEquals(streamString, 9, bs.getStream.size)	
 		    assertEquals(streamString, 9, bs.getValues.size)
@@ -103,6 +115,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) } zip resultValueList,
 	        bs.getStream zip bs.getValues
 	      )
+    
+	      compareCallsToGetStream(bs)
 	    }
 	    
     }
@@ -120,8 +134,8 @@ class BinaryStreamTest extends JUnitSuite {
 	    val infiniteStream1: Stream[(Combination, Int)] = Stream.continually((randomInt1, randomInt1))
 	    val infiniteStream2: Stream[(Number, Int)] = Stream.continually((randomInt2, randomInt2))
 	    
-	    val streamable1 = SingleStream(infiniteStream1)
-	    val streamable2 = SingleStream(infiniteStream2)
+	    val streamable1 = WrapperStream(infiniteStream1)
+	    val streamable2 = WrapperStream(infiniteStream2)
 	    	    
 	    {
 		    val bs = BinaryStream(streamable1, streamable2) {
@@ -130,6 +144,8 @@ class BinaryStreamTest extends JUnitSuite {
 		      case (x: NumberList, y: Number) => NumberList(x.list :+ y)	      
 		      case (x: Number, y: Number) => NumberList(List(x, y))
 	      }
+    
+        compareCallsToGetStream(bs)
 		    
 		    val stream = bs.getStream
 		    val streamString = stream.take(10).toList mkString (", ")
@@ -152,6 +168,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) } zip Stream.continually(randomInt1 + randomInt2).take(10),
 	        currentStream.take(10) zip bs.getValues.take(10)
 	      )
+    
+        compareCallsToGetStream(bs)
 	    }
 	    
     }    
@@ -174,8 +192,8 @@ class BinaryStreamTest extends JUnitSuite {
 	    val infiniteStream2: Stream[(Number, Int)] =
 	      Stream.from(randomInt2, 2) map { int => (int: Number, int) }
 	    
-	    val streamable1 = new SingleStream(infiniteStream1)
-	    val streamable2 = new SingleStream(infiniteStream2)
+	    val streamable1 = new WrapperStream(infiniteStream1)
+	    val streamable2 = new WrapperStream(infiniteStream2)
 	    	    
 	    {
 		    val bs = BinaryStream(streamable1, streamable2) {
@@ -184,6 +202,8 @@ class BinaryStreamTest extends JUnitSuite {
 		      case (x: NumberList, y: Number) => NumberList(x.list :+ y)	      
 		      case (x: Number, y: Number) => NumberList(List(x, y))
 	      }
+    
+        compareCallsToGetStream(bs)
 		    
 		    val stream = bs.getStream
 		    val streamString = stream.take(10).toList mkString (", ")
@@ -191,7 +211,8 @@ class BinaryStreamTest extends JUnitSuite {
 		    assertTrue(bs.isInfinite)
 		    assertEquals(
 	        streamToString(stream)(8),
-	        List( List(1, 2), List(2,2), List(1,4), List(3,2), List(2,4), List(4,2), List(3, 4), List(1, 6) ) map
+	        List( List(1, 2), List(2,2), List(1,4), List(3,2), 
+          List(2,4), List(4,2), List(3, 4), List(1, 6) ) map
 	        	{ x => NumberList(x map { Number(_) }) },
 	        stream.take(8).toList
 	      )
@@ -208,6 +229,8 @@ class BinaryStreamTest extends JUnitSuite {
 		      )
 		      ind += 147
 	      }
+    
+        compareCallsToGetStream(bs)
 	    }
 	    
     }    
@@ -242,8 +265,8 @@ class BinaryStreamTest extends JUnitSuite {
 		    assertTrue(bs.isInfinite)
 		    assertEquals(
 	        streamToString(stream)(9),
-	        List( List(10, 1), List(10, 2), List(11, 1), List(10, 3), List(12, 1), List(11,2),
-	            List(13,1), List(12, 2), List(11, 3) ) map
+	        List( List(10, 1), List(10, 2), List(11, 1), List(11,2), List(10, 3), List(12, 1),
+	            List(12, 2), List(11, 3), List(13,1) ) map
 	        	{ x => NumberList(x map { Number(_) }) },
 	        stream.take(9)
 	      )
@@ -260,6 +283,8 @@ class BinaryStreamTest extends JUnitSuite {
 		      )
 		      ind += 147
 	      }
+    
+        compareCallsToGetStream(bs)
       }
 	    
     }    

@@ -3,12 +3,13 @@ package insynth.streams.ordered
 import scala.util.Random
 
 import org.scalatest.junit.JUnitSuite
+import org.scalatest.matchers._
 import org.junit.Assert._
 import org.junit.Test
 
 import scala.language.implicitConversions
 
-class StreamCombinationsTest extends JUnitSuite {
+class StreamCombinationsTest extends JUnitSuite with ShouldMatchers {
 
   val rnd = new Random(System.currentTimeMillis())
 
@@ -41,6 +42,8 @@ class StreamCombinationsTest extends JUnitSuite {
     val elResult = List(1, 3, 4, 9, 12, 12, 16, 27)
 
     assertEquals(streamString, elResult, rr.getStream.take(elResult.size))
+    
+    compareCallsToGetStream(List(rr, bs))
   }
 
   @Test
@@ -68,6 +71,8 @@ class StreamCombinationsTest extends JUnitSuite {
     val elResult = List(1, 3, 4, 9, 12, 12, 16, 27)
 
     assertEquals(streamString, elResult, rr.getStream.take(elResult.size))
+    
+    compareCallsToGetStream(List(rr, bs))
   }
 
   @Test(expected = classOf[RuntimeException])
@@ -86,9 +91,12 @@ class StreamCombinationsTest extends JUnitSuite {
 
     rr.initialize
 
-    rr.getValues.take(6)    
-    val streamString = streamToString(rr.getStream zip rr.getValues)(6)
+    rr.getValues.take(6)
+    
+    val streamString = streamToString(rr.getStream zip rr.getValues)(6)    
     assertTrue("Stream string: " + streamString, List.empty != (rr.getStream zip rr.getValues take 6))
+        
+    compareCallsToGetStream(List(rr, bs))
   }
 
   @Test
@@ -131,11 +139,14 @@ class StreamCombinationsTest extends JUnitSuite {
 
       val stream = bs.getStream
 
-      assertFalse(bs.isInfinite)
+      // whenever we have lazy round robbin, its infinite
+      assertTrue(bs.isInfinite)
       assertEquals(
         stream.take(1) mkString (", "),
         List(3),
         stream.take(1).toList)
+    
+        compareCallsToGetStream( bs )
     }
   }
 
@@ -157,11 +168,13 @@ class StreamCombinationsTest extends JUnitSuite {
 
       val stream = bs.getStream
 
-      assertFalse(bs.isInfinite)
+      assertTrue(bs.isInfinite)
       assertEquals(
         stream.take(5) mkString (", "),
         List(List(1,2), List(1,3), List(3,2), List(3,3), List(1,6)),
         stream.take(5))
+    
+      compareCallsToGetStream( bs )
     }
   }
 
@@ -182,7 +195,7 @@ class StreamCombinationsTest extends JUnitSuite {
       (x, y) => x * y
     }
 
-    rr.streams ++= List(bs1, bs2)
+    rr addStreamable List(bs1, bs2)
 
     rr.initialize
 
@@ -195,6 +208,8 @@ class StreamCombinationsTest extends JUnitSuite {
     val elResult = List(1, 2, 3, 4, 6)
 
     assertEquals(streamString, elResult, rr.getStream.take(elResult.size))
+    
+    compareCallsToGetStream( List(rr, bs1, bs2) )
   }
 
   @Test
@@ -214,7 +229,7 @@ class StreamCombinationsTest extends JUnitSuite {
       (x, y) => x + y
     }
 
-    rr.streams ++= List(bs1, bs2)
+    rr addStreamable List(bs1, bs2)
 
     rr.initialize
 
@@ -234,6 +249,70 @@ class StreamCombinationsTest extends JUnitSuite {
 
     assertEquals(streamString, computedList.size, streamList.size)
     assertEquals("Computed: " + computedList.mkString(",") + "\nStream: " + streamToString(stream)(50), computedList, streamList)
+    
+    compareCallsToGetStream( List(rr, bs1, bs2) )
+  }
+
+  @Test
+  def testRecursionWithFilter {
+    val stream1 = WrapperStream( Stream((0, 0)) )
+    val rr = LazyRoundRobbin(List(stream1))
+    val us = UnaryStream(rr, { (x: Int) => x + 2 })
+    val filterOdds = FilterStream.counted(us, { (x: Int) => x % 2 == 0 }) 
+
+    rr addFilterable filterOdds
+
+    rr.initialize
+    
+    compareCallsToGetStream( List(rr, us, filterOdds) )
+
+    val stream = filterOdds.getValuedStream
+    
+    filterOdds.isInfinite should be (true)
+    stream.take(5) should be (Stream(2, 4, 6, 8, 10).zip(Stream.continually(0)))
+    
+    compareCallsToGetStream( List(rr, us, filterOdds) )
+  }
+
+  @Test
+  def testFilterAndCounted {
+    val innerStream = Stream(0, 1, 2)
+    val stream1 = WrapperStream( innerStream zip Stream.continually(0) )
+    val filterOdds = FilterStream.counted(stream1, { (x: Int) => x % 2 == 1 }) 
+    
+    filterOdds.enumerated should be (0)
+    compareCallsToGetStream( List(stream1, filterOdds) )
+
+    val stream = filterOdds.getValuedStream
+    filterOdds.isInfinite should be (true)
+    stream.take(3) should be (Stream((1, 0)))
+    filterOdds.enumerated should be (1)
+    
+    compareCallsToGetStream( List(stream1, filterOdds) )
+  }
+
+  @Test
+  def testRecursionWithFilter2 {
+    val innerStream = Stream(0, 1, 2)
+    val stream1 = WrapperStream( innerStream zip Stream.continually(0) )
+    val rr = LazyRoundRobbin(List(stream1))
+    val us = UnaryStream(rr, { (x: Int) => x + 1 })
+    val filterOdds = FilterStream.counted(us, { (x: Int) => x % 2 == 0 }) 
+
+    rr addFilterable filterOdds
+
+    rr.initialize
+    
+    compareCallsToGetStream( List(stream1, us, rr, stream1, filterOdds) )
+
+    val stream = filterOdds.getValuedStream
+    
+    filterOdds.isInfinite should be (true)
+    stream.take(1) should be (Stream(2).zip(Stream.continually(0)))
+    filterOdds.enumerated should be (1)
+    stream.take(2) should be (Stream(2).zip(Stream.continually(0)))
+    
+    compareCallsToGetStream( List(stream1, us, rr, stream1, filterOdds) )
   }
 
 }

@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.util.Random
 
@@ -6,7 +7,9 @@ import org.scalatest.FunSuite
 
 import insynth.streams.Streamable
 
-class SingleStreamTest extends FunSuite {    
+class SingleStreamTest extends FunSuite {
+  
+  import Utils._
   
   def printStream[A](stream: Stream[A])(n: Int) = stream.take(n).toList mkString (", ")
   
@@ -22,7 +25,8 @@ class SingleStreamTest extends FunSuite {
     val stream = streamable.getStream
     
     expectResult(100) { stream.take(100).size }
-    
+      
+    compareCallsToGetStream( List(streamable) )
   }
     
   test("finite stream test")  {
@@ -36,7 +40,8 @@ class SingleStreamTest extends FunSuite {
     val stream = streamable.getStream
     
     expectResult(6) { (0 /: stream)(_ + _) }
-    
+      
+    compareCallsToGetStream( List(streamable) )
   }
   
 }

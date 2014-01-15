@@ -1,110 +1,145 @@
 package insynth.streams.ordered
 
+import scala.collection.mutable
+
 import insynth.streams._
 
 import insynth.util.logging.HasLogger
 
-class LazyRoundRobbin[T](val initStreamsIn: IndexedSeq[OrderedStreamable[T]])
-	extends OrderedStreamable[T] with AddStreamable[T] with HasLogger {
+/**
+ * LazyRoundRobbin allows adding Streamables after creation. Added streamables may
+ * form recursive links in the structure of the constraint graph. That is why
+ * elements from the added streamables are enumerated always after at least one
+ * element from initStreams. 
+ * NOTE: all addded streamables are considered to be infinite
+ */
+class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
+	extends IntegerWeightStreamable[T] with AddStreamable[T] with HasLogger {
+  require(initStreams.size > 0)
+  
+  // can be computed once for all getValuedStream calls
+  // NOTE: do not save streams into a val because it will memoize
+  lazy val (minHead, minInd) = initStreams.map(_.getValuedStream.head)
+  	.zipWithIndex.minBy(_._1._2)
+    
+  override def getValuedStream = {
+  	val initIterators = Array(initStreams.map(_.getValuedStream.iterator.buffered): _*)
 
-  override def isInfinite: Boolean = 
-    if (initialized) innerRoundRobbin.isInfinite
-    else false
-    
-  override def isDepleted: Boolean = 
-    if (initialized) innerRoundRobbin.isDepleted
-    else false
-    
-  override def nextReady(ind: Int): Boolean = { 
-    if (ind == 1) {
-      // TODO force stream evaluation, fix this
-      val stream = produceRoundRobbin.getStream
+	  // set of iterators checked for next value
+	  lazy val allIterators = Array(
+	    (initIterators ++
+	    addedStreams.map( _.getValuedStream.iterator.buffered )) ++
+	    addedFilterables.map( new RecursiveStreamableIterator(_) )
+	  : _*)
+	  
+    minHead #:: {
+      // after the second element is enumerated, streams should not be added because they can change the stream
+      initialized = true
+      getNext(minInd, allIterators)
     }
-    if (initialized) innerRoundRobbin.nextReady(ind)
-    else false
   }
+
+  private def getNext(lastIndex: Int, allIterators: Array[BufferedIterator[IntegerWeightPair[T]]]):
+    Stream[IntegerWeightPair[T]] = {
+    entering("getNext", lastIndex)
     
-  private def getMinIndex = {
-    val valueIterators = initStreamsIn map { _.getValues.iterator.buffered }
-    
-    var min = Int.MaxValue
-    var minInd = -1
-    var ind = 0
-    while (ind < valueIterators.size) {
-      val indToCheck = ind % valueIterators.size
-      
-      if (valueIterators(indToCheck).hasNext && valueIterators(indToCheck).head < min) {
-        min = valueIterators(indToCheck).head
-        minInd = indToCheck
-      }        
+    allIterators(lastIndex).next
         
-      ind += 1
-    }
+    // at the end -1 means no next element was found
+    var minInd = -1
+    var minValue = Int.MaxValue
+    var minStream = Stream[IntegerWeightPair[T]]()
     
-    assert(minInd > -1, "minInd > -1")
-    info("returning from getMinIndex with minInd=" + minInd)
-    (min, minInd)
+    fine("allIterators: " + allIterators.filter(_.hasNext).zipWithIndex.mkString(", "))
+    // check all iterators by going from first next after previously forwarded
+    for (
+      ind <- 1 to allIterators.size;
+      indToCheck = (lastIndex + ind) % allIterators.size;
+      iterator = allIterators(indToCheck);
+      if iterator.hasNext
+    ) {
+
+      finest("Checking iterator index %d".format(indToCheck))
+      if ( iterator.head._2 < minValue ) {
+        finest("Iterator ind %d, with head %d is smaller than minValue %d.".format(indToCheck, iterator.head._2, minValue))
+        minInd = indToCheck
+        minValue = iterator.head._2
+        minStream = iterator.head #:: {
+          getNext(minInd, allIterators)
+        }
+      }
+      
+    }
+
+    exiting("getMinIterator", minStream)
   }
-  
-  lazy val (minValue, minInd) = getMinIndex
-  
-//  def mappedInitStreams = initStreamsIn.zipWithIndex map {
-//    p =>
-//      if (false && p._2 == minInd) {
-////        if (p._1.isInfinite) SingleStream((p._1.getStream zip p._1.getValues).tail, p._1.isInfinite)
-////        else FiniteStream((p._1.getStream zip p._1.getValues).tail)
-//        SingleStream((p._1.getStream zip p._1.getValues).tail)
-//      }
-//      else p._1
-//  }
-  
+    
   var initialized = false
       
-  var streams = initStreamsIn
+  var addedFilterables = mutable.MutableList[OrderedCounted[T]]()
   
-  override def getStreams = streams.toList
+  var addedStreams = mutable.MutableList[IntegerWeightStreamable[T]]()
+  
+  override def getStreamables = (initStreams ++ addedStreams).toList
     
-  var innerRoundRobbin: RoundRobbin[T] = _
-  
   // XXX terrible hack, since adding non-ordered streamable will break the code
   override def addStreamable[U >: T](s: Streamable[U]) =
-    streams :+= (s.asInstanceOf[OrderedStreamable[T]])
+    if (initialized) throw new UnsupportedOperationException("Cannot add new streamables once initialized")
+    else addedStreams += (s.asInstanceOf[IntegerWeightStreamable[T]])
   
-  override def addStreamable[U >: T](s: Iterable[Streamable[U]]) =
-    streams ++= (s.asInstanceOf[Iterable[OrderedStreamable[T]]])
+  override def addStreamable[U >: T](s: Traversable[Streamable[U]]) =
+    if (initialized) throw new UnsupportedOperationException("Cannot add new streamables once initialized")
+    else addedStreams ++= (s.asInstanceOf[Traversable[IntegerWeightStreamable[T]]])
+  
+  override def addFilterable[U >: T](s: Counted[U]) =
+    if (initialized) throw new UnsupportedOperationException("Cannot add new streamables once initialized")
+    else addedFilterables += (s.asInstanceOf[OrderedCounted[T]])
+  
+  override def addFilterable[U >: T](s: Traversable[Counted[U]]) =
+    if (initialized) throw new UnsupportedOperationException("Cannot add new streamables once initialized")
+    else addedFilterables ++= (s.asInstanceOf[Traversable[OrderedCounted[T]]])
   
   override def isInitialized = initialized
-    
-  private def produceRoundRobbin = {
-    if (innerRoundRobbin == null)
-    	innerRoundRobbin = RoundRobbin[T](streams)
-  	innerRoundRobbin
-  } 
   
-  override def initialize = {    
-    produceRoundRobbin
-    initialized = true
-  }
-    
-  lazy val stream = 
-    if (initialized && minInd > -1) initStreamsIn(minInd).getStream.head #:: produceRoundRobbin.getStream.tail
-    else Stream.empty    
+  def initialize = { }
+
+  override def size = -1
   
-  override def getStream = {
-    entering("getStream")
-    info("initialized " + initialized)
+  class RecursiveStreamableIterator(streamable: OrderedCounted[T]) extends BufferedIterator[IntegerWeightPair[T]]{
+
+    var nextToEnumerate = 0
     
-    stream
-  }
-  
-  override def getValues = 
-    if (initialized && minInd > -1) {
-      assert(minInd > -1)
-      minValue #:: produceRoundRobbin.getValues.tail
+    lazy val iterator = {
+      streamable.getValuedStream.iterator.buffered
     }
-    else Stream.Empty
+    
+    override def hasNext = {
+      info("hasNext: nextToEnumerate:%d < streamable.enumerated:%d".format(nextToEnumerate, streamable.enumerated))
+      nextToEnumerate < streamable.enumerated
+    }
+    
+    override def head = {
+      info("head: iterator.head" + iterator.head)
+      iterator.head
+    }
+    
+    override def next = {
+      info("next: nextToEnumerate=%d".format(nextToEnumerate))      
+      nextToEnumerate += 1
+      iterator.next
+    }
+    
+  }
+
 }
 
 object LazyRoundRobbin {
-	def apply[T](initStreams: IndexedSeq[OrderedStreamable[T]]) = new LazyRoundRobbin(initStreams)
+	def apply[T](initStreams: Seq[IntegerWeightStreamable[T]]) =
+	  new LazyRoundRobbin(initStreams)
+	
+	def memoized[T](initStreams: Seq[IntegerWeightStreamable[T]]) =
+    new LazyRoundRobbin(initStreams) with Memoized[T]
+	
+	def counted[T](initStreams: Seq[IntegerWeightStreamable[T]]) =
+    new LazyRoundRobbin(initStreams) with OrderedCountable[T]
 }

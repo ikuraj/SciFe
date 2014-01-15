@@ -30,6 +30,7 @@ class RoundRobbinTest extends JUnitSuite {
 
     assertEquals(streamString, List(1, 2, 3, 4), stream.take(4))
 
+    compareCallsToGetStream(List(streamable1, streamable2, rr))
   }
 
   @Test
@@ -52,6 +53,8 @@ class RoundRobbinTest extends JUnitSuite {
     assertEquals(streamString, 6, stream.size)
 
     assertEquals(streamString, List(1, 2, 3, 4), stream.take(4))
+
+    compareCallsToGetStream(List(streamable1, streamable2, rr))
   }
 
   @Test
@@ -73,6 +76,8 @@ class RoundRobbinTest extends JUnitSuite {
     assertEquals(streamString, 6, stream.size)
 
     assertEquals(streamString, List(1, 2, 3, 4), stream.take(4))
+
+    compareCallsToGetStream(List(streamable1, streamable2, rr))
   }
 
   @Test
@@ -98,6 +103,8 @@ class RoundRobbinTest extends JUnitSuite {
     assertEquals(streamString, 100, stream.take(100).size)
 
     assertEquals(streamString, List.fill(4)(randomInt1 min randomInt2), stream.take(4))
+
+    compareCallsToGetStream(List(streamable1, streamable2, rr))
   }
 
   @Test
@@ -123,6 +130,8 @@ class RoundRobbinTest extends JUnitSuite {
     val compareList = List(4, 5, 6, randomInt1, randomInt1, randomInt1)
 
     assertEquals(streamString, compareList, stream.take(compareList.size))
+
+    compareCallsToGetStream(List(streamable1, streamable2, rr))
   }
 
   @Test
@@ -145,7 +154,8 @@ class RoundRobbinTest extends JUnitSuite {
       assertEquals(3, stream.size)
 
       assertEquals(List(1, 2, 3), stream.take(3))
-    
+
+      compareCallsToGetStream(List(streamable1, streamable2, streamable3, rr))
   }
 
   @Test
@@ -172,7 +182,8 @@ class RoundRobbinTest extends JUnitSuite {
       assertEquals(3, stream.size)
 
       assertEquals(List(1, 2, 3), stream.take(3))
-    
+
+      compareCallsToGetStream(List(streamable1, streamable2, streamable3, rr))
   }
 
   @Test
@@ -189,7 +200,8 @@ class RoundRobbinTest extends JUnitSuite {
 
       assertEquals(List(1), stream.take(1))
       assertEquals(1, stream.iterator.next)
-    
+
+      compareCallsToGetStream(List(streamable1, streamable2, rr))
   }
 
 }

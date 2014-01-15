@@ -10,7 +10,7 @@ trait HasLogger {
   protected[this] def getMyClass = this.getClass
   
   protected[this] lazy val logger =
-	LoggerFactory.newLogger(getMyClass.getName)      		   
+	  LoggerFactory.newLogger(getMyClass.getName)      		   
     
   def severe(msg: => String) = logger.fatal(msg)
 
@@ -27,8 +27,11 @@ trait HasLogger {
   def finest(msg: => String) = logger.trace(msg)
      
   def entering(method: => String, arguments: Any*) =
-	  logger.trace("Entering " + getMyClass + "." + method)
+	  logger.trace("Entering " + getMyClass + "." + method + " with: " + arguments.mkString(", "))
      
   def exiting(method: => String, result: => String) =
 	  logger.trace("Exiting " + getMyClass + "." + method + " with " + result)
+	  
+  def exiting[T](method: => String, result: T): T =
+    { logger.trace("Exiting " + getMyClass + "." + method + " with " + result); result }
 }

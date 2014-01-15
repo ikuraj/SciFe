@@ -10,7 +10,7 @@ import insynth.util._
 /**
  * Object for reconstruction of proof trees into output(s)
  */
-object Streamer extends ( (SimpleNode, Boolean) => Stream[(LambdaNode, Float)]) with HasLogger {
+object Streamer extends ( (SimpleNode, Boolean) => Stream[(LambdaNode, Int)]) with HasLogger {
 
   def apply(tree: SimpleNode, streamOrdered: Boolean = false) = {		    
     // logging

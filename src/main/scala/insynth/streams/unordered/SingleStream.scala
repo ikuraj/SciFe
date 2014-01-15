@@ -8,8 +8,13 @@ import insynth.streams.Streamable
  * @param element
  */
 class SingleStream[T, U <: T](stream: => Stream[U], isInfiniteFlag: Boolean) extends Streamable[T] {
-  def isInfinite = isInfiniteFlag
+
+  override def size = if (isInfinite) -1 else stream.size
+  
+  override def isInfinite = isInfiniteFlag
+
   override def getStream = stream
+  
 }
 
 object SingleStream {

@@ -17,14 +17,17 @@ class UnorderedStreamFactory[T] extends StreamFactory[T] {
   override def makeFiniteStream[U <: T](array: => Vector[(U, Int)]) =
     SingleStream(array.toStream map (_._1), false)
   
-  override def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X=>Y, modifyVal: Option[Int => Int] = None) =
+  override def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X=>Y, modifyVal: Int => Int) =
+    UnaryStream(streamable, modify)
+        
+  override def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X=>Y) =
     UnaryStream(streamable, modify)
   
   override def makeUnaryStreamList[X, Y <: T](streamable: Streamable[X], modify: X => List[Y]) =
     UnaryStream(streamable, modify)
     
   override def makeFilterStream[U <: T](streamable: Streamable[U], filterFun: U => Boolean) =
-    FilterStream(streamable, filterFun)
+    throw new UnsupportedOperationException
   
   override def makeBinaryStream[X, Y, Z <: T](s1: Streamable[X], s2: Streamable[Y])(combine: (X, Y) => List[Z]) =
     BinaryStream(s1, s2)(combine)
@@ -40,5 +43,7 @@ class UnorderedStreamFactory[T] extends StreamFactory[T] {
         
   def getFinalStream(streamable: Streamable[T]) =
     streamable.getStream zip Stream.continually(0f)
+  
+  override def memoized = throw new RuntimeException
   
 }

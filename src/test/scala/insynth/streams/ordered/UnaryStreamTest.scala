@@ -38,7 +38,7 @@ class UnaryStreamTest extends JUnitSuite {
 	    val finiteStream = List(1,2,4).toStream
 	    
 	    val streamable1 = getSingleStream(finiteStream, false)
-	    val streamable2 = UnaryStream(streamable1, { x: Int => x + 1 }, Some(identity))
+	    val streamable2 = UnaryStream(streamable1, { x: Int => x + 1 }, identity)
 	    
 	    assertFalse(streamable2.isInfinite)
 	    
@@ -59,7 +59,7 @@ class UnaryStreamTest extends JUnitSuite {
 	    val finiteStream = List(1,2,4).toStream
 	    
 	    val streamable1 = getSingleStream(finiteStream, false)
-	    val streamable2 = UnaryStream(streamable1, { x: Int => x + 1 }, Some(_ + 1))
+	    val streamable2 = UnaryStream(streamable1, { x: Int => x + 1 }, _ + 1)
 	    
 	    assertFalse(streamable2.isInfinite)
 	    

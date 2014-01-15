@@ -5,57 +5,46 @@ import insynth.streams.unordered.{ UnaryStream => UnUnaryStream }
 
 import scala.annotation.tailrec
 
-class FilterStream[T](val streamable: OrderedStreamable[T], filterFun: T => Boolean)
-	extends OrderedStreamable[T] {
+class FilterStream[T](val streamable: IntegerWeightStreamable[T], filterFun: T => Boolean)
+	extends IntegerWeightStreamable[T] with Filterable[T] {
   
-  var numberOfEnumerated = 0
-  var numberOfFiltered = 0
+  override def getValuedStream = streamable.getValuedStream filter { p => filterFun(p._1) }
   
-  override def isInfinite = streamable.isInfinite
+//  lazy val st = streamable.getValuedStream filter { p => filterFun(p._1) }
+//  
+//  override def getValuedStream = st
   
-  override def isDepleted: Boolean = streamable.isDepleted
-  override def nextReady(ind: Int): Boolean =
-    if (ind < numberOfEnumerated) true
-    else { //streamable.nextReady(ind + numberOfFiltered)
-      info("nextReady(%d)".format(ind) + "=" + valIterator.hasNext)
-      valIterator.hasNext
-    }
-    
-  lazy val valIterator = streamable.getValues.iterator.buffered
-  lazy val elIterator = streamable.getStream.iterator.buffered  
-    
-  def loop: Stream[(T, Int)] = {
-    while (valIterator.hasNext) {
-      val currEl = elIterator.head
-      val isFine = filterFun(currEl)
-      finest("Evaluation of " + currEl + " resulted in " + isFine)      
-      
-      if (isFine) {
-        val res = (currEl, valIterator.head) #:: {
-          elIterator.next
-          valIterator.next          
-          loop
-        }
-        numberOfEnumerated += 1
-        return res
-      }
-      
-      numberOfFiltered += 1
-      elIterator.next
-      valIterator.next
-    }
-    Stream.empty
+  override def size = -1
+  
+}
+
+class FilterStreamCounted[T](val streamable: IntegerWeightStreamable[T], filterFun: T => Boolean)
+  extends IntegerWeightStreamable[T] with OrderedCounted[T] with Filterable[T] {
+  
+  var enumeratedCount = 0
+  
+  lazy val st = streamable.getValuedStream filter { p =>
+    val res = filterFun(p._1)
+    if (res) enumeratedCount+= 1
+    res
   }
-      
-  lazy val stream = loop
   
-  override def getStream = stream map (_._1)
+  override def enumerated = enumeratedCount
   
-  override def getValues = stream map (_._2)
+  override def getValuedStream = st
+  
+  override def size = -1
   
 }
 
 object FilterStream {
-  def apply[T, U](streamable: OrderedStreamable[T], filterFun: T => Boolean) =
+  def apply[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
     new FilterStream(streamable, filterFun)
+
+  def memoized[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
+    new FilterStream(streamable, filterFun) with Memoized[T]
+
+  def counted[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
+    new FilterStreamCounted(streamable, filterFun)
+//    new FilterStream(streamable, filterFun) with OrderedCounted[T]
 }

@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.collection.mutable.{ Map => MutableMap, LinkedList => MutableList, Set => MutableSet }
 
@@ -10,6 +11,9 @@ import insynth.streams.{ Streamable, AddStreamable }
  * @param streams stream that form a new stream
  */
 class LazyRoundRobbin[T](val initStreams: List[Streamable[T]]) extends Streamable[T] with AddStreamable[T] {
+  
+  override def size = -1
+  
   var initialized = false
   
   var streams: List[Streamable[T]] = List.empty
@@ -21,14 +25,20 @@ class LazyRoundRobbin[T](val initStreams: List[Streamable[T]]) extends Streamabl
     streams :+= (s.asInstanceOf[Streamable[T]])
   
   // XXX terrible hack, fix this
-  override def addStreamable[U >: T](s: Iterable[Streamable[U]]) =
-    streams ++= (s.asInstanceOf[Iterable[Streamable[T]]])
+  override def addStreamable[U >: T](s: Traversable[Streamable[U]]) =
+    streams ++= (s.asInstanceOf[Traversable[Streamable[T]]])
+  
+  override def addFilterable[U >: T](s: Counted[U]) =
+    throw new RuntimeException
+  
+  override def addFilterable[U >: T](s: Traversable[Counted[U]]) =
+    throw new RuntimeException
   
   override def isInitialized = initialized
   
-  override def getStreams = streams
+  override def getStreamables = streams
   
-  override def initialize = {
+  def initialize = {
     innerRoundRobbin = new RoundRobbin[T]((initStreams ++ streams).toSeq)
     initialized = true
   }

@@ -35,7 +35,7 @@ class StreamsTest extends FunSuite {
   val streamable = listStream
   val stream =
     streamable match {
-      case os: OrderedStreamable[_] =>
+      case os: IntegerWeightStreamable[_] =>
         fine("returning ordered streamable")
         os.getStream zip os.getValues.map(_.toFloat)
       case _ => fail

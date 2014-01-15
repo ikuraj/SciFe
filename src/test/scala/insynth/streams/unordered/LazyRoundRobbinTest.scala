@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.util.Random
 
@@ -9,6 +10,8 @@ import org.junit.Test
 import insynth.streams.Streamable
 
 class LazyRoundRobbinTest extends JUnitSuite {
+  
+  import Utils._
   
   val rnd = new Random(System.currentTimeMillis())
 
@@ -37,6 +40,7 @@ class LazyRoundRobbinTest extends JUnitSuite {
       assertEquals(streamMessage, 1, stream(ind*2 + 1))
     }
       
+    compareCallsToGetStream( List(stream1, rr) )
   }
   
   @Test(expected=classOf[RuntimeException])
@@ -77,6 +81,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     for (ind <- 1 to rnd.nextInt(1000)) {
       assertEquals(1, stream(ind))
     }
+      
+    compareCallsToGetStream( List(stream1, rr) )
   }
   
 }

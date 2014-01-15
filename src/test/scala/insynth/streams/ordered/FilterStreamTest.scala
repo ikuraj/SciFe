@@ -25,7 +25,7 @@ class FilterStreamTest extends FunSuite with ShouldMatchers {
 
   test("simple stream filtering test") {
     val stream = FilterStream(
-      SingleStream(Stream(1, 2).zipWithIndex), { (x: Int) => true }
+      WrapperStream(List(1, 2).zipWithIndex), { (x: Int) => true }
     )
     
     stream.getStream.head should be (
@@ -50,7 +50,7 @@ class FilterStreamTest extends FunSuite with ShouldMatchers {
 
   test("simple stream with exception filtering test") {
     val stream = FilterStream(
-      SingleStream((1 #:: (throw new RuntimeException) #:: Stream[Int]()).zipWithIndex), { (x: Int) => true }
+      WrapperStream((1 #:: (throw new RuntimeException) #:: Stream[Int]()).zipWithIndex), { (x: Int) => true }
     )
     
     stream.getStream.head should be (
@@ -58,8 +58,7 @@ class FilterStreamTest extends FunSuite with ShouldMatchers {
     )
   }
   
-  ignore("infinite values test") {
-  test("infinite values test") {
+  test("elements in the middle") {
     val stream = FilterStream(
       FiniteStream(Vector(1, 2, 3).zipWithIndex), { (x: Int) => x % 2 == 0 }
     )
@@ -67,7 +66,6 @@ class FilterStreamTest extends FunSuite with ShouldMatchers {
     stream.getStream.toList should be (
       Vector(2)
     )
-  }
   }
 
   

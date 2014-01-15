@@ -3,29 +3,47 @@ package insynth.streams.ordered
 import insynth.streams._
 import insynth.streams.unordered.{ UnaryStream => UnUnaryStream }
 
-// give modifyVal only when a monotonic function, otherwise your computer will blow up!
-class UnaryStream[T, U](val streamable: OrderedStreamable[T], modify: T=>U, modifyVal: Option[Int => Int] = None/*= identity */)
-	extends OrderedStreamable[U] {
+/**
+ * A Streamable that maps values of a given Streamable with the given function 
+ * NOTE: modifyVal should be a monotonic function, otherwise your computer will blow up!
+ * @param <T> @see Streamable
+ * @param <U> @see OrderedStreamable
+ */
+object UnaryStream {
+  def apply[T, U](streamable: IntegerWeightStreamable[T], modify: T=>U) =
+    new UnaryStream(streamable, modify)
   
-  override def isInfinite = streamable.isInfinite
+  def apply[T, U](streamable: IntegerWeightStreamable[T], modify: T=>U, modifyVal: Int => Int) =
+    new UnaryStreamWithValueMod(streamable, modify, modifyVal)
+
+  def memoized[T, U](streamable: IntegerWeightStreamable[T], modify: T=>U) =
+    new UnaryStream(streamable, modify) with Memoized[U]
   
-  override def isDepleted: Boolean = streamable.isDepleted // wtv
-  override def nextReady(ind: Int): Boolean = streamable.nextReady(ind)
-    
-  lazy val memoizedStream =
-    streamable.getStream map { modify(_) }
+  def memoized[T, U](streamable: IntegerWeightStreamable[T], modify: T=>U, modifyVal: Int => Int) =
+    new UnaryStreamWithValueMod(streamable, modify, modifyVal) with Memoized[U]
+
+  def counted[T, U](streamable: IntegerWeightStreamable[T], modify: T=>U) =
+    new UnaryStream(streamable, modify) with OrderedCountable[U]
   
-  override def getStream = memoizedStream
+  def counted[T, U](streamable: IntegerWeightStreamable[T], modify: T=>U, modifyVal: Int => Int) =
+    new UnaryStreamWithValueMod(streamable, modify, modifyVal) with OrderedCountable[U]
+}
+
+class UnaryStream[T, U](val streamable: IntegerWeightStreamable[T], modify: T=>U)
+	extends IntegerWeightStreamable[U] {
   
-  override def getValues = 
-    modifyVal match {
-	    case None => streamable.getValues
-	    case Some(f) => streamable.getValues.map(f)
-  	} 
+  override def size = streamable.size
+  
+  override def getValuedStream = streamable.getValuedStream map { p => (modify(p._1), p._2) }
   
 }
 
-object UnaryStream {
-  def apply[T, U](streamable: OrderedStreamable[T], modify: T=>U, modifyVal: Option[Int => Int] = None) =
-    new UnaryStream(streamable, modify, modifyVal)
+class UnaryStreamWithValueMod[T, U](val streamable: IntegerWeightStreamable[T], modify: T=>U,
+  modifyVal: Int => Int) extends IntegerWeightStreamable[U] {
+  
+  override def size = streamable.size
+  
+  override def getValuedStream = 
+    streamable.getValuedStream map { p => (modify(p._1), modifyVal(p._2)) }
+  
 }

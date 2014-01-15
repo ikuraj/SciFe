@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.util.Random
 
@@ -14,6 +15,8 @@ import scala.language.implicitConversions
 class BinaryStreamTest extends JUnitSuite {    
   
   def printStream[A](stream: Stream[A])(n: Int) = stream.take(n).toList mkString (", ")
+  
+  import Utils._
    
   @Test
   def testBinaryStreamBefore {    
@@ -27,6 +30,8 @@ class BinaryStreamTest extends JUnitSuite {
     val stream = bs.getStream
     
     assertEquals(3, stream.take(1).head)
+    
+    compareCallsToGetStream( List(stream1, stream2, bs) )
   }
   
   trait Combination
@@ -45,6 +50,8 @@ class BinaryStreamTest extends JUnitSuite {
 	    
 	    val streamable1: Streamable[Combination] = SingleStream(finiteStream1, false)
 	    val streamable2: Streamable[Number] = SingleStream(finiteStream2, false)
+    
+      compareCallsToGetStream( List(streamable1, streamable2) )
 	    
 	    {
 		    val bs = BinaryStream(streamable1, streamable2) {
@@ -64,6 +71,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        leftStream.toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
       
 	    {
@@ -74,6 +83,8 @@ class BinaryStreamTest extends JUnitSuite {
 		    
 		    val rightStream = bs.rightStream
 		    val rightStreamString = rightStream.toList mkString (", ")
+    
+        compareCallsToGetStream( bs )
 		    
 		    assertEquals(rightStreamString, 3, rightStream.size)
 		    assertEquals(
@@ -82,6 +93,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        rightStream.toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
 	    {
 		    val bs = BinaryStream(streamable1, streamable2) {
@@ -108,6 +121,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        stream.toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
     }
     
@@ -138,7 +153,9 @@ class BinaryStreamTest extends JUnitSuite {
 		    val leftStreamString = leftStream.take(10).toList mkString (", ")
 		    
 		    var currentStream = leftStream
-		    val prints = printStream(currentStream)(_)		    
+		    val prints = printStream(currentStream)(_)	
+    
+        compareCallsToGetStream( bs )	    
 		    
 		    assertTrue(bs.isInfinite)
 		    assertEquals(
@@ -154,6 +171,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        currentStream.take(10).toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
       
 	    {
@@ -167,6 +186,8 @@ class BinaryStreamTest extends JUnitSuite {
 		    
 		    var currentStream = rightStream
 		    val prints = printStream(currentStream)(_)	
+    
+        compareCallsToGetStream( bs )
 		    
 		    assertTrue(bs.isInfinite)
 		    assertEquals(
@@ -182,6 +203,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        currentStream.take(10).toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
 	    
 	    {
@@ -195,6 +218,8 @@ class BinaryStreamTest extends JUnitSuite {
 		    
 		    var currentStream = stream
 		    val prints = printStream(currentStream)(_)	
+    
+        compareCallsToGetStream( bs )
 		    
 		    assertTrue(bs.isInfinite)
 		    assertEquals(
@@ -210,6 +235,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        currentStream.take(10).toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
 	    
     }    
@@ -273,6 +300,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        currentStream.take(fixedListAfter.size).toList
 	      )
+    
+        compareCallsToGetStream( bs )
 	    }
       
 	    {
@@ -310,6 +339,8 @@ class BinaryStreamTest extends JUnitSuite {
 //	        	{ x => NumberList(x map { Number(_) }) },
 //	        rightStream.take(fixedList.size).toList
 //	      )
+    
+        compareCallsToGetStream( bs )
 	    }
 
       {
@@ -362,6 +393,8 @@ class BinaryStreamTest extends JUnitSuite {
 	        	{ x => NumberList(x map { Number(_) }) },
 	        currentStream.take(fixedListAfter.size).toList
 	      )
+    
+        compareCallsToGetStream( bs )
       }
 	    
     }    

@@ -1,24 +1,19 @@
 package insynth.streams
 
 /**
- * Each streamable may have elements to be enumerated but they may not
- * be ready for enumeration at a given point (think of situations in which
- * recursive links need to be followed) 
+ * OrderedStreamable is a Streamable that enumerates a (usually) cumulative weights with
+ * associated enumerated elements
  * @param <T> Type of enumerated elements
+ * @param <V> Values for determine "weights" of elements
  */
-trait OrderedStreamable[+T] extends Streamable[T] with Valuable[Int] {
+trait OrderedStreamable[+T, @specialized(Int, Float) V] extends Streamable[T] with Valuable[V] {
     
-  /**
-   * @return Whether this streamable has more elements to enumerate 
-   */
-  def isDepleted: Boolean
-  /**
-   * Check if the element with the index i is ready to be enumerated
-   */
-  def nextReady(i: Int): Boolean
+  override def isInfinite: Boolean
   
-  def isInfinite: Boolean
+  final override def getStream = getValuedStream map { _._1 }
   
-  def getStream: Stream[T]
+  def getValuedStream: Stream[(T, V)]
+  
+  final override def getValues = getValuedStream map { _._2 }
   
 }

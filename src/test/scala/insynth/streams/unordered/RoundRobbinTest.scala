@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.util.Random
 
@@ -8,7 +9,9 @@ import org.junit.Test
 
 import insynth.streams.Streamable
 
-class RoundRobbinTest extends JUnitSuite {    
+class RoundRobbinTest extends JUnitSuite {
+  
+  import Utils._
   
   def printStream[A](stream: Stream[A])(n: Int) = stream.take(n).toList mkString (", ")
   
@@ -30,6 +33,8 @@ class RoundRobbinTest extends JUnitSuite {
 	    assertEquals(6, stream.size)
 	    	    
 	    assertEquals(List(1, 4, 2, 5), stream.take(4))
+      
+	    compareCallsToGetStream( List(rr) )
     }
         
     {
@@ -52,6 +57,8 @@ class RoundRobbinTest extends JUnitSuite {
 	    assertEquals(100, stream.take(100).size)
 	    	    
 	    assertEquals(List(randomInt1, randomInt2, randomInt1, randomInt2), stream.take(4))
+      
+      compareCallsToGetStream( List(rr) )
     }    
     
     {
@@ -75,6 +82,8 @@ class RoundRobbinTest extends JUnitSuite {
 	    val compareList = List(randomInt1, 4, randomInt1, 5, randomInt1, 6, randomInt1, randomInt1, randomInt1)
 	    	    
 	    assertEquals(compareList, stream.take(compareList.size))
+      
+      compareCallsToGetStream( List(rr) )
     }
   }
   
@@ -98,6 +107,8 @@ class RoundRobbinTest extends JUnitSuite {
 	    assertEquals(3, stream.size)
 	    	    
 	    assertEquals(List(1, 2, 3), stream.take(3))
+      
+      compareCallsToGetStream( List(rr) )
     }
   }
   
@@ -117,6 +128,8 @@ class RoundRobbinTest extends JUnitSuite {
 	    assertEquals(3, stream.size)
 	    	    
 	    assertEquals(List(1, 2, 3), stream.take(3))
+      
+      compareCallsToGetStream( List(rr) )
     }
   }
   
@@ -134,6 +147,8 @@ class RoundRobbinTest extends JUnitSuite {
 	    	    
 	    assertEquals(List(1), stream.take(1))
 	    assertEquals(1, stream.iterator.next)
+      
+      compareCallsToGetStream( List(rr) )
     }
   }
   

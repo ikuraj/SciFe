@@ -2,6 +2,9 @@ package insynth.util
 
 import org.scalatest._
 import org.scalatest.matchers._
+import org.scalatest.Tag
+
+object FocusTag extends Tag("focus")
 
 object Checks {
 
@@ -16,7 +19,7 @@ object Checks {
     
   }
 
-  def nonDecreasing[T](elements: Iterable[(T, Float)]) = {
+  def nonDecreasing[T](elements: Iterable[(T, Int)]) = {
     (elements zip elements.tail) forall {
       case ((_, f), (_, s)) => f <= s
     }

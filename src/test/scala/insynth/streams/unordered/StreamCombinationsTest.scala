@@ -1,4 +1,5 @@
-package insynth.streams.unordered
+package insynth.streams
+package unordered
 
 import scala.util.Random
 
@@ -9,6 +10,8 @@ import org.junit.Test
 import insynth.streams.Streamable
 
 class StreamCombinationsTest {
+  
+  import Utils._
 
   val rnd = new Random(System.currentTimeMillis())
   
@@ -35,6 +38,8 @@ class StreamCombinationsTest {
     for (ind <- 1 to rnd.nextInt(1000)) {
       assertEquals(streamMessage, 1 + (3 * ind), stream(ind))
     }
+      
+    compareCallsToGetStream( List(rr, bs, stream1, stream2) )
   }
 
   @Test
@@ -78,7 +83,8 @@ class StreamCombinationsTest {
     
     assertTrue("ResultMap: " + resultMap.mkString(", "), resultMap.values.count(_ != 0) < 3)
     assertTrue("ResultMap: " + resultMap.mkString(", "), (0 /: resultMap.values.filter(_ != 0)) { _ + math.abs(_) } < 3)
-    
+      
+    compareCallsToGetStream( List(rr, bs, stream1, stream2) )
   }
 
   @Test
@@ -106,6 +112,8 @@ class StreamCombinationsTest {
       stream.take(1).toList)
 
     assertEquals(1, stream.size)
+      
+    compareCallsToGetStream( List(bs, streamable2, streamable1, streamable3, streamable4) )
   }
 
 }

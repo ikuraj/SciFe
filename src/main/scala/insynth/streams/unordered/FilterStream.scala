@@ -7,6 +7,9 @@ import insynth.streams.Streamable
  * @param <T>
  */
 class FilterStream[T](val streamable: Streamable[T], filterFunction: T=>Boolean) extends Streamable[T] {
+  
+  override def size = -1
+  
   override def isInfinite = streamable.isInfinite
   
   lazy val memoizedStream =     

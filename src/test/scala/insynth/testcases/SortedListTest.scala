@@ -11,16 +11,20 @@ import insynth.attrgrammar._
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.junit.JUnitRunner
 
 import org.junit.{ Test, Ignore, BeforeClass, AfterClass }
 import org.junit.Assert._
+import org.junit.runner.RunWith
 
 import insynth.common._
 import insynth.testdomain.{ TestQueryBuilder => QueryBuilder, _ }
 import insynth.util._
+import insynth.util.format._
 
 import scala.language.postfixOps
 
+//@RunWith(classOf[JUnitRunner])
 class SortedListTest extends FunSuite with ShouldMatchers {
   
   import StreamableAST._
@@ -65,7 +69,6 @@ class SortedListTest extends FunSuite with ShouldMatchers {
   }
   }
   
-  
   test("Enumeration of lists") {
     val intNode = Injecter(classOf[Int])
     val aggregatedIntNode = Generator(intNode)
@@ -107,25 +110,47 @@ class SortedListTest extends FunSuite with ShouldMatchers {
 
     val streamables = new StreamablesImpl(streamFactory)
     
+    
     for (size <- 1 to 5) {
-      val intStream = (1 to size toStream) zipWithIndex
-      
-      val resultStream = streamables.getStreamListPairs(
-        aggregatedIntNode,
-        Map.empty,
-        Map.empty,
-        Map( classOf[Int] -> ( intStream, false ) )
-      )
-         
-      val domainSize = (1 /: (1 to size)) { case (res, _) => res * size }
-      
-      val resStream = resultStream.take(domainSize)
-      
-      resStream.size should be (domainSize)
-          
-      nonDecreasing(resStream) should be (true)
-      noRepeat(resStream) should be (true)
+	    val intStream = (1 to size toStream) zip Stream.continually(1)
+	    
+	    val resultStream = streamables.getStreamListPairs(
+	      aggregatedIntNode,
+	      Map.empty,
+	      Map.empty,
+	      Map( classOf[Int] -> ( intStream, false ) )
+	    )
+	  
+//	      println("Streamable is: " + FormatStreamUtils(
+//	        streamables.getStreamableList(
+//		        aggregatedIntNode,
+//		        Map.empty,
+//		        Map.empty,
+//		        Map( classOf[Int] -> ( intStream, false ) )
+//	        )
+//	      ))
+	       
+	    // NOTE: + 1 for the empty list
+	    val numberOfAllLists = 
+	      (for (domainSize <- ( 1 to size )) yield {
+	      	(1 /: (1 to domainSize)) { case (res, _) => res * size }
+	      }).sum + 1
+	      
+	    val allLists =
+	      for (maxSize <- 1 to size; list <- generateLists(maxSize, 1 to size)) yield list
+	    
+	    val resStream = resultStream.take(numberOfAllLists)
+	    resStream.size should be (numberOfAllLists)
+	
+	    withClue ("Resulting stream is " + resStream.mkString(", ")) {
+		    for (list <- allLists)
+		      resStream.map( p => p._1.asInstanceOf[List[Int]] ) should contain (list)
+      }
+	        
+	    nonDecreasing(resStream) should be (true)
+	    noRepeat(resStream) should be (true)
     }
+    
   }
 
   test("Enumeration of sorted lists") {   

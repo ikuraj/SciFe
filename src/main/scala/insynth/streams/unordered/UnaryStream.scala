@@ -9,6 +9,9 @@ import insynth.streams.Streamable
  * @param element
  */
 class UnaryStream[T, U](val streamable: Streamable[T], modify: T=>U) extends Streamable[U] {
+  
+  override def size = streamable.size
+  
   override def isInfinite = streamable.isInfinite
   
   lazy val memoizedStream = {

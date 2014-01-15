@@ -11,6 +11,10 @@ import insynth.streams.Streamable
  * @param streams stream that form a new stream
  */
 class RoundRobbin[T](val streams: Seq[Streamable[T]]) extends Streamable[T] {
+  
+  override def size =
+    if (streams.exists(_.size <= 1)) -1
+    else streams.map(_.size).sum
     
   // this stream is infinite if there is an infinite stream in the array
   // compute infinite flag only once

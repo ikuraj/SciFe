@@ -3,15 +3,10 @@ package insynth.streams.ordered
 import insynth.streams.OrderedStreamable
 import insynth.streams.unordered.{ Empty => UnordEmpty }
 
-object Empty extends OrderedStreamable[Nothing] {
+object Empty extends IntegerWeightStreamable[Nothing] {
     
-  override def isInfinite = false
+  override def size = 0
 
-  override def isDepleted: Boolean = true
-  override def nextReady(ind: Int): Boolean = false
-
-  override def getStream = Stream.empty  
-  
-  override def getValues = Stream.empty
+  override def getValuedStream = Stream.empty
   
 }

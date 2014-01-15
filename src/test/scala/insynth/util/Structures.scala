@@ -18,6 +18,7 @@ object Structures {
   import StreamableAST._
   
   val fromOne = Stream.from(1)
+  val ones = Stream.continually(1)
 
   def generateLists(maxSize: Int, integers: Range) = {
     def rec(sizeToGen: Int): List[List[Int]] = {
@@ -114,7 +115,7 @@ object Structures {
             if (c) lHeight + 1
             else lHeight
           
-          ((lRes && rRes && lHeight == rHeight), lHeight)
+          ((lRes && rRes && lHeight == rHeight), newHeight)
         case Leaf => (true, 1)
       }
       
@@ -130,14 +131,10 @@ object Structures {
       def redNodesHaveBlackChildren(t: Tree) : Boolean = t match {
         case Leaf => true
         case Node(l, _, r, true) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
-        case Node(l, _, r, false) => isBlack(l) && isBlack(r)
+        case Node(l, _, r, false) => isBlack(l) && isBlack(r) &&
           redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
-        case _ => false
       }
-      t match {
-        case Leaf => true
-        case Node(l,_,r, c) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
-      }
+      redNodesHaveBlackChildren(t)
     }
     
 		// for every node n, all the nodes in the left (respectively, right) subtree of

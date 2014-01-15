@@ -30,7 +30,7 @@ import insynth.util.format._
  * tree
  */
 class Transformer(streamBuilder: StreamFactory[Node])
-	extends (env.SimpleNode => Stream[(lambda.Node, Float)]) with HasLogger {
+	extends (env.SimpleNode => Stream[(lambda.Node, Int)]) with HasLogger {
   
   // set the types according to which we are conforming our abstract language
   type TreePair = (lambda.Node, Float)
@@ -73,12 +73,12 @@ class Transformer(streamBuilder: StreamFactory[Node])
 //    file.flush()
     
     transformed match {
-      case os: OrderedStreamable[_] =>
+      case os: IntegerWeightStreamable[_] =>
         fine("returning ordered streamable")
-        os.getStream zip os.getValues.map(_.toFloat)
+        os.getValuedStream
       case _: Streamable[_] =>
         fine("returning unordered streamable")
-        transformed.getStream zip Stream.continually(0f)
+        transformed.getStream zip Stream.continually(0)
     }
   }
 
@@ -153,7 +153,7 @@ class Transformer(streamBuilder: StreamFactory[Node])
           
           streamBuilder.makeUnaryStream(paramListStream, {
             params: List[lambda.Node] => Application(fun, functionNode :: params)
-          }/*, functionNode.asInstanceOf[Identifier].decl.getSimpleName*/, Some(_ + 1))
+          }/*, functionNode.asInstanceOf[Identifier].decl.getSimpleName*/, (_: Int) + 1)
         }
         // fun returns another function to which we need to apply arguments, include
         // a recursive call
@@ -188,7 +188,7 @@ class Transformer(streamBuilder: StreamFactory[Node])
           // out of this make a stream that streams applications filled with parameters
           streamBuilder.makeUnaryStream(paramListStream, {
             params: List[lambda.Node] => Application(fun, functionNode :: params)
-          }/*, functionNode.asInstanceOf[Identifier].decl.getSimpleName*/,  Some(_ + 1))
+          }/*, functionNode.asInstanceOf[Identifier].decl.getSimpleName*/,  (_: Int) + 1)
 
         // anything else is an error 
         case _ => throw new RuntimeException
@@ -401,7 +401,7 @@ class Transformer(streamBuilder: StreamFactory[Node])
         val roundRobin = streamBuilder.makeRoundRobbin(subtreeStreams.toSeq)
         // out of this make stream of abstractions
         streamBuilder.makeUnaryStream(roundRobin,
-          { el: lambda.Node => abstractionTermFun(el) },  Some(_ + 1))        
+          { el: lambda.Node => abstractionTermFun(el) }, (_: Int) + 1)        
       }
 
       // we dont need to add new abstraction

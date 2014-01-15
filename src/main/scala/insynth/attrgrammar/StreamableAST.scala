@@ -17,6 +17,10 @@ object StreamableAST {
     
     // TODO make it single el
     
+    /** Allows injection of a stream of values at run-time */
+    case class Injecter(c: Class[_], id: Int = 0) extends StreamEl
+
+    /** Allows mapping of elements of inner stream */ 
     case class Single(c: Class[_], inner: StreamEl) extends StreamEl
     
     case class Combiner(c: Class[_], inner: ListStreamEl) extends StreamEl
@@ -30,8 +34,6 @@ object StreamableAST {
       def getRecursiveLinks = recList
         
     }
-    /** Allows injection of a stream of values at run-time */
-    case class Injecter(c: Class[_], id: Int = 0) extends StreamEl
 
     case class Filter(c: Class[_], inner: StreamEl, id: Int = 0) extends StreamEl
     

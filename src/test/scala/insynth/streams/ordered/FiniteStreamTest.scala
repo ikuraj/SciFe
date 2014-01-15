@@ -24,43 +24,27 @@ class FiniteStreamTest extends FunSuite with ShouldMatchers {
   test("streamable test") {
     val stream = FiniteStream(Vector(1, 2, 3).zipWithIndex)
     
-    stream.nextReady(0) should be (true)
-    stream.isDepleted should be (false)
+    stream.size should be (3)
+    stream.isInfinite should be (false)
     
     val it = stream.getStream.iterator
-    stream.nextReady(0) should be (true)
-    stream.isDepleted should be (false)
-    stream.nextReady(0) should be (true)
-    stream.isDepleted should be (false)
-    
     it.next
-    
-    stream.nextReady(1) should be (true)
-    stream.isDepleted should be (false)
-    stream.nextReady(1) should be (true)
-    stream.isDepleted should be (false)
-    
-    it.next
-    
-    stream.nextReady(2) should be (true)
-    stream.isDepleted should be (false)
-    stream.nextReady(2) should be (true)
-    stream.isDepleted should be (false)
-    
-    it.next
-    
-    stream.nextReady(3) should be (false)
-    stream.isDepleted should be (true)
-    stream.nextReady(3) should be (false)
-    stream.isDepleted should be (true)
     
     stream.getStream.toList should be (
       Vector(1, 2, 3)
     )
 
+    it.next
+
     stream.getStream.toList should be (
       Vector(1, 2, 3)
     )
+
+    it.next
+
+    stream.getValuedStream(2) should be ( (3, 2) )
+    
+    it.hasNext should be (false)
   }
   
 }

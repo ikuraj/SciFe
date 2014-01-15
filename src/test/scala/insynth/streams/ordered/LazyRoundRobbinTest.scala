@@ -31,6 +31,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     val rndValue = rnd.nextInt(1000)
 
     assertEquals(List.fill(rndValue)(1), stream.take(rndValue))
+    
+    compareCallsToGetStream(rr)
   }
 
   @Test
@@ -41,7 +43,7 @@ class LazyRoundRobbinTest extends JUnitSuite {
 //    val innerStream = (1, 1) #:: lazyPair #:: Stream[(Int, Int)]()
     
     val stream1 = getSingleStream(0)
-    val stream2 = RoundRobbin(IndexedSeq(Singleton[Int](throw new RuntimeException)))
+    val stream2 = RoundRobbin(IndexedSeq(Singleton[Int]((throw new RuntimeException): Int)))
     
     val lrr = LazyRoundRobbin(List(stream1))
 
@@ -52,6 +54,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     val stream = lrr.getStream
 
     val rndValue = rnd.nextInt(1000)
+    
+    compareCallsToGetStream(lrr)
 //
 //    assertEquals(List.fill(rndValue)(1), stream.take(rndValue))
   }
@@ -71,6 +75,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     val rndValue = rnd.nextInt(1000)
 
     assertEquals(List.fill(rndValue)(1), stream.take(rndValue))
+    
+    compareCallsToGetStream(rr)
   }
 
   @Test
@@ -92,6 +98,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     val stream = rr.getStream
 
     assertEquals(List(4, 5, 6, 7, 9, 12, 15), stream)
+    
+    compareCallsToGetStream(rr)
   }
 
   @Test
@@ -110,6 +118,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     val stream = rr.getStream
 
     assertEquals(List(4, 6, 7, 12, 15), stream)
+    
+    compareCallsToGetStream(rr)
   }
 
   @Test
@@ -132,6 +142,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     val stream = rr.getStream
 
     assertEquals(List.fill(6)(4), stream.take(6))
+    
+    compareCallsToGetStream(rr)
   }
 
   @Test
@@ -142,7 +154,7 @@ class LazyRoundRobbinTest extends JUnitSuite {
 
     val rr = LazyRoundRobbin(streams)
 
-    val us = UnaryStream(rr, { (_: Int) + 1 }, Option({ (_: Int) + 1 }))
+    val us = UnaryStream(rr, { (_: Int) + 1 }, { (_: Int) + 1 })
     val ss2 = getSingleStream(5)
     
     rr addStreamable us
@@ -157,6 +169,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     lazy val message = streamToString(rr.getStream)(10)
 
     assertEquals(message, solutionsList, stream.take(solutionsList.size))
+    
+    compareCallsToGetStream(rr)
   }
   
   @Test
@@ -167,7 +181,7 @@ class LazyRoundRobbinTest extends JUnitSuite {
 
     val rr = LazyRoundRobbin(streams)
 
-    val us = UnaryStream(rr, { (_: Int) + 1 }, Option({ (_: Int) + 1 }))
+    val us = UnaryStream(rr, { (_: Int) + 1 }, { (_: Int) + 1 })
     val ss2 = getSingleStream(2)
     
     rr addStreamable us
@@ -182,6 +196,8 @@ class LazyRoundRobbinTest extends JUnitSuite {
     lazy val message = streamToString(rr.getStream)(10)
 
     assertEquals(message, solutionsList, stream.take(solutionsList.size))
+    
+    compareCallsToGetStream(rr)
   }
 
 }
