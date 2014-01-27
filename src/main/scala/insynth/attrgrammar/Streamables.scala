@@ -1,17 +1,20 @@
 package insynth
 package attrgrammar
 
-import scala.collection.mutable.{ Map => MutableMap }
+import scala.collection._
+
 import org.kiama.attribution.Attribution
 import org.kiama.attribution.Attributable
 import org.kiama.attribution.Attribution._
 import org.kiama.attribution.Decorators._
+
 import streams._
+import insynth.streams.ordered.IntegerWeightStreamable
 import reconstruction.stream._
 import util.logging._
 import StreamableAST._
+
 import scala.language.postfixOps
-import insynth.streams.ordered.IntegerWeightStreamable
 
 trait Streamables[T] {
 
@@ -19,12 +22,12 @@ trait Streamables[T] {
 
   val listStream: ListStreamEl => Streamable[List[T]]
 
-  val visited: StreamEl => Set[StreamEl]
-
+  val visited: Element => Set[Element]
+  
   val cachedStreams: StreamEl => Map[StreamEl, Streamable[T]]
 
-  val allRecursiveLinksDownTheTree: Attributable => Set[StreamEl]
-
+  val allRecursiveLinksDownTheTree: Element => Set[StreamEl]
+  
 }
 
 class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T]
@@ -126,10 +129,13 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         fine("(innerStream, isInfinite) is " + (innerStream, isInfinite) + " for " + i)
 
         // depending on whether the stream is infinite, make appropriate streamable
-        if (isInfinite)
+        if (isInfinite) {
+          throw new RuntimeException
           streamBuilder.makeSingleStream(innerStream)
+        }
         else
-          streamBuilder.makeFiniteStream(innerStream.toVector)
+          // NOTE: optimization, we memoize injected finite streams
+          streamBuilder.memoized.makeFiniteStream(innerStream.toVector)
         
       
       // TODO optimize this!, dont do unary stream if not necessary
@@ -208,12 +214,17 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
       }
     }
 
-  val visited: Attributable => Set[StreamEl] =
-    down[Attributable, Set[StreamEl]] {
-      case t: StreamEl if t isRoot => Set(t)
-      case t: StreamEl => Set(t) | t.parent[Attributable] -> visited
+  val visited: Element => Set[Element] =
+    //down[Element, Set[Element]]
+    attr {
+      case se: Element if artificialVisited contains se => {
+        info("visited matched (artificialVisited contains se) for " + se )
+        artificialVisited(se)
+      }
+      case t: Element if t isRoot => Set(t)
+      case t: Element => Set(t) | t.parent[Element] -> visited
     }
-
+  
   val listStream: ListStreamEl => Streamable[List[T]] = {
     import _streamBuilder._
     
@@ -244,11 +255,11 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         val nilStream = streamBuilder.makeSingletonList(Nil)
         val genStream = inner -> stream
 
-        val listStream = streamBuilder.makeLazyRoundRobbinList(List(nilStream))
+        val listStream = memoized.makeLazyRoundRobbinList(List(nilStream))
 
         // NOTE: this needs to be memoized (see the theoretical examination)
         val constructorStream =
-          memoized.makeBinaryStream(listStream, genStream) { (list, el2) => list :+ el2 }
+          makeBinaryStream(listStream, genStream) { (list, el2) => list :+ el2 }
 
         listStream addStreamable constructorStream
         listStream.initialize
@@ -257,7 +268,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
     }
   }
 
-  var recursiveParamsMap: MutableMap[StreamEl, (LazyStreamable, List[StreamEl])] = _
+  var recursiveParamsMap: mutable.Map[StreamEl, (LazyStreamable, List[StreamEl])] = _
   //  var nodeMap: MutableMap[StreamEl, Streamable[T]] = _
 
   var combiner: PartialFunction[(Class[_], List[T]), T] = _
@@ -266,14 +277,52 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   var specificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = _
   var filters: Map[Filter, T => Boolean] = _
 
-  // initialize data for each traversal
-  def initialize(streamEl: Attributable) = {
+  // TODO: a hack
+  var artificialVisited = mutable.Map[Element, Set[Element]]()
+  var artificialChildren = mutable.Map[Element, List[Element]]()
+  def computeArtificiallyVisited(streamEl: Element, visited: Set[Element], isArtificial: Boolean): Unit = {
+    if (isArtificial) {
+      artificialVisited += (streamEl -> (visited + streamEl))
+      artificialChildren += (streamEl -> StreamableAST.children(streamEl))
+    }
 
+    if (! (visited contains streamEl) ) {
+      streamEl match {
+        case s@Single(c, inner) =>
+          computeArtificiallyVisited(inner, visited + streamEl, isArtificial)
+
+        case f@ Filter(c, inner, _) =>
+          computeArtificiallyVisited(inner, visited + streamEl, isArtificial)
+  
+        case a @ Alternater(c, inner) =>
+          for (recLink <- a.getRecursiveLinks)
+            computeArtificiallyVisited(recLink, visited + streamEl, true)
+              
+          for (link <- inner)
+            computeArtificiallyVisited(link, visited + streamEl, isArtificial)
+  
+        case c@ Combiner(clazz, inner) =>
+          computeArtificiallyVisited(inner, visited + streamEl, isArtificial)
+  
+        case _ =>
+      }
+    } 
+  }
+  
+  // initialize data for each traversal
+  def initialize(streamEl: Element) = {
+
+    // a hack
+    artificialVisited = mutable.Map[Element, Set[Element]]()
+    artificialChildren = mutable.Map[Element, List[Element]]()
+    computeArtificiallyVisited(streamEl, Set(), false)
+    info("artificialVisited in initialization: " + artificialVisited)
+    
     Attribution.resetMemo
     Attribution.initTree(streamEl)
 
     //    nodeMap = MutableMap.empty
-    recursiveParamsMap = MutableMap.empty
+    recursiveParamsMap = mutable.Map.empty
   }
 
   // method that is called after the traversal to update recursive node children
@@ -302,19 +351,59 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         us.getStream zip Stream.continually(0)
     }
 
-  val allRecursiveLinksDownTheTree: Attributable => Set[StreamEl] =
+  val allRecursiveLinksDownTheTree: Element => Set[StreamEl] = {
+  
+    def children(e: Element) = {
+      if (artificialChildren contains e)
+        artificialChildren(e)
+      else e.children.toList
+    }
+    
     attr {
       case a @ Alternater(c, inner) =>
-        (a.getRecursiveLinks.toSet /:
-          a.children.asInstanceOf[Iterator[StreamEl]]) {
-            (res, child) =>
+        val allLinks = (inner ++ a.getRecursiveLinks)
+        val recursive = (allLinks.filter {
+          case link: Element => a->visited contains link
+          case _ => false
+        }).toSet
+
+        info("@ Alternater(%s) a->visited=%s, allLinks=%s, recursive=%s, inner=%s".
+          format(a, a->visited, allLinks, recursive.toString, inner) )
+
+        // alternater can have recursive links only in the returned collection
+        ( recursive /:
+          // for the alternater, explore also the additionally added, recursive links
+          allLinks ) {
+          	case (res, child: Element) if ! (a->visited contains child) =>
               res | (child -> allRecursiveLinksDownTheTree)
+          	case (res, _) => res
           }
-      case t: Attributable =>
-        (Set[StreamEl]() /: t.children) {
-          (res, child) =>
+      case a @ Aggregator(inner) =>
+        val recursiveLinks = inner.filter( a->visited contains _ ).toSet
+        info("Aggregator(%s) recursiveLinks=%s, a->visited=%s, inner=%s".
+          format(a, recursiveLinks, a->visited, inner))
+        // aggregator can have recursive links as children
+        (recursiveLinks /: children(a)) {
+        	// skip recursive links when traversing children
+        	case (res, child: Element) if ! (a->visited contains child) =>
             res | (child -> allRecursiveLinksDownTheTree)
+        	case (res, _) => res
         }
+      case t: Element => {
+        val recursiveLinks = children(t) filter {
+          case child: StreamEl => t->visited contains child
+          case _ => false
+        }
+        info("Element(%s) recursiveLinks=%s, t->visited=%s, t.children=%s".
+          format(t, recursiveLinks, t->visited, children(t)))
+        // traverse any other element by means of its children, skip the recursive links
+        (recursiveLinks.toSet.asInstanceOf[Set[StreamEl]] /: children(t)) {
+          case (res, child: Element) if ! (recursiveLinks contains child)  =>
+            res | (child -> allRecursiveLinksDownTheTree)
+        	case (res, _) => res
+        }
+      }
     }
+  }
 
 }

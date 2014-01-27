@@ -25,6 +25,12 @@ object FiniteStream {
 //    else
     	new FiniteStream(stream)
   
+  def memoized[T](stream: => Seq[(T, Int)]) =
+    if (stream.size == 1)
+      new Singleton[T](stream.head) with Memoized[T]
+    else
+      new FiniteStream(stream) with Memoized[T]
+  
   def counted[T](stream: => Seq[(T, Int)]) =
     if (stream.size == 1)
       new Singleton[T](stream.head) with OrderedCountable[T]

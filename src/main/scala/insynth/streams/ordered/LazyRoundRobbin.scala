@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 import insynth.streams._
 
-import insynth.util.logging.HasLogger
+import insynth.util.logging._
 
 /**
  * LazyRoundRobbin allows adding Streamables after creation. Added streamables may
@@ -14,7 +14,7 @@ import insynth.util.logging.HasLogger
  * NOTE: all addded streamables are considered to be infinite
  */
 class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
-	extends IntegerWeightStreamable[T] with AddStreamable[T] with HasLogger {
+	extends IntegerWeightStreamable[T] with AddStreamable[T] with HasLogger with CountedLogger {
   require(initStreams.size > 0)
   
   // can be computed once for all getValuedStream calls
@@ -23,6 +23,7 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
   	.zipWithIndex.minBy(_._1._2)
     
   override def getValuedStream = {
+    entering("getValuedStream")
   	val initIterators = Array(initStreams.map(_.getValuedStream.iterator.buffered): _*)
 
 	  // set of iterators checked for next value

@@ -17,7 +17,7 @@ class MemoizedOrderedStreamFactory[T] extends OrderedStreamFactory[T] with HasLo
     WrapperStream(stream)
 
   override def makeFiniteStream[U <: T](array: => Vector[(U, Int)]) =
-    FiniteStream(array)
+    FiniteStream.memoized(array)
   
   override def makeUnaryStream[X, Y <: T](streamable: Streamable[X], modify: X=>Y, modifyVal: Int => Int) =
     UnaryStream.memoized(streamable.asInstanceOf[IntegerWeightStreamable[X]], modify, modifyVal)

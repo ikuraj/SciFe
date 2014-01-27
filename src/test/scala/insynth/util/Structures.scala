@@ -162,6 +162,21 @@ object Structures {
         val color = c == RBTreeItems.B
         Node(rbMap2rbTree(l), k, rbMap2rbTree(r), color)
     }
+    
+    def numberOfTress =
+      Stream.from(0) zip List(
+        1, 2, 2, 3, 8, 14, 20, 35, 64, 122, 260, 586, 1296, 2708, 5400,
+        10468, 19888, 37580, 71960, 140612, 279264, 560544, 1133760, 2310316,
+        4750368, 9876264, 20788880, 44282696, 95241664, 206150208, 447470464,
+        970862029, 2100029344
+      ) toMap
+  
+    // helper method when constructing streams
+		val constructRBTree: PartialFunction[Any, Tree] = (a: Any) => a match {
+		  case (clazz, (a: Tree) :: (v: Int) :: (b: Tree) :: (c: Boolean) :: Nil)
+		    if clazz == classOf[Node] =>
+		    Node(a, v, b, c)
+		}
   }
 
   object Binomial {

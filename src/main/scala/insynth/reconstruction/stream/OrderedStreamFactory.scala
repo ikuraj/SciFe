@@ -16,7 +16,7 @@ class OrderedStreamFactory[T] extends StreamFactory[T] with HasLogger {
   override def makeSingleStream[U <: T](stream: => Stream[(U, Int)]) =    
     WrapperStream(stream)
 
-  override def makeFiniteStream[U <: T](array: => Vector[(U, Int)]) =
+  override def makeFiniteStream[U <: T](array: => Vector[(U, Int)]): Streamable[T] =
 //    FiniteStream(array zip Vector.range(1, array.size + 1))
     FiniteStream(array)
   

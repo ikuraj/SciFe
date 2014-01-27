@@ -11,7 +11,7 @@ import scala.language.postfixOps
 
 class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
 	(combine: (T, V) => U)
-	extends Streamable[U] with HasLogger {
+	extends Streamable[U] with HasLogger with CountedLogger {
   
   type ValuePairLeft = (T, Int)
   type ValuePairRight = (V, Int)
@@ -21,7 +21,8 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
     if (s1.size <= -1 || s2.size <= -1) -1
     else s1.size + s2.size
     
-  override def getValuedStream = {
+  override def getValuedStream = {      
+    entering("getValuedStream")
     new InnerBinaryStream getValuedStream
   }
 	  
@@ -34,7 +35,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
   def combineTwoValuesLeft( v1: ValuePairLeft, v2: V, w2: Int ) =
     ( combine(v1._1, v2), v1._2 + w2 )
 
-	class InnerBinaryStream extends HasLogger {
+	class InnerBinaryStream extends HasLogger with CountedLogger {
       
 	  def getValuedStream = {
 	    // picks next element from all "active" iterators according to weight 
@@ -87,6 +88,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
 	    iterators appendAll iteratorsToBeAdded
 	    iteratorsToBeAdded = MutableList.empty
 	    info( "iterators.size = " + iterators.size )
+	    addValue("getNext", iterators.size)
 	    
 	    fine("iterators = " + iterators.zipWithIndex.filter(_._1.hasNext).
 	      map(p => p._2 + ":" + p._1.head).mkString(", "))

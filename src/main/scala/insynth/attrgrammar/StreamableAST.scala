@@ -9,11 +9,18 @@ import scala.language.existentials
  * Language AST for streamables
  */
 object StreamableAST {
-
+  
     import org.kiama.attribution.Attributable
     import org.kiama.util.Positioned
+    
+    trait Element extends Attributable with Positioned {
+      override def toString = this.getClass.getSimpleName + "[" + this.## + "]"
+    }
 
-    trait StreamEl extends Attributable with Positioned
+    trait StreamEl extends Element {
+      var vParent: StreamEl = null
+      def setVParent(e: StreamEl) = vParent = e
+    }
     
     // TODO make it single el
     
@@ -29,7 +36,10 @@ object StreamableAST {
       
       var recList = List[StreamEl]()
       
-      def addStreamEl(se: StreamEl) = recList :+= se
+      def addStreamEl(se: StreamEl) = {
+        se.setVParent(this)
+        recList :+= se
+      }
       
       def getRecursiveLinks = recList
         
@@ -41,7 +51,7 @@ object StreamableAST {
     
 //    case class Combinator2(c: Class[_], left: StreamEl, right: StreamEl) extends StreamEl
         
-    abstract class ListStreamEl extends Attributable with Positioned
+    abstract class ListStreamEl extends Element
     // generates a list of elements from a single stream
     // NOTE this cannot be expressed in the typing system (something like a function with infinite number of
     // parameters of the same type)
@@ -67,6 +77,19 @@ object StreamableAST {
       def newFilter(c: Class[_], el: StreamEl) = {
         newId += 1
         new Filter(c, el, newId)
+      }
+    }
+    
+    def children(el: Element): List[Element] = {
+      el match {
+        case _: Injecter => List()
+        case Single(_, inner) => List(inner)
+        case Combiner(_, inner) => List(inner)
+        case Alternater(_, inner) => inner.toList
+        case Filter(_, inner, _) => List(inner)
+        case Empty => List()
+        case Aggregator(inner) => inner.toList
+        case Generator(inner) => List(inner)
       }
     }
 
