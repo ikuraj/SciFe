@@ -19,17 +19,45 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
   
   // can be computed once for all getValuedStream calls
   // NOTE: do not save streams into a val because it will memoize
-  lazy val (minHead, minInd) = initStreams.map(_.getValuedStream.head)
-  	.zipWithIndex.minBy(_._1._2)
-    
+//  lazy val (minHead, minInd) = initStreams.map(_.getValuedStream.head).zipWithIndex.minBy(_._1._2)
+  
+  // NOTE: OK we're losing the "lazy" and enforcing head computations... (since Scala does not know how to do this
+  // without saving RHS in a field)
+  // NOTE: this does not work also?!
+//  val (minHead, minInd) = initStreams.map(_.getValuedStream.head).zipWithIndex.minBy(_._1._2)
+
+  // NOTE: working but invokes 2x per getStream call
+//  def minHead = initStreams.map(_.getValuedStream.head).zipWithIndex.minBy(_._1._2)._1
+//  def minInd = initStreams.map(_.getValuedStream.head).zipWithIndex.minBy(_._1._2)._2
+
+  // NOTE: not working?!
+//  initStreams.map(_.getValuedStream.head).zipWithIndex.minBy(_._1._2) match {
+//    case (mminHead, mminInd) =>
+//      minHead = mminHead
+//      minInd = mminInd
+//    case _ =>
+//  }
+  
+  // NOTE: not working?!
+//  var minInd: Int = 0
+//  var minHead = initStreams.head.getValuedStream.head
+//
+//  for (ind <- 1 until initStreams.size) {
+//    if (initStreams(ind).getValuedStream.head._2 < minHead._2) {
+//      minInd = ind
+//      minHead = initStreams(ind).getValuedStream.head
+//    }    
+//  }
+  
   override def getValuedStream = {
     entering("getValuedStream")
-  	val initIterators = Array(initStreams.map(_.getValuedStream.iterator.buffered): _*)
+
+    val (minHead, minInd) = initStreams.map(_.getValuedStream.head).zipWithIndex.minBy(_._1._2)
 
 	  // set of iterators checked for next value
-	  lazy val allIterators = Array(
-	    (initIterators ++
-	    addedStreams.map( _.getValuedStream.iterator.buffered )) ++
+	  def allIterators = Array(
+	    initStreams.map(_.getValuedStream.iterator.buffered) ++
+	    addedStreams.map( _.getValuedStream.iterator.buffered ) ++
 	    addedFilterables.map( new RecursiveStreamableIterator(_) )
 	  : _*)
 	  
@@ -49,7 +77,7 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
     // at the end -1 means no next element was found
     var minInd = -1
     var minValue = Int.MaxValue
-    var minStream = Stream[IntegerWeightPair[T]]()
+//    var minStream = Stream[IntegerWeightPair[T]]()
     
     fine("allIterators: " + allIterators.filter(_.hasNext).zipWithIndex.mkString(", "))
     // check all iterators by going from first next after previously forwarded
@@ -65,14 +93,19 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
         finest("Iterator ind %d, with head %d is smaller than minValue %d.".format(indToCheck, iterator.head._2, minValue))
         minInd = indToCheck
         minValue = iterator.head._2
-        minStream = iterator.head #:: {
-          getNext(minInd, allIterators)
-        }
+//        minStream = iterator.head #:: {
+//          getNext(minInd, allIterators)
+//        }
       }
       
     }
 
-    exiting("getMinIterator", minStream)
+//    exiting("getMinIterator", minStream)
+    if (minInd >= 0) 
+      allIterators(minInd).head #:: {
+        getNext(minInd, allIterators)
+      }
+    else Stream.empty
   }
     
   var initialized = false
@@ -81,7 +114,7 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
   
   var addedStreams = mutable.MutableList[IntegerWeightStreamable[T]]()
   
-  override def getStreamables = (initStreams ++ addedStreams).toList
+  override def getStreamables = (initStreams ++ addedStreams ++ addedFilterables).toList
     
   // XXX terrible hack, since adding non-ordered streamable will break the code
   override def addStreamable[U >: T](s: Streamable[U]) =
@@ -104,7 +137,9 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
   
   def initialize = { }
 
-  override def size = -1
+  override def size = 
+    if (getStreamables.size == initStreams.size) initStreams.map(_.size).sum
+    else -1
   
   class RecursiveStreamableIterator(streamable: OrderedCounted[T]) extends BufferedIterator[IntegerWeightPair[T]]{
 

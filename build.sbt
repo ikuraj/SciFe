@@ -6,11 +6,7 @@ organization := "ch.epfl.lara"
 
 scalaVersion := "2.10.2"
 
-scalacOptions += "-deprecation"
-
-scalacOptions += "-unchecked"
-
-scalacOptions += "-feature"
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
 
 javacOptions += "-Xlint:unchecked"
 

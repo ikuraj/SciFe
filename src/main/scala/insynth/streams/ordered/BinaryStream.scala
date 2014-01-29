@@ -19,7 +19,7 @@ class BinaryStream[T, V, U](val s1: Streamable[T], val s2: Streamable[V])
   
   override def size =
     if (s1.size <= -1 || s2.size <= -1) -1
-    else s1.size + s2.size
+    else s1.size * s2.size
     
   override def getValuedStream = {      
     entering("getValuedStream")
