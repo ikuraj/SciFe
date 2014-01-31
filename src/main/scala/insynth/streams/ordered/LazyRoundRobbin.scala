@@ -110,7 +110,7 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
     
   var initialized = false
       
-  var addedFilterables = mutable.MutableList[OrderedCounted[T]]()
+  var addedFilterables = mutable.MutableList[OrderedCountable[T]]()
   
   var addedStreams = mutable.MutableList[IntegerWeightStreamable[T]]()
   
@@ -127,11 +127,11 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
   
   override def addFilterable[U >: T](s: Counted[U]) =
     if (initialized) throw new UnsupportedOperationException("Cannot add new streamables once initialized")
-    else addedFilterables += (s.asInstanceOf[OrderedCounted[T]])
+    else addedFilterables += (s.asInstanceOf[OrderedCountable[T]])
   
   override def addFilterable[U >: T](s: Traversable[Counted[U]]) =
     if (initialized) throw new UnsupportedOperationException("Cannot add new streamables once initialized")
-    else addedFilterables ++= (s.asInstanceOf[Traversable[OrderedCounted[T]]])
+    else addedFilterables ++= (s.asInstanceOf[Traversable[OrderedCountable[T]]])
   
   override def isInitialized = initialized
   
@@ -141,7 +141,7 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
     if (getStreamables.size == initStreams.size) initStreams.map(_.size).sum
     else -1
   
-  class RecursiveStreamableIterator(streamable: OrderedCounted[T]) extends BufferedIterator[IntegerWeightPair[T]]{
+  class RecursiveStreamableIterator(streamable: OrderedCountable[T]) extends BufferedIterator[IntegerWeightPair[T]]{
 
     var nextToEnumerate = 0
     
@@ -177,5 +177,5 @@ object LazyRoundRobbin {
     new LazyRoundRobbin(initStreams) with Memoized[T]
 	
 	def counted[T](initStreams: Seq[IntegerWeightStreamable[T]]) =
-    new LazyRoundRobbin(initStreams) with OrderedCountable[T]
+    new LazyRoundRobbin(initStreams) with OrderedCounted[T]
 }

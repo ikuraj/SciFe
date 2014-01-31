@@ -178,9 +178,9 @@ class SortedListTest extends FunSuite with ShouldMatchers with ProfileLogger {
 
     val resultStream = streamables.getStreamPairs(
       filterListValNode,
-      {
-        case (clazz, e: Int) if clazz == classOf[JustInt] => JustInt(e)
-      },
+      Map( justIntNode ->  { (a: Any) => a match {
+        case e: Int => JustInt(e)
+      }}),
       {
         case (clazz, (a: JustInt) :: (b: CusList) :: Nil) if clazz == classOf[Cons] =>
           Cons(a, b)
@@ -241,9 +241,9 @@ class SortedListTest extends FunSuite with ShouldMatchers with ProfileLogger {
       val intStream = 1 to intRange toStream
       val resultStream = streamables.getStreamPairs(
         consNode,
-        {
-          case (clazz, e: Int) if clazz == classOf[JustInt] => JustInt(e)
-        },
+        Map( justIntNode ->  { (a: Any) => a match {
+          case e: Int => JustInt(e)
+        }}),
         {
           case (clazz, (a: JustInt) :: (b: CusList) :: Nil) if clazz == classOf[Cons] =>
             Cons(a, b)
@@ -290,9 +290,9 @@ class SortedListTest extends FunSuite with ShouldMatchers with ProfileLogger {
       val intStream = 1 to intRange toStream
       val resultStream = streamables.getStreamPairs(
         filterListValNode,
-        {
-          case (clazz, e: Int) if clazz == classOf[JustInt] => JustInt(e)
-        },
+        Map( justIntNode ->  { (a: Any) => a match {
+          case e: Int => JustInt(e)
+        }}),
         {
           case (clazz, (a: JustInt) :: (b: CusList) :: Nil) if clazz == classOf[Cons] =>
             Cons(a, b)
@@ -338,9 +338,9 @@ class SortedListTest extends FunSuite with ShouldMatchers with ProfileLogger {
       val intStream = 1 to intRange toStream
       val resultStream = streamables.getStreamPairs(
         filterListValNode,
-        {
-          case (clazz, e: Int) if clazz == classOf[JustInt] => JustInt(e)
-        },
+        Map( justIntNode ->  { (a: Any) => a match {
+          case e: Int => JustInt(e)
+        }}),
         {
           case (clazz, (a: JustInt) :: (b: CusList) :: Nil) if clazz == classOf[Cons] =>
             Cons(a, b)

@@ -37,14 +37,14 @@ object WrapperStream {
     if (stream.hasDefiniteSize)
       FiniteStream.counted(stream)
     else
-      new WrapperStream(stream.toStream) with OrderedCountable[T]
+      new WrapperStream(stream.toStream) with OrderedCounted[T]
 
   def counted[T](stream: Stream[(T, Int)], isInfinite: Boolean) =
     if (isInfinite)
-      new WrapperStream(stream.toStream) with OrderedCountable[T]
+      new WrapperStream(stream.toStream) with OrderedCounted[T]
     else
       FiniteStream.counted(stream.toList)
 
   def counted(el: Int) =
-    new Singleton(el, el) with OrderedCountable[Int]
+    new Singleton(el, el) with OrderedCounted[Int]
 }

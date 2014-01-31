@@ -140,7 +140,7 @@ class StreamCombinationsTest extends JUnitSuite with ShouldMatchers {
       val stream = bs.getStream
 
       // whenever we have lazy round robbin, its infinite
-      assertTrue(bs.isInfinite)
+      assertFalse(bs.isInfinite)
       assertEquals(
         stream.take(1) mkString (", "),
         List(3),
@@ -168,7 +168,7 @@ class StreamCombinationsTest extends JUnitSuite with ShouldMatchers {
 
       val stream = bs.getStream
 
-      assertTrue(bs.isInfinite)
+      assertTrue(!bs.isInfinite)
       assertEquals(
         stream.take(5) mkString (", "),
         List(List(1,2), List(1,3), List(3,2), List(3,3), List(1,6)),
@@ -258,7 +258,7 @@ class StreamCombinationsTest extends JUnitSuite with ShouldMatchers {
     val stream1 = WrapperStream( Stream((0, 0)) )
     val rr = LazyRoundRobbin(List(stream1))
     val us = UnaryStream(rr, { (x: Int) => x + 2 })
-    val filterOdds = FilterStream.counted(us, { (x: Int) => x % 2 == 0 }) 
+    val filterOdds = FilterStream.memoizedCounted(us, { (x: Int) => x % 2 == 0 }) 
 
     rr addFilterable filterOdds
 
@@ -278,7 +278,7 @@ class StreamCombinationsTest extends JUnitSuite with ShouldMatchers {
   def testFilterAndCounted {
     val innerStream = Stream(0, 1, 2)
     val stream1 = WrapperStream( innerStream zip Stream.continually(0) )
-    val filterOdds = FilterStream.counted(stream1, { (x: Int) => x % 2 == 1 }) 
+    val filterOdds = FilterStream.memoizedCounted(stream1, { (x: Int) => x % 2 == 1 }) 
     
     filterOdds.enumerated should be (0)
     compareCallsToGetStream( List(stream1, filterOdds) )
@@ -297,7 +297,7 @@ class StreamCombinationsTest extends JUnitSuite with ShouldMatchers {
     val stream1 = WrapperStream( innerStream zip Stream.continually(0) )
     val rr = LazyRoundRobbin(List(stream1))
     val us = UnaryStream(rr, { (x: Int) => x + 1 })
-    val filterOdds = FilterStream.counted(us, { (x: Int) => x % 2 == 0 }) 
+    val filterOdds = FilterStream.memoizedCounted(us, { (x: Int) => x % 2 == 0 }) 
 
     rr addFilterable filterOdds
 

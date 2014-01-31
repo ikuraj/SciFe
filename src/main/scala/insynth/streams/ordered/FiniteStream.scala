@@ -34,7 +34,7 @@ object FiniteStream {
   
   def counted[T](stream: Seq[(T, Int)]) =
     if (stream.size == 1)
-      new Singleton[T](stream.head) with OrderedCountable[T]
+      new Singleton[T](stream.head) with OrderedCounted[T]
     else
-    	new FiniteStream(stream) with OrderedCountable[T]
+    	new FiniteStream(stream) with OrderedCounted[T]
 }

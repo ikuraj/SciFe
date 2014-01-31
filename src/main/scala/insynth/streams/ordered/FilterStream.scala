@@ -8,7 +8,18 @@ import scala.annotation.tailrec
 class FilterStream[T](val streamable: IntegerWeightStreamable[T], filterFun: T => Boolean)
 	extends IntegerWeightStreamable[T] with Filterable[T] {
   
-  override def getValuedStream = streamable.getValuedStream filter { p => filterFun(p._1) }
+  override def getValuedStream = //streamable.getValuedStream filter { p => filterFun(p._1) }
+  {
+    def loop(it: Iterator[IntegerWeightPair[T]]): Stream[IntegerWeightPair[T]] = {
+      while (it.hasNext) {
+        val el = it.next
+        if (filterFun(el._1)) return el #:: loop(it)
+      }
+      Stream.empty
+    }
+
+    loop(streamable.getValuedStream.iterator)
+  }
   
 //  lazy val st = streamable.getValuedStream filter { p => filterFun(p._1) }
 //  
@@ -19,7 +30,7 @@ class FilterStream[T](val streamable: IntegerWeightStreamable[T], filterFun: T =
 }
 
 class FilterStreamCounted[T](val streamable: IntegerWeightStreamable[T], filterFun: T => Boolean)
-  extends IntegerWeightStreamable[T] with OrderedCounted[T] with Filterable[T] {
+  extends IntegerWeightStreamable[T] with OrderedCountable[T] with Filterable[T] {
   
   var enumeratedCount = 0
   
@@ -44,7 +55,15 @@ object FilterStream {
   def memoized[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
     new FilterStream(streamable, filterFun) with Memoized[T]
 
-  def counted[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
+  def countedMemoized[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
+//    new FilterStreamCounted(streamable, filterFun)
     new FilterStreamCounted(streamable, filterFun)
-//    new FilterStream(streamable, filterFun) with OrderedCounted[T]
+  
+  def memoizedCounted[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
+//    new FilterStreamCounted(streamable, filterFun)
+    new FilterStreamCounted(streamable, filterFun)
+
+  def counted[T](streamable: IntegerWeightStreamable[T], filterFun: T => Boolean) =
+//    new FilterStreamCounted(streamable, filterFun)
+    new FilterStream(streamable, filterFun) with OrderedCounted[T]
 }

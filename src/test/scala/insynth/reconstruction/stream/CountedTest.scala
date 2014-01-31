@@ -14,7 +14,7 @@ import util.format._
 class CountedTest extends FunSuite with ShouldMatchers {
 
   test("finite streamable test") {
-    val streamable = new FiniteStream(Vector(1, 2, 3).zipWithIndex) with OrderedCountable[Int]
+    val streamable = new FiniteStream(Vector(1, 2, 3).zipWithIndex) with OrderedCounted[Int]
 
     streamable.enumerated should be (0)
     val stream = streamable.getValuedStream
@@ -31,7 +31,7 @@ class CountedTest extends FunSuite with ShouldMatchers {
   }
 
   test("infinite streamable test") {
-    val streamable = new WrapperStream(Stream.from(1).zipWithIndex) with OrderedCountable[Int]
+    val streamable = new WrapperStream(Stream.from(1).zipWithIndex) with OrderedCounted[Int]
     val stream = streamable.getValuedStream
     
     streamable.enumerated should be (1)

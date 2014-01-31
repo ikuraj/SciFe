@@ -10,13 +10,13 @@ trait Counted[T] extends Streamable[T] {
 
 package ordered {
 
-  trait OrderedCounted[T] extends ordered.IntegerWeightStreamable[T] with Counted[T] with HasLogger {
+  trait OrderedCountable[T] extends ordered.IntegerWeightStreamable[T] with Counted[T] with HasLogger {
     
     def enumerated: Int
     
   }
   
-  trait OrderedCountable[T] extends ordered.IntegerWeightStreamable[T] with Counted[T] with HasLogger {
+  trait OrderedCounted[T] extends ordered.IntegerWeightStreamable[T] with OrderedCountable[T] with HasLogger {
     
     var _enumerated = 0
     

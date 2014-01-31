@@ -45,7 +45,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   type LazyStreamable = Streamable[T] with AddStreamable[T]
 
   def getStreamPairs(streamEl: StreamEl,
-    process: PartialFunction[(Class[_], T), T],
+    process: Map[Element, T => T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
     streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
@@ -57,7 +57,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   }
 
   def getStreamListPairs(streamEl: ListStreamEl,
-    process: PartialFunction[(Class[_], T), T],
+    process: Map[Element, T => T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
     streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
@@ -68,7 +68,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   }
 
   def getStream(streamEl: StreamEl,
-    process: PartialFunction[(Class[_], T), T],
+    process: Map[Element, T => T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
     streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
@@ -78,7 +78,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   }
 
   def getStreamable(streamEl: StreamEl,
-    process: PartialFunction[(Class[_], T), T],
+    process: Map[Element, T => T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
     streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
@@ -99,7 +99,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   }
 
   def getStreamableList(streamEl: ListStreamEl,
-    process: PartialFunction[(Class[_], T), T],
+    process: Map[Element, T => T],
     combiner: PartialFunction[(Class[_], List[T]), T],
     injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)],
     streamSpecificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = Map(),
@@ -140,14 +140,12 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
       
       // TODO optimize this!, dont do unary stream if not necessary
       case s@Single(c, inner) =>
-        // create a modify function if process has the appropriate definition 
-        val modify: T => T = (t: T) =>
-          if (process.isDefinedAt((c, t)))
-            process(c, t)
-          else
-            t
-
-        streamBuilder(s).makeUnaryStream(inner -> stream, modify)
+        // create a modify function if process has this stream element 
+//        if (process contains s) {
+          val modify = process(s)
+          streamBuilder(s).makeUnaryStream(inner -> stream, modify)
+//        } else
+//          inner -> stream
 
       case f@ Filter(c, inner, _) =>        
         // check if filter stream is needed
@@ -184,14 +182,15 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
             paramInitStream
           }
 
-        // TODO optimize this!, dont do unary stream if not necessary
-        val modify: T => T = (t: T) =>
-          if (process.isDefinedAt((c, t)))
-            process(c, t)
-          else
-            t
-
-        streamBuilder(a).makeUnaryStream(thisStream, modify)
+//        // TODO optimize this!, dont do unary stream if not necessary
+//        val modify: T => T = (t: T) =>
+//          if (process.isDefinedAt((c, t)))
+//            process(c, t)
+//          else
+//            t
+//
+//        streamBuilder(a).makeUnaryStream(thisStream, modify)
+        thisStream
 
       case c@ Combiner(clazz, inner) =>
         // make streams of lists of parameter combinations
@@ -272,7 +271,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
   //  var nodeMap: MutableMap[StreamEl, Streamable[T]] = _
 
   var combiner: PartialFunction[(Class[_], List[T]), T] = _
-  var process: PartialFunction[(Class[_], T), T] = _
+  var process: Map[Element, T => T] = _
   var injections: Map[Class[_], (Stream[InjectionStreamValue], Boolean)] = _
   var specificInjections: Map[StreamEl, (Stream[InjectionStreamValue], Boolean)] = _
   var filters: Map[Filter, T => Boolean] = _
