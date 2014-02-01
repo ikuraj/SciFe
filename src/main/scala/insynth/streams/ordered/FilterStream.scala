@@ -5,7 +5,7 @@ import insynth.streams.unordered.{ UnaryStream => UnUnaryStream }
 
 import scala.annotation.tailrec
 
-class FilterStream[T](val streamable: IntegerWeightStreamable[T], filterFun: T => Boolean)
+class FilterStream[T](val streamable: IntegerWeightStreamable[T], val filterFun: T => Boolean)
 	extends IntegerWeightStreamable[T] with Filterable[T] {
   
   override def getValuedStream = //streamable.getValuedStream filter { p => filterFun(p._1) }
@@ -29,7 +29,7 @@ class FilterStream[T](val streamable: IntegerWeightStreamable[T], filterFun: T =
   
 }
 
-class FilterStreamCounted[T](val streamable: IntegerWeightStreamable[T], filterFun: T => Boolean)
+class FilterStreamCounted[T](val streamable: IntegerWeightStreamable[T], val filterFun: T => Boolean)
   extends IntegerWeightStreamable[T] with OrderedCountable[T] with Filterable[T] {
   
   var enumeratedCount = 0

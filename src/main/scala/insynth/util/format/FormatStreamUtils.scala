@@ -94,7 +94,15 @@ class FormatStreamUtils[_](node: Streamable[_], _level: Int) extends Formatable 
         foldDoc(lrr.getStreamables map { trans(_, level - 1, visited + node) }, "\n")
       )
       case lrr: ordered.LazyRoundRobbin[_] => "ord.LazyRoundRobbin" :: header(node) :: nestedBrackets(
-        foldDoc(lrr.getStreamables map { trans(_, level - 1, visited + node) }, "\n")
+        "initial" :: brackets(
+          foldDoc(lrr.initStreams.toList map { trans(_, level - 1, visited + node) }, "\n")
+        ) :/:
+        "lazy " :: brackets(
+          foldDoc(lrr.getAddedStreams.toList map { trans(_, level - 1, visited + node) }, "\n")
+        ) :/:
+        "filterable " :: brackets(
+          foldDoc(lrr.getAddedFilterables.toList map { trans(_, level - 1, visited + node) }, "\n")
+        )
       )
 
       case rr: ordered.RoundRobbin[_] => "ord.RoundRobin" :: header(node) :/: nestedBrackets(

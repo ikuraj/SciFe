@@ -18,15 +18,15 @@ import scala.language.postfixOps
 
 trait Streamables[T] {
 
-  val stream: StreamEl => Streamable[T]
+  def stream: StreamEl => Streamable[T]
 
-  val listStream: ListStreamEl => Streamable[List[T]]
+  def listStream: ListStreamEl => Streamable[List[T]]
 
-  val visited: Element => Set[Element]
+  def visited: Element => Set[Element]
   
-  val cachedStreams: StreamEl => Map[StreamEl, Streamable[T]]
+  def cachedStreams: StreamEl => Map[StreamEl, Streamable[T]]
 
-  val allRecursiveLinksDownTheTree: Element => Set[StreamEl]
+  def allRecursiveLinksDownTheTree: Element => Set[StreamEl]
   
 }
 
@@ -119,7 +119,12 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
     transformed
   }
 
-  val stream: StreamEl => Streamable[T] =
+  /********************************************/
+  // Attributes
+  /********************************************/
+  
+  override def stream = _stream
+  var _stream: StreamEl => Streamable[T] =
     dynAttr {
       case i: Injecter =>
         // get stream to be injected
@@ -135,6 +140,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         }
         else
           // NOTE: optimization, we memoize injected finite streams
+//          streamBuilder.memoized.makeFiniteStream(innerStream.toVector)
           streamBuilder.memoized.makeFiniteStream(innerStream.toVector)
         
       
@@ -203,7 +209,8 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         streamBuilder.makeEmptyStreamable
     }
 
-  val cachedStreams: StreamEl => Map[StreamEl, Streamable[T]] =
+  def cachedStreams = _cachedStreams
+  var _cachedStreams: StreamEl => Map[StreamEl, Streamable[T]] =
     attr {
       case t if t isRoot => Map((t, (t -> stream)))
       case t => {
@@ -213,7 +220,8 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
       }
     }
 
-  val visited: Element => Set[Element] =
+  def visited = _visited
+  var _visited: Element => Set[Element] =
     //down[Element, Set[Element]]
     attr {
       case se: Element if artificialVisited contains se => {
@@ -224,7 +232,8 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
       case t: Element => Set(t) | t.parent[Element] -> visited
     }
   
-  val listStream: ListStreamEl => Streamable[List[T]] = {
+  def listStream = _listStream
+  var _listStream: ListStreamEl => Streamable[List[T]] = {
     import _streamBuilder._
     
     attr {
@@ -338,6 +347,24 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
       // initialize the lazy round robbin
       //      paramInitStream.initialize
     }
+    
+    // try to rid of all cached values so that GC can proceed
+    Attribution.resetMemo
+    // reset fields to null
+    _stream = null
+    _listStream = null
+    _visited = null
+    _cachedStreams = null
+    allRecursiveLinksDownTheTree = null
+
+    recursiveParamsMap = null
+//    combiner = null
+    process = null
+    injections = null
+    specificInjections = null
+    filters = null
+    artificialVisited = mutable.Map[Element, Set[Element]]()
+    artificialChildren = mutable.Map[Element, List[Element]]()
   }
 
   def extractPairStream(s: Streamable[_]) =
@@ -350,7 +377,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         us.getStream zip Stream.continually(0)
     }
 
-  val allRecursiveLinksDownTheTree: Element => Set[StreamEl] = {
+  var allRecursiveLinksDownTheTree: Element => Set[StreamEl] = {
   
     def children(e: Element) = {
       if (artificialChildren contains e)

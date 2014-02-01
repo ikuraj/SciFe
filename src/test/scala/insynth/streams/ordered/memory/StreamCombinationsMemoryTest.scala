@@ -116,81 +116,120 @@ class StreamCombinationsMemoryTest extends FunSuite with ShouldMatchers with Has
 //    getCollectedCount(filterOdds, 100) should be >= 90
 //  }
 
-  test("rbtrees") {
-    import insynth.util.Structures._
-    import StreamableAST._
-    import RedBlackTrees._
-	  
-	  type Weight = Int
+  test("FilterStream, unary streams, memoized, non filtered should be GCed") {
+    val single0 = Singleton(new Integer(0))
+    val lazyStream = LazyRoundRobbin(Seq( single0 ))
     
-    val leafNode = Injecter(classOf[Tree])
-    val booleanNode = Injecter(classOf[Boolean])
-    val intNode = Injecter(classOf[Int])
-    val chooserNode = Alternater(classOf[Tree], List(leafNode))
-    val filteredTrees = Filter(classOf[Cons], chooserNode)
-    val treeParamNode = Aggregator(Seq(filteredTrees, intNode, filteredTrees, booleanNode))
-    
-    val consNode =
-      Single( classOf[Node], Combiner(classOf[Node], treeParamNode) )
-    chooserNode.addStreamEl(consNode)
+    var toBeCollected = mutable.MutableList[Integer]()
+    val us = UnaryStream( lazyStream, { (v: Integer) =>
+      toBeCollected += v; v } )
+    val filteredStream =
+      FilterStream.memoized(
+        us, { (i: Integer) => ((i % 3) % 2) == 0 }
+      )
 
-    implicit def anyToRBTree(a: Any) = a.asInstanceOf[Tree]
+    val finiteStream = WrapperStream( Seq(1, 2, 3) map (new Integer (_)) zipWithIndex )
+    val binaryStream = BinaryStream(
+      finiteStream, filteredStream
+    ) ( (l, r) => new Integer(l + r) )
+    lazyStream.addStreamable( binaryStream )
+    fine("Streamable is: " + FormatStreamUtils(filteredStream))
     
-    // NOTE making this 1 to 5 throws StackOverflowError
-    for(currentSize <- 4 to 4) {
-      val (treeSize, correctNumber) = (currentSize, numberOfTress(currentSize))
-      info("For currentSize %d, number of trees should be %d".format(treeSize, correctNumber))
-  
-      val nilStream = Stream( (Leaf, 1) )
-      val intStream = (1 to treeSize) zip Stream.continually(1) toStream
-      val booleanStream = Stream(true, false) zip Stream.continually(1)
-      
-      val streamFactory = new OrderedStreamFactory[Any]
-      val streamables = new StreamablesImpl(streamFactory)
+    val stream = filteredStream.getValuedStream
     
-      var allTrees = mutable.MutableList[Node]()
+    // force 10 enumerations
+    stream.take(10).size
     
-	    val resultStream = streamables.getStreamPairs(
-	      filteredTrees,
-	      Map(consNode -> { tree: Any => allTrees += tree.asInstanceOf[Node]; tree } ),
-	      constructRBTree,
-	      Map( classOf[Tree] -> ( nilStream, false ), classOf[Int] -> ( intStream, false ), 
-	          classOf[Boolean] -> ( booleanStream, false )),
-	      Map(),
-	      Map( filteredTrees -> ( (e: Any) => invariant(e.asInstanceOf[Tree]) ) )
-	    )
-    
-	    var resList: List[(Any, Weight)] = null
-	    def checkSize = (p: (Any, Weight)) => RedBlackTrees.size(p._1.asInstanceOf[Tree]) == treeSize
-      
-	    var foundAll = false
-	    var bound = -1
-	    for (toTake <- 1 to 10000; if !foundAll) {
-		    bound = toTake
-		    val startTime = System.currentTimeMillis
-		    resList = resultStream.take(toTake).toList
-		    val duration = System.currentTimeMillis - startTime
-
-		    foundAll = resList.count(checkSize) == correctNumber
-		    fine("Count of tree of size " + treeSize + " is: " +
-	        resList.count(checkSize))
-	    }
-      info("Count of tree of size " + treeSize + " is found: " + resList.count(checkSize))
-	        
-	    resList = resultStream.take(bound).toList
-	    val testers = for (el <- allTrees; if ! invariant(el.asInstanceOf[Tree])) yield MemoryLeak(el, el.toString)
-	    
-      val allTreesNum = allTrees.size
-      info("All trees : " + allTreesNum)
-      
-      Console.readLine
-      
-	    allTrees = null
-	    val collected = testers.count(_.isCollected)
-	    
-	    collected should be >= (allTreesNum - 40)
+    withClue ( stream.take(10).mkString(", ") ) {
+	    (toBeCollected filterNot filteredStream.filterFun).size should be > 0
+	    val tester = MemoryLeak( toBeCollected filterNot filteredStream.filterFun )
+	    toBeCollected = null
+	
+	    tester.countCollected should be >= 10
     }
-    
   }
+
+//  test("rbtrees") {
+//    import insynth.util.Structures._
+//    import StreamableAST._
+//    import RedBlackTrees._
+//	  
+//	  type Weight = Int
+//    
+//    val leafNode = Injecter(classOf[Tree])
+//    val booleanNode = Injecter(classOf[Boolean])
+//    val intNode = Injecter(classOf[Int])
+//    val chooserNode = Alternater(classOf[Tree], List(leafNode))
+//    val filteredTrees = Filter(classOf[Cons], chooserNode)
+//    val treeParamNode = Aggregator(Seq(filteredTrees, intNode, filteredTrees, booleanNode))
+//    
+//    val consNode =
+//      Single( classOf[Node], Combiner(classOf[Node], treeParamNode) )
+//    chooserNode.addStreamEl(consNode)
+//
+//    implicit def anyToRBTree(a: Any) = a.asInstanceOf[Tree]
+//    
+//    // NOTE making this 1 to 5 throws StackOverflowError
+//    for(currentSize <- 6 to 6) {
+//      val (treeSize, correctNumber) = (currentSize, numberOfTress(currentSize))
+//      info("For currentSize %d, number of trees should be %d".format(treeSize, correctNumber))
+//  
+//      val nilStream = Stream( (Leaf, 1) )
+//      val intStream = (1 to treeSize) zip Stream.continually(1) toStream
+//      val booleanStream = Stream(true, false) zip Stream.continually(1)
+//      
+//      val streamFactory = new OrderedStreamFactory[Any]
+//      val streamables = new StreamablesImpl(streamFactory)
+//    
+//      var allTrees = mutable.MutableList[Node]()
+//    
+//	    val streamable = streamables.getStreamable(
+//	      filteredTrees,
+//	      Map(consNode -> { tree: Any => allTrees += tree.asInstanceOf[Node]; tree } ),
+//	      constructRBTree,
+//	      Map( classOf[Tree] -> ( nilStream, false ), classOf[Int] -> ( intStream, false ), 
+//	          classOf[Boolean] -> ( booleanStream, false )),
+//	      Map(),
+//	      Map( filteredTrees -> ( (e: Any) => invariant(e.asInstanceOf[Tree]) ) )
+//	    )
+//      fine("Streamable is: " + FormatStreamUtils(streamable))
+//      val resultStream = streamables.extractPairStream(streamable)
+//    
+//	    var resList: List[(Any, Weight)] = null
+//	    def checkSize = (p: (Any, Weight)) => RedBlackTrees.size(p._1.asInstanceOf[Tree]) == treeSize
+//      
+//	    var foundAll = false
+//	    var bound = -1
+//	    for (toTake <- 1 to 10000; if !foundAll) {
+//		    bound = toTake
+//		    val startTime = System.currentTimeMillis
+//		    resList = resultStream.take(toTake).toList
+//		    val duration = System.currentTimeMillis - startTime
+//
+//		    foundAll = resList.count(checkSize) == correctNumber
+//		    fine("Count of tree of size " + treeSize + " is: " +
+//	        resList.count(checkSize))
+//	    }
+//      info("Count of tree of size " + treeSize + " is found: " + resList.count(checkSize))
+//	        
+//	    resList = resultStream.take(bound).toList
+//	    val tester = {
+//        val objects = for (el <- allTrees; if ! invariant(el.asInstanceOf[Tree])) yield el
+//        MemoryLeak(objects)
+//      }
+//	    
+//      val allTreesNum = allTrees.size
+//      info("All trees : " + allTreesNum)
+//      
+//      allTrees = null
+//      resList = null
+////      println("done")
+////      Console.readLine
+//
+//      val collected = tester.countCollected
+//	    collected should be >= (allTreesNum - 40)
+//    }
+//    
+//  }
   
 }

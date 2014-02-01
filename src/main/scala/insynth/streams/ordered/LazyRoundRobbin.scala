@@ -108,11 +108,13 @@ class LazyRoundRobbin[T](val initStreams: Seq[IntegerWeightStreamable[T]])
     else Stream.empty
   }
     
-  var initialized = false
+  private var initialized = false
       
-  var addedFilterables = mutable.MutableList[OrderedCountable[T]]()
+  private var addedFilterables = mutable.MutableList[OrderedCountable[T]]()
+  def getAddedFilterables = addedFilterables.toList
   
-  var addedStreams = mutable.MutableList[IntegerWeightStreamable[T]]()
+  private var addedStreams = mutable.MutableList[IntegerWeightStreamable[T]]()
+  def getAddedStreams = addedStreams.toList
   
   override def getStreamables = (initStreams ++ addedStreams ++ addedFilterables).toList
     
