@@ -642,9 +642,9 @@ class StreamablesTest extends FunSuite with ShouldMatchers {
     import Attribution._
     
     streamables.allRecursiveLinksDownTheTree(treeParamNode) should have size (1)
-    streamables.allRecursiveLinksDownTheTree(treeParamNode) should contain (filteredTrees: StreamEl)
+    streamables.allRecursiveLinksDownTheTree(treeParamNode) should contain (filteredTrees: Element)
     streamables.allRecursiveLinksDownTheTree(filteredTrees) should have size (1)
-    streamables.allRecursiveLinksDownTheTree(filteredTrees) should contain (filteredTrees: StreamEl)
+    streamables.allRecursiveLinksDownTheTree(filteredTrees) should contain (filteredTrees: Element)
     for (node <- List(consNode, chooserNode, treeParamNode))
     	streamables.allRecursiveLinksDownTheTree(node) should have size (1)
   }

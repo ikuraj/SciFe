@@ -106,7 +106,6 @@ class SortedListTest extends FunSuite with ShouldMatchers with ProfileLogger {
   
   ignore("Number of sorted lists") {
   test("Number of sorted lists") {
-    
     for (maxSize <- 1 to 4) {
 
       val sortedLists =         
@@ -119,9 +118,7 @@ class SortedListTest extends FunSuite with ShouldMatchers with ProfileLogger {
       println("Number of sorted lists for size " + maxSize + " is: " + sortedLists.size)
       println(sortedLists.mkString(","))
       expectResult( calculatedNumber ) { sortedLists.size }
-      
     }
-
   }
   }
   

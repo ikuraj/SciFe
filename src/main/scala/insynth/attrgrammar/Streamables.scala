@@ -26,7 +26,10 @@ trait Streamables[T] {
   
   def cachedStreams: StreamEl => Map[StreamEl, Streamable[T]]
 
-  def allRecursiveLinksDownTheTree: Element => Set[StreamEl]
+  // collects all recursive link from the node and its children
+  // NOTE: this is done since some stream nodes are added externally and not detected by
+  // the attribute grammar
+  def allRecursiveLinksDownTheTree: Element => Set[Element]
   
 }
 
@@ -135,7 +138,6 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
 
         // depending on whether the stream is infinite, make appropriate streamable
         if (isInfinite) {
-          throw new RuntimeException
           streamBuilder.makeSingleStream(innerStream)
         }
         else
@@ -238,22 +240,44 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
     
     attr {
       case agg @ Aggregator(inner) =>
-        //          val singletonList = makeUnaryStreamList(inner.head->stream, { t: T => List(t) })
-
-        val paramsStreams: Seq[Streamable[T]] =
-          inner map { _ -> stream }
+        def makeTwoElementCombinationListStream(list: List[Element]):
+        	Streamable[List[T]] = {
+          list match {
+          	case (s1: StreamEl) :: (s2: StreamEl) :: Nil =>
+          	  makeBinaryStream(s1->stream, s2->stream) {
+                (el1, el2) => List(el1, el2)
+              }
+          	  // cannot happen
+//          	case (s1: ListStreamEl) :: (s2: StreamEl) :: Nil =>
+          	case (s1: StreamEl) :: (s2: ListStreamEl) :: Nil =>
+          	  makeBinaryStream(s1->stream, s2->listStream) {
+                (el1, l2) => el1 :: l2
+              }
+          	case _ => throw new RuntimeException
+          }
+        } 
 
         // make streams of lists of parameter combinations
         val paramListStream: Streamable[List[T]] =
-          paramsStreams match {
+          inner.reverse.toList match {
             case Nil => makeSingletonList(Nil)
-            case List(stream) => makeUnaryStreamList(stream, { el: T => List(el) })
-            case stream1 :: stream2 :: rest =>
-              ((makeBinaryStream(stream1, stream2) {
-                (el1, el2) => List(el1, el2)
-              }: Streamable[List[T]]) /: rest) {
-                (resStream: Streamable[List[T]], stream3: Streamable[T]) =>
-                  makeBinaryStream(resStream, stream3) { (list, el2) => list :+ el2 }
+            case List(s: StreamEl) =>
+              makeUnaryStreamList(s -> stream, { el: T => List(el) })
+            case List(sel: ListStreamEl) =>
+              sel -> listStream
+            case (sel: ListStreamEl) :: rest =>
+              (rest :\ sel -> listStream) {
+                case (se: StreamEl, resStream) =>
+                  makeBinaryStream(se->stream, resStream) { (el, list) => el :: list }
+                case (sel: ListStreamEl, resStream) =>
+                  makeBinaryStream(resStream, sel->listStream) { (list1, list2) => list1 ::: list2 }
+              }
+            case e1 :: e2 :: rest =>
+              (rest :\ makeTwoElementCombinationListStream( e2 :: e1 :: Nil )) {
+                case (se: StreamEl, resStream) =>
+                  makeBinaryStream(se->stream, resStream) { (el, list) => el :: list }
+                case (sel: ListStreamEl, resStream) =>
+                  makeBinaryStream(resStream, sel->listStream) { (list1, list2) => list1 ::: list2 }
               }
           }
 
@@ -355,7 +379,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
     _listStream = null
     _visited = null
     _cachedStreams = null
-    allRecursiveLinksDownTheTree = null
+    _allRecursiveLinksDownTheTree = null
 
     recursiveParamsMap = null
 //    combiner = null
@@ -377,7 +401,8 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         us.getStream zip Stream.continually(0)
     }
 
-  var allRecursiveLinksDownTheTree: Element => Set[StreamEl] = {
+  def allRecursiveLinksDownTheTree = _allRecursiveLinksDownTheTree
+  var _allRecursiveLinksDownTheTree: Element => Set[Element] = {
   
     def children(e: Element) = {
       if (artificialChildren contains e)
@@ -388,7 +413,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
     attr {
       case a @ Alternater(c, inner) =>
         val allLinks = (inner ++ a.getRecursiveLinks)
-        val recursive = (allLinks.filter {
+        val recursive: Set[Element] = (allLinks.filter {
           case link: Element => a->visited contains link
           case _ => false
         }).toSet
@@ -401,7 +426,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
           // for the alternater, explore also the additionally added, recursive links
           allLinks ) {
           	case (res, child: Element) if ! (a->visited contains child) =>
-              res | (child -> allRecursiveLinksDownTheTree)
+              res | allRecursiveLinksDownTheTree(child)
           	case (res, _) => res
           }
       case a @ Aggregator(inner) =>
@@ -412,7 +437,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         (recursiveLinks /: children(a)) {
         	// skip recursive links when traversing children
         	case (res, child: Element) if ! (a->visited contains child) =>
-            res | (child -> allRecursiveLinksDownTheTree)
+            res | allRecursiveLinksDownTheTree(child)
         	case (res, _) => res
         }
       case t: Element => {
@@ -423,7 +448,7 @@ class StreamablesImpl[T](_streamBuilder: StreamFactory[T]) extends Streamables[T
         info("Element(%s) recursiveLinks=%s, t->visited=%s, t.children=%s".
           format(t, recursiveLinks, t->visited, children(t)))
         // traverse any other element by means of its children, skip the recursive links
-        (recursiveLinks.toSet.asInstanceOf[Set[StreamEl]] /: children(t)) {
+        (recursiveLinks.toSet.asInstanceOf[Set[Element]] /: children(t)) {
           case (res, child: Element) if ! (recursiveLinks contains child)  =>
             res | (child -> allRecursiveLinksDownTheTree)
         	case (res, _) => res

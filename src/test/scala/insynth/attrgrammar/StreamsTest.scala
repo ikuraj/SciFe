@@ -20,28 +20,30 @@ class StreamsTest extends FunSuite {
   import streamFactory._
   import ord._
   
-  val nilStream = makeSingletonList(Nil)
-  val genStream = makeFiniteStream( Vector(1, 2, 3) zip fromOne )
-//    makeSingleton(1)
+  test("Simple constructions used in streamables") {
+    val nilStream = makeSingletonList(Nil)
+    val genStream = makeFiniteStream( Vector(1, 2, 3) zip fromOne )
+  //    makeSingleton(1)
+    
+    val listStream = makeLazyRoundRobbinList(List(nilStream))
   
-  val listStream = makeLazyRoundRobbinList(List(nilStream))
-
-  val constructorStream =
-    makeBinaryStream(listStream, genStream) { (list, el2) => list :+ el2 }
+    val constructorStream =
+      makeBinaryStream(listStream, genStream) { (list, el2) => list :+ el2 }
+    
+    listStream addStreamable constructorStream
+    listStream.initialize
   
-  listStream addStreamable constructorStream
-  listStream.initialize
-
-  val streamable = listStream
-  val stream =
-    streamable match {
-      case os: IntegerWeightStreamable[_] =>
-        fine("returning ordered streamable")
-        os.getStream zip os.getValues.map(_.toFloat)
-      case _ => fail
-    }
-  
-  assert( stream.take(50) contains (List(1, 2), 4.0) )
-  assert( stream.take(80) contains (List(2, 2, 1), 6.0) )
+    val streamable = listStream
+    val stream =
+      streamable match {
+        case os: IntegerWeightStreamable[_] =>
+          fine("returning ordered streamable")
+          os.getStream zip os.getValues.map(_.toFloat)
+        case _ => fail
+      }
+    
+    assert( stream.take(50) contains (List(1, 2), 4.0) )
+    assert( stream.take(80) contains (List(2, 2, 1), 6.0) )
+  }
 
 }
