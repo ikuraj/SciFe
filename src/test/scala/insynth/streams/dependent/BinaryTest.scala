@@ -3,37 +3,39 @@ package streams
 package dependent
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-import reconstruction.stream.Application
-import reconstruction.stream._
+import streams.{ light => e }
 
 import util._
 import util.format._
 import common._
 
-class BinaryTest extends FunSuite with ShouldMatchers {
+class BinaryTest extends FunSuite with Matchers {
 
   test("sorted lists") {
     
     val maxLength = 10
     
-    val intProducer = Producer(
-      { (v: Int) => Stream.from(v, -1) }
-    )
-    val listChooser = Producer(
-       { (v: Int) => Stream.from(v).map( el => List(el to maxLength: _*) ) }
-    )
-    val binaryStream = Binary(intProducer, listChooser) ( _ + 1 ) (
-      (v: Int, l: List[Int]) => v :: l
+    val intProducer = Producer.finite(
+      { (v: Int) => e.Singleton(v) }
     )
     
-    withClue (binaryStream.getStream(5).take(5).mkString(", ")) {
-      binaryStream.getStream(0) should be ( Nil )
-      binaryStream.getStream(1) should be ( Stream(List(1)) )
-      binaryStream.getStream(2).map(_.reverse) should be ( Stream(List(1, 2)) )
-      binaryStream.getStream(3).map(_.reverse) should be ( Stream(List(1, 2, 3)) )
-    }
+    var getList: Int => e.Finite[List[Int]] = null
+    
+    val listChooser: FiniteDependent[Int, List[Int]] = Producer.finite(
+       { (v: Int) =>
+   			v match {
+   			  case 0 => e.Singleton(List[Int]())
+   			  case _ => e.Binary( e.Singleton(v), getList(v - 1) )( _ :: _ )
+   			}
+       }
+    )
+    
+    getList = (v: Int) => listChooser.getStream(v)
+    
+    val enum = listChooser.getStream(5)
+    
+    enum.size should be (1)
   }
   
 }

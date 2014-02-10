@@ -4,13 +4,13 @@ version := "1.3"
 
 organization := "ch.epfl.lara"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
 
 javacOptions += "-Xlint:unchecked"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "1.9.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
 
