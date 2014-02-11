@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN">
+	<appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<File name="ProofTreeFile" fileName="logs/proofTree.log">
+			<PatternLayout
+				pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<ThresholdFilter level="debug" onMatch="DENY" onMismatch="ACCEPT"/>
+		</File>
+	</appenders>
+	<loggers>
+		<logger name="insynth.reconstruction.Streamer" level="all"
+			additivity="false">
+			<appender-ref ref="Console" />
+		</logger>
+		<logger name="insynth.Solver" level="trace" additivity="false">
+			<appender-ref ref="ProofTreeFile" />
+		</logger>
+    <logger name="insynth.streams.light" level="off" additivity="false">
+      <appender-ref ref="Console" />
+    </logger>
+    <logger name="insynth.streams.dependent" level="all" additivity="false">
+      <appender-ref ref="Console" />
+    </logger>
+		<root level="error">
+			<appender-ref ref="Console" />
+		</root>
+	</loggers>
+</configuration>

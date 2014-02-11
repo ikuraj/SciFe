@@ -2,19 +2,92 @@ package insynth.streams
 package dependent
 
 import scala.collection.mutable.{ ArrayBuffer, MutableList }
-
 import insynth.util.logging._
-
 import scala.language.postfixOps
 import scala.annotation._
+import insynth.streams.light.Finite
 
-case class Binary[I, O]
-  (s1: light.Finite[I], s2: FiniteDependent[I, O])
+// TODO refactor ME
+class BinaryFinite[I, O]
+  (s1: light.Finite[I], s2: Dependent[I, O])
   extends light.Finite[O] with HasLogger {
   
-  val rr = light.RoundRobbinFinite.fixed(
-    Array((0 to s1.size).map(ind => s2.getStream(s1(ind))): _*)
-  )
+  val rr = { 
+    val rightStreams = 
+      for (ind <- 0 until s1.size; stream = s2.getStream(s1(ind)); if stream.size > 0 )
+        yield stream
+        
+    light.RoundRobbinFinite.fixed[O](
+      Array(rightStreams: _*)
+    )
+  }
+  
+  override def size = rr.size
+  
+  override def apply(ind: Int) =
+    rr(ind)
+  
+}
+
+class BinaryFiniteChain[I, I2, O]
+  (s1: light.Finite[I], s2: Dependent[I2, O])(chain: I => I2)
+  extends light.Finite[O] with HasLogger {
+  
+  val rr = { 
+    val rightStreams = 
+      for (ind <- 0 until s1.size; stream = s2.getStream( chain(s1(ind)) ); if stream.size > 0 )
+        yield stream
+        
+    light.RoundRobbinFinite.fixed[O](
+      Array(rightStreams: _*)
+    )
+  }
+  
+  override def size = rr.size
+  
+  override def apply(ind: Int) =
+    rr(ind)
+  
+}
+
+class BinaryFiniteCombine[I, O, R]
+  (s1: light.Finite[I], s2: Dependent[I, O], combine: (I, O) => R)
+  extends light.Finite[R] with HasLogger {
+  
+  val rr = {
+    val streams = 
+      for (ind <- 0 until s1.size; leftProduced = s1(ind); rightStream = s2.getStream( leftProduced );
+        if rightStream.size > 0 ) yield {
+          light.Mapper( rightStream, { (rightProduced: O) => combine(leftProduced, rightProduced) })
+        }
+
+    light.RoundRobbinFinite.fixed[R](  
+      Array(streams: _*)
+    )
+  }
+  
+  override def size = rr.size
+  
+  override def apply(ind: Int) =
+    rr(ind)
+  
+}
+
+class BinaryFiniteChainCombine[I, I2, O, R]
+  (s1: light.Finite[I], s2: Dependent[I2, O], chain: I => I2, combine: (I, O) => R)
+  extends light.Finite[R] with HasLogger {
+  
+  val rr = {
+    val streams = 
+      for (ind <- 0 until s1.size; leftProduced = s1(ind); rightStream = s2.getStream( chain(leftProduced) );
+        if rightStream.size > 0 ) yield {
+          light.Mapper( rightStream, { (rightProduced: O) => combine(leftProduced, rightProduced) })
+        }
+
+    light.RoundRobbinFinite.fixed[R](  
+      Array(streams: _*)
+    )
+  }
   
   override def size = rr.size
   
@@ -24,15 +97,78 @@ case class Binary[I, O]
 }
 
 // NOTE this only works if all dependent streams are finite
-case class FiniteBinary[I, I1, O]
-  (s1: FiniteDependent[I, I1], s2: FiniteDependent[I1, O])
+case class Binary[I, I1, O]
+  (s1: Dependent[I, I1], s2: Dependent[I1, O])
   extends Dependent[I, O] {
   
   def getStream(parameter: I) =
-    forLeftStream(s1.getStream(parameter))
+    BinaryFinite(s1.getStream(parameter), s2)
     
-  def forLeftStream(s: light.Finite[I1]): light.Finite[O] = 
-    Binary(s, s2)
+}
+
+object BinaryFinite {
+  
+  def apply[I, O](s1: light.Enumerable[I], s2: Dependent[I, O]) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFinite(f, s2)
+      case _ => throw new RuntimeException
+    }    
+  }
+  
+  def chain[I, I2, O](s1: light.Enumerable[I], s2: Dependent[I2, O])(chain: I => I2) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFiniteChain(f, s2)(chain)
+      case _ => throw new RuntimeException
+    }    
+  }
+  
+  def chainCombined[I, I2, O, R](s1: light.Enumerable[I], s2: Dependent[I2, O],
+    chain: I => I2, combine: (I, O) => R) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFiniteChainCombine(f, s2, chain, combine)
+      case _ => throw new RuntimeException
+    }    
+  }
+  
+}
+
+object BinaryFiniteMemoized {
+  
+  def apply[I, O](s1: light.Enumerable[I], s2: Dependent[I, O]) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFinite(f, s2) with light.Memoized[O]
+      case _ => throw new RuntimeException
+    }    
+  }
+  
+  def chain[I, I2, O](s1: light.Enumerable[I], s2: Dependent[I2, O])(chain: I => I2) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFiniteChain(f, s2)(chain) with light.Memoized[O]
+      case _ => throw new RuntimeException
+    }    
+  }
+  
+  def combine[I, O, R](s1: light.Enumerable[I], s2: Dependent[I, O], combine: (I, O) => R) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFiniteCombine(f, s2, combine) with light.Memoized[R]
+      case _ => throw new RuntimeException
+    }    
+  }
+  
+  def chainCombined[I, I2, O, R](s1: light.Enumerable[I], s2: Dependent[I2, O],
+    chain: I => I2, combine: (I, O) => R) = {
+    s1 match {
+      case f: light.Finite[I] =>
+        new BinaryFiniteChainCombine(f, s2, chain, combine) with light.Memoized[R]
+      case _ => throw new RuntimeException
+    }    
+  }
   
 }
 

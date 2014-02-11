@@ -1,11 +1,17 @@
 package insynth.streams
 package dependent
 
+import scala.collection.mutable
+
 import light._
 
-trait Dependent[I, +O] {
+trait Memoized[I, O] extends Dependent[I, O] {
 
-  def getStream(parameter: I): Enumerable[O]
+  val memoizedMap = mutable.Map[I, Enumerable[O]]()
+  
+  override abstract def getStream(parameter: I) = {
+    memoizedMap.getOrElseUpdate(parameter, super.getStream(parameter))
+  }
   
 }
 

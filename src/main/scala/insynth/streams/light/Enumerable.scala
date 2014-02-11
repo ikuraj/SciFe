@@ -10,7 +10,7 @@ trait Enumerable[+A] {
 
 trait Finite[+A] extends Enumerable[A] {
   
-  self: Enumerable[A] =>
+//  self: Enumerable[A] =>
   
 //  lazy val memoizedSize: Int = self.size
 //  

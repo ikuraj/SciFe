@@ -4,7 +4,6 @@ import insynth.attrgrammar._
 import insynth.reconstruction.stream._
 
 import org.scalatest._
-import org.scalatest.matchers._
 import org.scalatest.prop.Checkers
 
 import org.scalacheck._
@@ -96,7 +95,38 @@ object Structures {
     }
   }
 
-  object RedBlackTrees {    
+  object BSTrees {    
+    trait Tree
+    case object Leaf extends Tree
+    // if c == true then the node is black
+    case class Node(l: Tree, v: Int, r: Tree) extends Tree
+    
+    def invariant(tree: Tree) =
+      valueOrdering(tree)
+        
+		// for every node n, all the nodes in the left (respectively, right) subtree of
+		// n, if any, have keys which are smaller (respectively, bigger) than the key
+  	// labeling n.
+    def valueOrdering(t: Tree) : Boolean = {
+      def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
+        case Leaf => true
+        case Node(l, v, r) => min <= v && max > v &&
+        	valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
+      }
+      
+      valuesInRange(t, Int.MinValue, Int.MaxValue)
+    }
+    
+    def size(t: Tree): Int = t match {
+      case Leaf => 0
+      case Node(l, v, r) => 1 + size(l) + size(r)
+    }
+
+    def numberOfTress(n: Int) = Catalan.catalan(n)
+  
+  }
+
+  object RedBlackTrees {
     trait Tree
     case object Leaf extends Tree
     // if c == true then the node is black
@@ -192,9 +222,15 @@ object Structures {
       (BigInt(1) to k).product).intValue
   }
   
+  object Catalan {
+	  def factorial(n: BigInt) = BigInt(1).to(n).foldLeft(BigInt(1))(_ * _)
+
+	  def catalan(n: BigInt) = factorial(2 * n) / (factorial(n + 1) * factorial(n))
+	}
+  
 }
 
-class StructuresTest extends FunSuite with ShouldMatchers {
+class StructuresTest extends FunSuite with Matchers {
   
   import Structures._
   
@@ -255,5 +291,29 @@ class StructuresTest extends FunSuite with ShouldMatchers {
       }
       
     Prop.forAll(rbTreeGen)(invariant) check
+  }
+  
+  test("catalan numbers") {
+    import Catalan._
+    
+    val resultList = List(
+	    1,
+	    1,
+	    2,
+	    5,
+	    14,
+	    42,
+	    132,
+	    429,
+	    1430,
+	    4862,
+	    16796,
+	    58786,
+	    208012,
+	    742900,
+	    2674440)
+	    
+    for(ind <- 0 until resultList.size)
+      catalan(ind) should be ( resultList(ind) )
   }
 }

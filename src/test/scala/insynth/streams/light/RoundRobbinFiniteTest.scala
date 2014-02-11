@@ -3,6 +3,7 @@ package light
 
 import org.scalatest._
 
+@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class RoundRobbinTest extends FunSuite {
   
   import Utils._
@@ -39,6 +40,27 @@ class RoundRobbinTest extends FunSuite {
     ) should be ( 1 to 9 )
     
   }
+
+  test("Simple accesses, fixed, one-element enumerables") {
+    val arrays: Array[Enumerable[Int]] = Array(
+      WrapperArray(1),
+      WrapperArray(4),
+      WrapperArray(7)
+    )
+    arrays.size should be (3)
+    
+    val rr = RoundRobbinFinite.fixed[Int](arrays)
+
+    rr.size should be (3)
+    for (target <- 0 until 3) {
+      rr.binarySearch(target) should be (target)
+    }
+    
+//    (0 until 3).map(
+//      rr.apply(_)
+//    ) should be ( List(1, 4, 7) )
+    
+  }
   
   test("Simple accesses and appending, buffer") {
     val rr = RoundRobbinFinite.buffer(Array(
@@ -59,6 +81,13 @@ class RoundRobbinTest extends FunSuite {
       rr(target) should be (target + 1)
     }
     
+  }
+  
+  test("RoundRobbin with empty array") {
+    val rr = RoundRobbinFinite.fixed[Int](Array(
+    ))
+    
+    rr.size should be (0)
   }
   
 }

@@ -12,7 +12,14 @@ trait ProfileLogger extends HasLogger {
   var countMap: mutable.Map[(Int, String), (Long, Int)] =
     mutable.Map[(Int, String), (Long, Int)]().withDefaultValue((0l, 0))
 
-  def profile[R](code: => R, name: => String = "Profiling") = {
+  def profile[R](code: => R) = {
+    val startTime = _time
+    val res = code
+    info( "Profiling took " + (_time - startTime) + "ms")
+    res
+  }
+
+  def profile[R](name: String)(code: => R) = {
     val startTime = _time
     val res = code
     info( name + " took " + (_time - startTime) + "ms")
