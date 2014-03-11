@@ -10,7 +10,7 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
 javacOptions += "-Xlint:unchecked"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.0.1-SNAP" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
 
@@ -37,5 +37,5 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalacheck" %% "scalacheck" % "1.11.1" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
 )

@@ -193,7 +193,7 @@ object Structures {
         Node(rbMap2rbTree(l), k, rbMap2rbTree(r), color)
     }
     
-    def numberOfTress =
+    def numberOfTrees =
       Stream.from(0) zip List(
         1, 2, 2, 3, 8, 14, 20, 35, 64, 122, 260, 586, 1296, 2708, 5400,
         10468, 19888, 37580, 71960, 140612, 279264, 560544, 1133760, 2310316,

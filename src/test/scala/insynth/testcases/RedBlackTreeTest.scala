@@ -199,8 +199,8 @@ class RedBlackTreeTest extends FunSuite with ShouldMatchers with HasLogger {
     implicit def anyToRBTree(a: Any) = a.asInstanceOf[Tree]
     
     // NOTE making this 1 to 5 throws StackOverflowError
-    for(currentSize <- 7 to 7) {
-      val (treeSize, correctNumber) = (currentSize, numberOfTress(currentSize))
+    for(currentSize <- 4 to 4) {
+      val (treeSize, correctNumber) = (currentSize, numberOfTrees(currentSize))
       info("For currentSize %d, number of trees should be %d".format(treeSize, correctNumber))
   
       val nilStream = Stream( (Leaf, 1) )

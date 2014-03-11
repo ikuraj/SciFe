@@ -6,6 +6,8 @@ trait Enumerable[+A] {
   
   def apply(ind: Int): A
   
+  def toList = ( for (i <- 0 until size) yield this(i) ).toList
+  
 }
 
 trait Finite[+A] extends Enumerable[A] {

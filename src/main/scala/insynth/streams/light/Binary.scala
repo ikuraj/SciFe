@@ -55,6 +55,8 @@ object Binary{
 	  	case (s1: Finite[T], s2: Finite[V]) => new BinaryFinite(s1, s2)( (_, _) )
 	  	case (s1: Infinite[T], s2: Infinite[V]) => new BinaryInfinite(s1, s2)( (_, _) )
 	  	case (s1: Finite[T], s2: Infinite[V]) => new BinaryOneFinite(s1, s2)( (_, _) )
+      case (Empty, _) => Empty
+      case (_, Empty) => Empty
 	  	case _ => throw new RuntimeException
 		}
   
