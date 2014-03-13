@@ -137,12 +137,17 @@ object BinaryFinite {
 
 object BinaryFiniteMemoized {
   
-  def apply[I, O](s1: light.Enumerable[I], s2: Dependent[I, O]) = {
-    s1 match {
-      case f: light.Finite[I] =>
-        new BinaryFinite(f, s2) with light.Memoized[O]
-      case _ => throw new RuntimeException
-    }    
+  def apply[I, O](s1: light.Enumerable[I], s2: Dependent[I, O])
+  	(implicit ms: MemoizationScope = null) = {
+    val enum =
+	    s1 match {
+	      case f: light.Finite[I] =>
+	        new BinaryFinite(f, s2) with light.Memoized[O]
+	      case _ => throw new RuntimeException
+	    }
+    
+    if (ms != null) ms add enum
+    enum
   }
   
   def chain[I, I2, O](s1: light.Enumerable[I], s2: Dependent[I2, O])(chain: I => I2) = {
@@ -153,12 +158,17 @@ object BinaryFiniteMemoized {
     }    
   }
   
-  def combine[I, O, R](s1: light.Enumerable[I], s2: Dependent[I, O], combine: (I, O) => R) = {
-    s1 match {
-      case f: light.Finite[I] =>
-        new BinaryFiniteCombine(f, s2, combine) with light.Memoized[R]
-      case _ => throw new RuntimeException
-    }    
+  def combine[I, O, R](s1: light.Enumerable[I], s2: Dependent[I, O], combine: (I, O) => R)
+  	(implicit ms: MemoizationScope = null) = {
+    val enum =
+	    s1 match {
+	      case f: light.Finite[I] =>
+	        new BinaryFiniteCombine(f, s2, combine) with light.Memoized[R]
+	      case _ => throw new RuntimeException
+	    }
+    
+    if (ms != null) ms add enum
+    enum
   }
   
   def chainCombined[I, I2, O, R](s1: light.Enumerable[I], s2: Dependent[I2, O],

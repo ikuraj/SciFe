@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# rough
+
+#export PATH=$PATH:$JAVA_HOME/bin
+base=`dirname $0`
+#export ALLOCATION_JAR=$base/lib/allocation.jar
+exec java -cp $base/lib/caliper-@VERSION@.jar:$CLASSPATH com.google.caliper.Runner $*

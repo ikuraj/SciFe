@@ -14,7 +14,7 @@ import util.format._
 import util.logging._
 import common._
 
-class SortedListTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with Inspectors with
+class SortedListEqualTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with Inspectors with
 	HasLogger with ProfileLogger {  
   import Checks._
   import Structures._
@@ -25,29 +25,29 @@ class SortedListTest extends FunSuite with Matchers with GeneratorDrivenProperty
     
     withLazyClue("Elements are: " + clue) {
     
-	    {
-	      val en = lists.getStream(1, 2)
-	      elements = for (ind <- 0 until en.size) yield en(ind)
-	      en.size should be (2)
-	    }
-    
-	    {
-	      val en = lists.getStream(2, 3)
-	      elements = for (ind <- 0 until en.size) yield en(ind)
-	      en.size should be (3)
-	    }
-    
-	    for (size <- 1 to 10) {
-	      val en = lists.getStream(size, size + 1)
-	      elements = for (ind <- 0 until en.size) yield en(ind)
-	      elements.size should be ( Binomial.binomialCoefficient(size + 1, size) )
-	    }
-    
 //	    {
-//	      val en = lists.getStream(11, 12)
+//	      val en = lists.getStream(1, 2)
 //	      elements = for (ind <- 0 until en.size) yield en(ind)
-//	      en.size should be (352716)
+//	      en.size should be (2)
 //	    }
+//    
+//	    {
+//	      val en = lists.getStream(2, 3)
+//	      elements = for (ind <- 0 until en.size) yield en(ind)
+//	      en.size should be (3)
+//	    }
+//    
+//	    for (size <- 1 to 10) {
+//	      val en = lists.getStream(size, size + 1)
+//	      elements = for (ind <- 0 until en.size) yield en(ind)
+//	      elements.size should be ( Binomial.binomialCoefficient(size + 1, size) )
+//	    }
+    
+	    {
+	      val en = lists.getStream(11, 11)
+	      elements = for (ind <- 0 until en.size) yield en(ind)
+	      en.size should be (352716)
+	    }
 
 //      for (size <- 11 to 10) {        
 //        elements = lists.getStream((size, size)).toList
@@ -61,14 +61,14 @@ class SortedListTest extends FunSuite with Matchers with GeneratorDrivenProperty
 //        elements.size should be ( Binomial.binomialCoefficient(size, size + 1) )
 //      }
       
-      forAll( Gen.choose(1, 20), Gen.choose(1, 20), maxSize(50) ) { (size: Int, m: Int) =>
+      forAll( Gen.choose(1, 10), Gen.choose(1, 10), maxSize(50) ) { (size: Int, m: Int) =>
         whenever(true) {        
           elements = lists.getStream((size, m)).toList
           
           forAll (elements) { lst =>
             forAll(lst.zip(lst.tail)) {
               case ((i, j)) => 
-                assert( i > j )
+                assert( i >= j )
             }
           }
         }
@@ -95,11 +95,11 @@ class SortedListTest extends FunSuite with Matchers with GeneratorDrivenProperty
         assert(size >= 0, "size=%d, max=%d" format (size, max))
 
         if (size == 0) e.Singleton( Nil )
-        else if (size > 0 && max >= size) {
+        else if (size > 0) {
           val roots = naturals.getStream(max)
           
           val innerLists: Dependent[Int, List[Int]] = new InMapper(getListOfSize, { (par: Int) =>
-            (size - 1, par - 1)
+            (size - 1, par)
           })
           
           import BinaryFiniteMemoized._

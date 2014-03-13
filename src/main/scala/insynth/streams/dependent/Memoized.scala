@@ -5,13 +5,15 @@ import scala.collection.mutable
 
 import light._
 
-trait Memoized[I, O] extends Dependent[I, O] {
+trait Memoized[I, O] extends Dependent[I, O] with Memoizable {
 
   val memoizedMap = mutable.Map[I, Enumerable[O]]()
   
   override abstract def getStream(parameter: I) = {
     memoizedMap.getOrElseUpdate(parameter, super.getStream(parameter))
   }
+  
+  override def clearMemoization = memoizedMap.clear
   
 }
 

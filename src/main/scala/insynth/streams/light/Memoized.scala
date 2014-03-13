@@ -6,7 +6,7 @@ import scala.collection.mutable._
 
 import insynth.util.logging.HasLogger
 
-trait Memoized[T] extends Enumerable[T] with HasLogger {
+trait Memoized[T] extends Enumerable[T] with Memoizable with HasLogger {
   
   val memoizedFlags = new BitSet()
   val memoizedValues = new ArrayBuffer[T]()
@@ -23,12 +23,9 @@ trait Memoized[T] extends Enumerable[T] with HasLogger {
       nextValue
     }
       
-//    if (ind < memoizedValues.size)
-//      memoizedValues(ind)
-//    else {
-//      val nextValue = super.apply(ind)
-//      memoizedValues += nextValue
-//      nextValue
-//    }      
+  override def clearMemoization {
+    memoizedFlags.clear
+    memoizedValues.clear
+  }
   
 }

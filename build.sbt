@@ -6,6 +6,8 @@ organization := "ch.epfl.lara"
 
 scalaVersion := "2.10.3"
 
+scalaBinaryVersion := "2.10"
+
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
 
 javacOptions += "-Xlint:unchecked"
@@ -39,3 +41,12 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
 )
+
+// micro-benchmarks
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+libraryDependencies += "com.github.axel22" %% "scalameter" % "0.5-SNAPSHOT" % "test"
+
+testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework")
+
+parallelExecution in Test := false
