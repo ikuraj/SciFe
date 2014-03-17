@@ -11,7 +11,7 @@ abstract class RoundRobbinFinite[T] protected[streams] ()
 
   def length: Int
   
-  def enum(ind: Int): Enumerable[T]
+  def enum(ind: Int): Enum[T]
   
   def limit(ind: Int): Int
   
@@ -46,7 +46,7 @@ abstract class RoundRobbinFinite[T] protected[streams] ()
 }
 
 // Union of finite enumerators
-class RoundRobbinFiniteFixed[@specialized T] protected[streams] (val streams: Array[Enumerable[T]])
+class RoundRobbinFiniteFixed[@specialized T] protected[streams] (val streams: Array[Enum[T]])
   extends RoundRobbinFinite[T] with HasLogger {
 
   override def length = streams.length
@@ -74,7 +74,7 @@ class RoundRobbinFiniteFixed[@specialized T] protected[streams] (val streams: Ar
 }
 
 // Union of finite enumerators, new enumerators can be added dynamically
-class RoundRobbinFiniteBuffer[T] protected[streams] (streams: Seq[Enumerable[T]])
+class RoundRobbinFiniteBuffer[T] protected[streams] (streams: Seq[Enum[T]])
   extends RoundRobbinFinite[T] with HasLogger {
 
   private var streamsArray = mutable.ArrayBuffer(streams: _*)
@@ -90,7 +90,7 @@ class RoundRobbinFiniteBuffer[T] protected[streams] (streams: Seq[Enumerable[T]]
       }
     }
 
-  def append(en: Enumerable[T]) {
+  def append(en: Enum[T]) {
     streamsArray += en
     _size += en.size
     limits += _size
@@ -105,7 +105,7 @@ class RoundRobbinFiniteBuffer[T] protected[streams] (streams: Seq[Enumerable[T]]
 }
 
 // Union of finite enumerators of equal length
-class RoundRobbinFiniteEqual[T] protected[streams] (streams: Seq[Enumerable[T]])
+class RoundRobbinFiniteEqual[T] protected[streams] (streams: Seq[Enum[T]])
   extends Finite[T] with HasLogger {
   assert(streams.map(_.size).distinct.size == 1, "RoundRobbinFiniteEqual should be constructed with streams of equal sizes." +
     "(sizes are %s)".format(streams.map(_.size).distinct))
@@ -126,13 +126,13 @@ class RoundRobbinFiniteEqual[T] protected[streams] (streams: Seq[Enumerable[T]])
 
 object RoundRobbinFinite {
 
-  def fixed[T](streams: Array[Enumerable[T]]) =
+  def fixed[T](streams: Array[Enum[T]]) =
     new RoundRobbinFiniteFixed(streams)
 
-  def buffer[T](streams: Seq[Enumerable[T]]) =
+  def buffer[T](streams: Seq[Enum[T]]) =
     new RoundRobbinFiniteBuffer(streams)
 
-  def equal[T](streams: Seq[Enumerable[T]]) =
+  def equal[T](streams: Seq[Enum[T]]) =
     new RoundRobbinFiniteEqual(streams)
 
 }

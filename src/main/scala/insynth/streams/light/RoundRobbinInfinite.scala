@@ -5,7 +5,7 @@ import scala.collection.mutable
 
 import insynth.util.logging._
 
-class RoundRobbinInfinite[T] (streams: Seq[Enumerable[T]])
+class RoundRobbinInfinite[T] (streams: Seq[Enum[T]])
   extends Infinite[T] with HasLogger {
   assert(streams.forall(_.size == -1), "RoundRobbinInfinite should be constructed " +
 		"with infinite streams. " +
@@ -23,7 +23,7 @@ class RoundRobbinInfinite[T] (streams: Seq[Enumerable[T]])
 
 object RoundRobbinInfinite {
 
-  def apply[T](streams: Seq[Enumerable[T]]) =
+  def apply[T](streams: Seq[Enum[T]]) =
     new RoundRobbinInfinite(streams)
 
 }

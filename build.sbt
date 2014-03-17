@@ -12,7 +12,7 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
 javacOptions += "-Xlint:unchecked"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.0.1-SNAP" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
 

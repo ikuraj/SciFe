@@ -21,10 +21,10 @@ class BSTWithCombinatorsTest extends FunSuite with Matchers with GeneratorDriven
   
   def bstTests(trees: Dependent[(Int, Range), Tree]) {
     object OMG {
-      var _res: light.Enumerable[Tree] = null
+      var _res: light.Enum[Tree] = null
       var elements: Seq[Tree] = null
       def res = _res
-      def res_=(n: light.Enumerable[Tree]) = {
+      def res_=(n: light.Enum[Tree]) = {
         _res = n
         elements = (0 until res.size) map { res(_) }
       }

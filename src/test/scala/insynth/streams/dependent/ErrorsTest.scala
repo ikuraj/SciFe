@@ -9,15 +9,15 @@
 //
 //class ErrorsTest extends FunSuite with ShouldMatchers {
 //
-//  trait Enumerable[+A] {
+//  trait Enum[+A] {
 //    
 //    def size: Int
 //    
 //  }
 //  
-//  trait Finite[+A] extends Enumerable[A] {
+//  trait Finite[+A] extends Enum[A] {
 //    
-//    self: Enumerable[A] =>
+//    self: Enum[A] =>
 //    
 //    val memoizedSize: Int = self.size
 //    
@@ -39,7 +39,7 @@
 //  
 //  }
 //  
-//  class RoundRobbinFiniteFixed[/*@specialized */T] protected[streams] (val streams: IndexedSeq[Enumerable[T]])
+//  class RoundRobbinFiniteFixed[/*@specialized */T] protected[streams] (val streams: IndexedSeq[Enum[T]])
 //    extends RoundRobbinFinite[T] {
 //  
 //    val limits =
@@ -54,7 +54,7 @@
 //  }
 //  
 //  test("Simple accesses, fixed") {
-//    val arrays: Array[Enumerable[Int]] = Array(
+//    val arrays: Array[Enum[Int]] = Array(
 //      WrapperArray(Array(1, 2, 3)),
 //      WrapperArray(Array(4, 5, 6)),
 //      WrapperArray(Array(7, 8, 9))

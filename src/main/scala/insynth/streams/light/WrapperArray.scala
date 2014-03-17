@@ -2,10 +2,12 @@ package insynth
 package streams
 package light
 
+import scala.reflect._
+
 import unordered.{ SingleStream => UnSingleStream }
 import util.logging._
 
-class WrapperArray[T](coll: IndexedSeq[T])
+class WrapperArray[@specialized T](coll: Array[T])
 	extends Finite[T] with HasLogger {
   require(coll.hasDefiniteSize)
   
@@ -17,10 +19,10 @@ class WrapperArray[T](coll: IndexedSeq[T])
 
 object WrapperArray{
 
-  def apply[T](stream: IndexedSeq[T]) =
-  	new WrapperArray(stream)
+  def apply[@specialized T](stream: IndexedSeq[T])(implicit ct: ClassTag[T]) =
+  	new WrapperArray(stream.toArray)
 
-  def apply[T](args: T*) =
-  	new WrapperArray(IndexedSeq(args: _*))
+  def apply[@specialized T](args: T*)(implicit ct: ClassTag[T]) =
+  	new WrapperArray(Array(args: _*))
 
 }

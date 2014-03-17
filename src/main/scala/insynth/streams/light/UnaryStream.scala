@@ -1,12 +1,12 @@
 package insynth.streams.light
 
 /**
- * A Enumerable that maps values of a given Enumerable with the given function 
+ * A Enum that maps values of a given Enum with the given function 
  * NOTE: modifyVal should be a monotonic function, otherwise your computer will blow up!
- * @param <T> @see Enumerable
+ * @param <T> @see Enum
  */
-class Mapper[T, U](val streamable: Enumerable[T], modify: T=>U)
-	extends Enumerable[U] {
+class Mapper[T, U](val streamable: Enum[T], modify: T=>U)
+	extends Enum[U] {
   
   override def size = streamable.size
   
@@ -17,7 +17,7 @@ class Mapper[T, U](val streamable: Enumerable[T], modify: T=>U)
 
 object Mapper {
   
-  def apply[T, U](streamable: Enumerable[T], modify: T=>U) =
+  def apply[T, U](streamable: Enum[T], modify: T=>U) =
     new Mapper(streamable, modify)
   
 }

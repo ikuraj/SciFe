@@ -1,24 +1,11 @@
-package insynth.streams.light
-
-//class FilterStream[T](val streamable: IntegerWeightStreamable[T], val filterFun: T => Boolean)
-//	extends IntegerWeightStreamable[T] with Filterable[T] {
-//  
-//  override def getValuedStream = //streamable.getValuedStream filter { p => filterFun(p._1) }
-//  {
-//    def loop(it: Iterator[IntegerWeightPair[T]]): Stream[IntegerWeightPair[T]] = {
-//      while (it.hasNext) {
-//        val el = it.next
-//        if (filterFun(el._1)) return el #:: loop(it)
-//      }
-//      Stream.empty
-//    }
+//package insynth.streams.light
 //
-//    loop(streamable.getValuedStream.iterator)
-//  }
+//class Filter[T](val enum: Enum[T], val filterFun: T => Boolean)
+//	extends Enum[T] {
 //  
-////  lazy val st = streamable.getValuedStream filter { p => filterFun(p._1) }
-////  
-////  override def getValuedStream = st
+//  def size: Int
+//  
+//  def apply(ind: Int): A
 //  
 //  override def size = -1
 //  

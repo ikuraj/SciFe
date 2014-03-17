@@ -5,7 +5,7 @@ import light._
 
 trait Dependent[I, +O] {
 
-  def getStream(parameter: I): Enumerable[O]
+  def getStream(parameter: I): Enum[O]
   
 }
 

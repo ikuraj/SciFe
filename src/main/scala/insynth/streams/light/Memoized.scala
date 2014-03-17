@@ -6,7 +6,7 @@ import scala.collection.mutable._
 
 import insynth.util.logging.HasLogger
 
-trait Memoized[T] extends Enumerable[T] with Memoizable with HasLogger {
+trait Memoized[T] extends Enum[T] with Memoizable with HasLogger {
   
   val memoizedFlags = new BitSet()
   val memoizedValues = new ArrayBuffer[T]()

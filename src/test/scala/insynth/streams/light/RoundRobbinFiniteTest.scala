@@ -22,7 +22,7 @@ class RoundRobbinTest extends FunSuite {
   }
 
   test("Simple accesses, fixed") {
-    val arrays: Array[Enumerable[Int]] = Array(
+    val arrays: Array[Enum[Int]] = Array(
       WrapperArray(1, 2, 3),
       WrapperArray(4, 5, 6),
       WrapperArray(7, 8, 9)
@@ -41,8 +41,8 @@ class RoundRobbinTest extends FunSuite {
     
   }
 
-  test("Simple accesses, fixed, one-element enumerables") {
-    val arrays: Array[Enumerable[Int]] = Array(
+  test("Simple accesses, fixed, one-element Enums") {
+    val arrays: Array[Enum[Int]] = Array(
       WrapperArray(1),
       WrapperArray(4),
       WrapperArray(7)

@@ -15,6 +15,12 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends
   import util.Structures._
 
   val benchmarkMainName = "SciFe_Dependent_Enumerators"
+    
+  val JVMParameters =
+    // important outputs
+    "-XX:+PrintCompilation, -verbose:gc" +
+    // compilation
+    "-Xbatch, --XX:CICompilerCount=1"
   
   def fixture: Unit = fixture()
   

@@ -55,7 +55,7 @@ class StreamCombinationTest extends FunSuite with Matchers with
 //      }
 //    )
 //
-//    var getList: ( (Int, Range) ) => e.Enumerable[List[Int]] = null
+//    var getList: ( (Int, Range) ) => e.Enum[List[Int]] = null
 //    
 //    val listDep: Dependent[ (Int, Range), List[Int] ] = Producer(
 //      ( pair: (Int, Range) ) => {
@@ -71,7 +71,7 @@ class StreamCombinationTest extends FunSuite with Matchers with
 //    
 //    getList = (v: (Int, Range)) => listDep.getStream(v)
 //    
-//    var res: light.Enumerable[List[Int]] = null
+//    var res: light.Enum[List[Int]] = null
 //    def clue = (0 until res.size).map(res(_)).mkString(",") 
 //    
 //    withLazyClue("Elements are: " + clue) {
@@ -186,10 +186,10 @@ class StreamCombinationTest extends FunSuite with Matchers with
 //    val trees = treesOfSize
 //    
 //    object OMG {
-//	    var _res: light.Enumerable[Tree] = null
+//	    var _res: light.Enum[Tree] = null
 //	    var elements: Seq[Tree] = null
 //	    def res = _res
-//	    def res_=(n: light.Enumerable[Tree]) = {
+//	    def res_=(n: light.Enum[Tree]) = {
 //	      _res = n
 //	  		elements = (0 until res.size) map { res(_) }
 //	    }
@@ -331,10 +331,10 @@ class StreamCombinationTest extends FunSuite with Matchers with
     val trees = treesOfSize
     
     object OMG {
-	    var _res: light.Enumerable[Tree] = null
+	    var _res: light.Enum[Tree] = null
 	    var elements: Seq[Tree] = null
 	    def res = _res
-	    def res_=(n: light.Enumerable[Tree]) = {
+	    def res_=(n: light.Enum[Tree]) = {
 	      _res = n
 	  		elements = (0 until res.size) map { res(_) }
 	    }

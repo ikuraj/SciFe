@@ -1,6 +1,6 @@
 package insynth.streams.light
 
-object Empty extends Enumerable[Nothing] {
+object Empty extends Enum[Nothing] {
     
   override def size = 0
 

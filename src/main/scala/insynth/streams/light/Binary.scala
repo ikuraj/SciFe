@@ -50,7 +50,7 @@ protected[streams] class BinaryFinite[T, V, U](val s1: Finite[T], val s2: Finite
 
 object Binary{
   
-	def apply[T, V, U](s1: Enumerable[T], s2: Enumerable[V]) =
+	def apply[T, V, U](s1: Enum[T], s2: Enum[V]) =
 	  (s1, s2) match {
 	  	case (s1: Finite[T], s2: Finite[V]) => new BinaryFinite(s1, s2)( (_, _) )
 	  	case (s1: Infinite[T], s2: Infinite[V]) => new BinaryInfinite(s1, s2)( (_, _) )
@@ -60,7 +60,7 @@ object Binary{
 	  	case _ => throw new RuntimeException
 		}
   
-	def apply[T, V, U](s1: Enumerable[T], s2: Enumerable[V], combine: (T, V) => U) =
+	def apply[T, V, U](s1: Enum[T], s2: Enum[V], combine: (T, V) => U) =
 	  (s1, s2) match {
 	  	case (s1: Finite[T], s2: Finite[V]) => new BinaryFinite(s1, s2)(combine)
 	  	case (s1: Infinite[T], s2: Infinite[V]) => new BinaryInfinite(s1, s2)(combine)

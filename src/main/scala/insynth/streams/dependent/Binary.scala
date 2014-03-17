@@ -108,7 +108,7 @@ case class Binary[I, I1, O]
 
 object BinaryFinite {
   
-  def apply[I, O](s1: light.Enumerable[I], s2: Dependent[I, O]) = {
+  def apply[I, O](s1: light.Enum[I], s2: Dependent[I, O]) = {
     s1 match {
       case f: light.Finite[I] =>
         new BinaryFinite(f, s2)
@@ -116,7 +116,7 @@ object BinaryFinite {
     }    
   }
   
-  def chain[I, I2, O](s1: light.Enumerable[I], s2: Dependent[I2, O])(chain: I => I2) = {
+  def chain[I, I2, O](s1: light.Enum[I], s2: Dependent[I2, O])(chain: I => I2) = {
     s1 match {
       case f: light.Finite[I] =>
         new BinaryFiniteChain(f, s2)(chain)
@@ -124,7 +124,7 @@ object BinaryFinite {
     }    
   }
   
-  def chainCombined[I, I2, O, R](s1: light.Enumerable[I], s2: Dependent[I2, O],
+  def chainCombined[I, I2, O, R](s1: light.Enum[I], s2: Dependent[I2, O],
     chain: I => I2, combine: (I, O) => R) = {
     s1 match {
       case f: light.Finite[I] =>
@@ -137,7 +137,7 @@ object BinaryFinite {
 
 object BinaryFiniteMemoized {
   
-  def apply[I, O](s1: light.Enumerable[I], s2: Dependent[I, O])
+  def apply[I, O](s1: light.Enum[I], s2: Dependent[I, O])
   	(implicit ms: MemoizationScope = null) = {
     val enum =
 	    s1 match {
@@ -150,7 +150,7 @@ object BinaryFiniteMemoized {
     enum
   }
   
-  def chain[I, I2, O](s1: light.Enumerable[I], s2: Dependent[I2, O])(chain: I => I2) = {
+  def chain[I, I2, O](s1: light.Enum[I], s2: Dependent[I2, O])(chain: I => I2) = {
     s1 match {
       case f: light.Finite[I] =>
         new BinaryFiniteChain(f, s2)(chain) with light.Memoized[O]
@@ -158,7 +158,7 @@ object BinaryFiniteMemoized {
     }    
   }
   
-  def combine[I, O, R](s1: light.Enumerable[I], s2: Dependent[I, O], combine: (I, O) => R)
+  def combine[I, O, R](s1: light.Enum[I], s2: Dependent[I, O], combine: (I, O) => R)
   	(implicit ms: MemoizationScope = null) = {
     val enum =
 	    s1 match {
@@ -171,7 +171,7 @@ object BinaryFiniteMemoized {
     enum
   }
   
-  def chainCombined[I, I2, O, R](s1: light.Enumerable[I], s2: Dependent[I2, O],
+  def chainCombined[I, I2, O, R](s1: light.Enum[I], s2: Dependent[I2, O],
     chain: I => I2, combine: (I, O) => R) = {
     s1 match {
       case f: light.Finite[I] =>
