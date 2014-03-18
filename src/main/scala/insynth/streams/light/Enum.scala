@@ -13,12 +13,17 @@ object Enum {
 
   implicit def streamToEnum[T](col: Stream[T])(implicit ct: ClassTag[T]): Enum[T] =
     apply(col)
+    
+  implicit def enumToCollection[T](e: Enum[T]): Seq[T] =
+    if (e.hasDefiniteSize)
+      e.toList
+    else EnumStream(e)
 
   def apply[T](col: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
     col match {
+      case (stream: Stream[T]) if !stream.hasDefiniteSize => new WrapperStream(stream)
     	case _ if col.size == 0 => Empty
     	case _ if col.size == 1 => Singleton(col.head)
-    	case (stream: Stream[T]) if stream.hasDefiniteSize => new WrapperStream(stream)
     	case _ => WrapperArray(col.toIndexedSeq)
 	  }
 
@@ -46,6 +51,8 @@ trait Enum[+A] {
   
   def size: Int
   
+  def hasDefiniteSize: Boolean
+  
   def apply(ind: Int): A
   
   def toList = ( for (i <- 0 until size) yield this(i) ).toList
@@ -69,7 +76,7 @@ trait Enum[+A] {
   def ↑[B](modifyFun: A => B) = map(modifyFun)
 
 //  def filter[B](e: Enum[B]) =
-//    (this, e)
+//    FilterStream(this, e)
 //    
 //  def **[B](e: Enum[B]) = product(e)
 //  def ⊘[B](e: Enum[B]) = product(e)
@@ -77,6 +84,8 @@ trait Enum[+A] {
 }
 
 trait Finite[+A] extends Enum[A] {
+  
+  def hasDefiniteSize = true
   
 //  self: Enum[A] =>
   
@@ -88,16 +97,8 @@ trait Finite[+A] extends Enum[A] {
 
 trait Infinite[+A] extends Enum[A] {
   
+  def hasDefiniteSize = false
+  
   override def size = -1
   
 }
-
-///** Same as Scala stream but strictly single-threaded, thus without synchronization */
-//class Cons[+A](hd: A, tl: => Enum[A]) extends Enum[A] {
-//
-//  override def isEmpty = false
-//  override def head = hd
-//  override def tail: Enum[A] = tl
-//  
-//}
-//

@@ -7,6 +7,8 @@ package insynth.streams.light
  */
 class Mapper[T, U](val streamable: Enum[T], modify: T=>U)
 	extends Enum[U] {
+
+  override def hasDefiniteSize = streamable.hasDefiniteSize
   
   override def size = streamable.size
   
