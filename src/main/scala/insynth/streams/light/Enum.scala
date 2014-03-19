@@ -19,7 +19,7 @@ object Enum {
       e.toList
     else EnumStream(e)
 
-  def apply[T](col: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
+  def apply[T](col: Traversable[T])(implicit ct: ClassTag[T]): Enum[T] =
     col match {
       case (stream: Stream[T]) if !stream.hasDefiniteSize => new WrapperStream(stream)
     	case _ if col.size == 0 => Empty

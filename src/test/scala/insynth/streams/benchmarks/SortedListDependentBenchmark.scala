@@ -15,14 +15,14 @@ import util.Structures.RedBlackTrees._
 class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Dependent[(Int, Int), List[Int]]]
   with java.io.Serializable with HasLogger {
 
-  val maxSize = 2
+  val maxSize = 15
 
   fixtureRun("strictly", constructEnumerator = constructEnumeratorStrict)
   fixtureRun("equal", constructEnumerator = constructEnumerator)
 
   type EnumType = Dependent[(Int, Int), List[Int]]
 
-  override val name = "Sorted List"
+  override def name = "SortedList"
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>

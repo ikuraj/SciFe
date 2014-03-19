@@ -24,7 +24,10 @@
     <logger name="insynth.streams.dependent" level="info" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.testcases" level="all" additivity="false">
+    <logger name="insynth.testcases" level="off" additivity="false">
+      <appender-ref ref="Console" />
+    </logger>
+    <logger name="insynth.streams.benchmarks" level="all" additivity="false">
       <appender-ref ref="Console" />
     </logger>
 		<root level="error">
