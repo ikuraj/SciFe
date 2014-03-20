@@ -55,9 +55,11 @@ object Binary{
 	  	case (s1: Finite[T], s2: Finite[V]) => new BinaryFinite(s1, s2)( (_, _) )
 	  	case (s1: Infinite[T], s2: Infinite[V]) => new BinaryInfinite(s1, s2)( (_, _) )
 	  	case (s1: Finite[T], s2: Infinite[V]) => new BinaryOneFinite(s1, s2)( (_, _) )
-      case (Empty, _) => Empty
-      case (_, Empty) => Empty
-	  	case _ => throw new RuntimeException
+      case (Empty, _) | (_, Empty) | (MemoizedEmpty, _) | (_, MemoizedEmpty) =>
+        Empty
+//      case (_, _) if s1.hasDefiniteSize && s2.hasDefiniteSize =>
+//        new BinaryFinite(s1, s2)( (_, _) )
+//	  	case _ => throw new RuntimeException
 		}
   
 	def apply[T, V, U](s1: Enum[T], s2: Enum[V], combine: (T, V) => U) =

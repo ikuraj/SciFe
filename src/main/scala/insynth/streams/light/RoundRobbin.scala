@@ -8,7 +8,15 @@ import insynth.util.logging._
 
 object RoundRobbin {
   
-  def apply[@specialized T](left: Enum[T], right: Enum[T])(implicit ct: ClassTag[T]) =
+//  def apply[@specialized T](left: Enum[T], right: Enum[T])(implicit ct: ClassTag[T]) =
+//    (left, right) match {
+//      case (left: Finite[T], right: Infinite[T]) =>        
+//        new RoundRobbinMixedSingle(left, right)
+//      case _ =>
+//        new RoundRobbinFiniteFixed(Array(left, right))
+//    }
+  
+  def apply[@specialized T](left: Enum[T], right: Enum[T]) =
     (left, right) match {
       case (left: Finite[T], right: Infinite[T]) =>        
         new RoundRobbinMixedSingle(left, right)

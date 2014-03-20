@@ -164,6 +164,7 @@ object BinaryFiniteMemoized {
 	    s1 match {
 	      case f: light.Finite[I] =>
 	        new BinaryFiniteCombine(f, s2, combine) with light.Memoized[R]
+	      case light.Empty => light.MemoizedEmpty
 	      case _ => throw new RuntimeException
 	    }
     

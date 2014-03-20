@@ -19,7 +19,15 @@ class Mapper[T, U](val streamable: Enum[T], modify: T=>U)
 
 object Mapper {
   
+  // TODO these overrides are a hack
   def apply[T, U](streamable: Enum[T], modify: T=>U) =
-    new Mapper(streamable, modify)
+    streamable match {
+    	case f: Finite[_] => new Mapper(streamable, modify) with Finite[U] {
+    		override def hasDefiniteSize = true    	  
+    	}
+    	case i: Infinite[_] => new Mapper(streamable, modify) with Infinite[U] {
+    		override def hasDefiniteSize = false
+    	}
+	  }
   
 }

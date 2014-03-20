@@ -1,8 +1,9 @@
 package insynth.util
 
 import org.scalatest._
-import org.scalatest.matchers._
 import org.scalatest.Tag
+
+import insynth.streams.light
 
 object FocusTag extends Tag("focus")
 
@@ -69,6 +70,18 @@ object Checks {
    */
 //  implicit def convertToClueful[T](fun: => T) = new Clueful(fun)
 
+    class CheckerHelper[T] {
+      var _res: light.Enum[T] = null
+      var elements: Seq[T] = null
+      def res = _res
+      def res_=(n: light.Enum[T]) = {
+        _res = n
+        elements = (0 until res.size) map { res(_) }
+      }
+      var addMessage: String = ""
+      def clue =
+        (0 until res.size).map(res(_)).mkString("\n") + "\n" + addMessage
+    }
 }
 
 class ChecksTest extends FunSuite with ShouldMatchers {

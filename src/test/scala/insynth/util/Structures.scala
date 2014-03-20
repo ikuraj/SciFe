@@ -123,6 +123,30 @@ object Structures {
     }
 
     def numberOfTress(n: Int) = Catalan.catalan(n)
+
+    def heapProperty(t: Tree) : Boolean = {
+      t match {
+        case Node(ln@Node(_, lv, _), v, rn@Node(_, rv, _)) => v > lv && v > rv &&
+      		heapEqualProperty(ln) && heapEqualProperty(rn)
+        case Node(_, v, rn@Node(_, rv, _)) => v > rv &&
+      		heapEqualProperty(rn)
+        case Node(ln@Node(_, lv, _), v, _) => v > lv &&
+      		heapEqualProperty(ln)
+        case _ => true
+      }
+    }
+    
+    def heapEqualProperty(t: Tree) : Boolean = {
+      t match {
+        case Node(ln@Node(_, lv, _), v, rn@Node(_, rv, _)) => v >= lv && v >= rv &&
+      		heapEqualProperty(ln) && heapEqualProperty(rn)
+        case Node(_, v, rn@Node(_, rv, _)) => v >= rv &&
+      		heapEqualProperty(rn)
+        case Node(ln@Node(_, lv, _), v, _) => v >= lv &&
+      		heapEqualProperty(ln)
+        case _ => true
+      }
+    }
   
   }
 
