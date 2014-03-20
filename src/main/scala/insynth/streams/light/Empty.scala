@@ -1,6 +1,6 @@
 package insynth.streams.light
 
-object Empty extends Enum[Nothing] {
+trait Empty extends Enum[Nothing] {
     
   override def size = 0
 
@@ -9,3 +9,5 @@ object Empty extends Enum[Nothing] {
   override def apply(ind: Int) = throw new NoSuchElementException("no elements in Empty")
 
 }
+
+object Empty extends Empty
