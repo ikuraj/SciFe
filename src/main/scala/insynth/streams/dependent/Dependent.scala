@@ -4,6 +4,8 @@ package dependent
 import light._
 
 trait Dependent[I, +O] {
+
+  def apply(parameter: I): Enum[O] = getStream(parameter)
   
   def getStream(parameter: I): Enum[O]
   

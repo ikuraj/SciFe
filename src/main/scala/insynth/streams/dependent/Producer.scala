@@ -43,10 +43,20 @@ object Producer {
   def map[I, O](producerMap: Map[I, Enum[O]] = Map.empty) =
     new Producer(producerMap)
   
-  def memoized[I, O](producerFunction: I => Enum[O]): Dependent[I, O] =
-    new Producer(producerFunction) with Memoized[I, O]
+  def memoized[I, O](producerFunction: I => Enum[O])
+    (implicit ms: MemoizationScope = null): Dependent[I, O] = {
+    val enum = new Producer(producerFunction) with Memoized[I, O]
+        
+    if (ms != null) ms add enum
+    enum
+  }
     
-  def memoized[I, O](producerFunction: (Dependent[I, O], I) => Enum[O]): Dependent[I, O] =
-    new Producer(producerFunction) with Memoized[I, O]
+  def memoized[I, O](producerFunction: (Dependent[I, O], I) => Enum[O])
+    (implicit ms: MemoizationScope = null): Dependent[I, O] = {
+    val enum = new Producer(producerFunction) with Memoized[I, O]
+        
+    if (ms != null) ms add enum
+    enum
+  }
     
 }

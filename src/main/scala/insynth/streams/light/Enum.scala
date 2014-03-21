@@ -11,8 +11,11 @@ object Enum {
   implicit def elemsToEnum[T](elems: T*)(implicit ct: ClassTag[T]) =
     apply(elems)
 
-  implicit def streamToEnum[T](col: Stream[T])(implicit ct: ClassTag[T]): Enum[T] =
-    apply(col)
+  implicit def streamToEnum[T](col: Stream[T]): Enum[T] =
+    applyNoTag(col)
+
+  implicit def traversableToEnum[T](col: Traversable[T]): Enum[T] =
+    applyNoTag(col)
     
   implicit def enumToCollection[T](e: Enum[T]): Seq[T] =
     if (e.hasDefiniteSize)
@@ -26,6 +29,21 @@ object Enum {
     	case _ if col.size == 1 => Singleton(col.head)
     	case _ => WrapperArray(col.toIndexedSeq)
 	  }
+  
+  def applyNoTag[T](col: Traversable[T]): Enum[T] =
+    col match {
+      case (stream: Stream[T]) if !stream.hasDefiniteSize => new WrapperStream(stream)
+      case _ if col.size == 0 => Empty
+      case _ if col.size == 1 => Singleton(col.head)
+      case is: IndexedSeq[T] => new WrapperIndexedSeq(is)
+    }
+
+  def applyNoTag[T](col: Array[T]): Enum[T] =
+    col match {
+      case _ if col.size == 0 => Empty
+      case _ if col.size == 1 => Singleton(col.head)
+      case _ => WrapperArray(col)
+    }
 
 //  def apply[T](col: Stream[T])(implicit ct: ClassTag[T]): Enum[T] =
 //    col match {

@@ -1,6 +1,6 @@
 package insynth.streams.light
 
-class Singleton[T](el: T) extends Finite[T] {
+case class Singleton[T](el: T) extends Finite[T] {
   
   override def size = 1
   
@@ -12,6 +12,6 @@ class Singleton[T](el: T) extends Finite[T] {
 
 object Singleton {
 
-  def apply[T](element: T) = new Singleton(element)
+//  def apply[T](element: T) = new Singleton(element)
 
 }

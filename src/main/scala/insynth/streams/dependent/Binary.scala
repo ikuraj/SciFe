@@ -96,6 +96,55 @@ class BinaryFiniteChainCombine[I, I2, O, R]
   
 }
 
+//class BinaryFiniteCombineLazyLazy[I, O, R]
+//  (s1: light.Finite[I], s2: Dependent[I, O], combine: (I, O) => R = (_: I, _: O))
+//  extends light.Finite[R] with HasLogger {
+//  
+//  val rr = light.RoundRobbinFinite.buffer[R]( Seq.empty )
+//  
+//  override def size = -1
+//  
+//  var explored = -1
+//  
+//  override def apply(ind: Int) = {
+//    while(ind >= rr.size) {
+//      explored += 1
+//      if (explored >= s1.size) throw new NoSuchElementException("Went out of range of this lazy structure")
+//      val leftProduced = s1(explored)
+//      val toAdd = light.Mapper(
+//        s2(leftProduced), { (rightProduced: O) => combine(leftProduced, rightProduced) })
+//      rr.append( toAdd )
+//    }
+//    rr(ind)
+//  }
+//  
+//}
+
+// size is -1
+class BinaryFiniteCombineLazy[I, O, R]
+  (s1: light.Finite[I], s2: Dependent[I, O], combine: (I, O) => R = (_: I, _: O))
+  extends light.Finite[R] with HasLogger {
+  
+  val rr = light.RoundRobbinFinite.buffer[R]( Seq.empty )
+  
+  override def size = -1
+  
+  var explored = -1
+  
+  override def apply(ind: Int) = {
+    while(ind >= rr.size) {
+      explored += 1
+      if (explored >= s1.size) throw new NoSuchElementException("Went out of range of this lazy structure")
+      val leftProduced = s1(explored)
+      val toAdd = light.Mapper(
+        s2(leftProduced), { (rightProduced: O) => combine(leftProduced, rightProduced) })
+      rr.append( toAdd )
+    }
+    rr(ind)
+  }
+  
+}
+
 // NOTE this only works if all dependent streams are finite
 case class Binary[I, I1, O]
   (s1: Dependent[I, I1], s2: Dependent[I1, O])

@@ -7,7 +7,7 @@ import insynth.streams.Streamable
  * @param <T>, <U>
  * @param element
  */
-class SingleStream[T, U <: T](stream: => Stream[U], isInfiniteFlag: Boolean) extends Streamable[T] {
+class SingleStream[T](stream: => Stream[T], isInfiniteFlag: Boolean) extends Streamable[T] {
 
   override def size = if (isInfinite) -1 else stream.size
   
@@ -18,6 +18,6 @@ class SingleStream[T, U <: T](stream: => Stream[U], isInfiniteFlag: Boolean) ext
 }
 
 object SingleStream {
-	def apply[T, U <: T](stream: => Stream[U], isInfiniteFlag: Boolean) =
+	def apply[T](stream: => Stream[T], isInfiniteFlag: Boolean) =
 	  new SingleStream(stream, isInfiniteFlag)
 }

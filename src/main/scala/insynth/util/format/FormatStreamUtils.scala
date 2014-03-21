@@ -66,7 +66,7 @@ class FormatStreamUtils[_](node: Streamable[_], _level: Int) extends Formatable 
         s.getStream.head.toString
       }
 
-      case ss: SingleStream[_, _] => "SingleStream" :: header(node)// :: paren(trans(ss.stream, level - 1))
+      case ss: SingleStream[_] => "SingleStream" :: header(node)// :: paren(trans(ss.stream, level - 1))
       case ss: ordered.WrapperStream[_] => "ord.SingleStream" :: header(node)// :: paren(trans(ss.stream, level - 1))
       case fs: ordered.FiniteStream[_] => "ord.FiniteStream" :: header(node) :: brackets(
         foldDoc(

@@ -16,6 +16,11 @@ object Structures {
   
   import StreamableAST._
   
+  implicit def flatten1[A, B, C](t: ((A, B), C)): (A, B, C) = (t._1._1, t._1._2, t._2)
+  implicit def flatten2[A, B, C](t: (A, (B, C))): (A, B, C) = (t._1, t._2._1, t._2._2)
+  implicit def flatten3[A, B, C, D](t: ((A, B), (C, D))): (A, B, C, D) = (t._1._1, t._1._2, t._2._1, t._2._2)
+  implicit def flatten4[A, B, C, D](t: (((A, B), C), D)): (A, B, C, D) = (t._1, t._2)
+  
   val fromOne = Stream.from(1)
   val ones = Stream.continually(1)
 
@@ -251,6 +256,38 @@ object Structures {
 
 	  def catalan(n: BigInt) = factorial(2 * n) / (factorial(n + 1) * factorial(n))
 	}
+  
+  object Program {
+    implicit def intToId(i: Int) = Id(i) 
+    case class Id(id: Int)
+  
+    trait Identifiable
+   
+    case class Program(classes: Seq[Class])
+    case class Class(id: Id, methods: Seq[Method]) extends Identifiable
+    case class Method(id: Id, statements: Seq[Statement]) extends Identifiable {
+      require(
+        (for (ind <- 0 until statements.size)
+          yield usedVars(statements(ind)) subsetOf definedVars(statements.take(ind))
+        ).reduce( _ && _ )
+      )
+      def usedVars(s: Statement) = Set[Id]()
+      def definedVars(s: Seq[Statement]) = Set[Id]()
+    }
+    abstract class Statement
+    case class MethodCall(callee: Id, argument: Seq[Expression])
+    case class Assignment(varId: Id, exp: Expression) extends Statement with Identifiable
+    abstract class Expression
+    case class Var(id: Id) extends Expression
+    case class IntExp(v: Int) extends Expression
+    case class BooleanExp(v: Boolean) extends Expression
+    
+    object BinOp extends Enumeration {
+      val Plus, Minus = Value
+    }
+    case class BinOp(l: Expression, r: Expression) extends Expression
+    case class UnOp(l: Expression, r: Expression) extends Expression
+  }
   
 }
 
