@@ -61,7 +61,8 @@ object Enum {
 //  	}
 
   implicit def rangeToEnum(range: Range): Enum[Int] =
-    WrapperArray(range)
+    throw new RuntimeException("can be implemented with just functions")
+//    WrapperArray(range)
   
 }
 

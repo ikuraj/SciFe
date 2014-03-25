@@ -122,12 +122,18 @@ class BinaryFiniteChainCombine[I, I2, O, R]
 
 // size is -1
 class BinaryFiniteCombineLazy[I, O, R]
-  (s1: light.Finite[I], s2: Dependent[I, O], combine: (I, O) => R = (_: I, _: O))
+  (val s1: light.Finite[I], val s2: Dependent[I, O], combine: (I, O) => R = (_: I, _: O))
   extends light.Finite[R] with HasLogger {
   
   val rr = light.RoundRobbinFinite.buffer[R]( Seq.empty )
   
-  override def size = -1
+  override def size: Int = {
+    var size = 0
+    for( ind <- 0 until s1.size; innerEnum = s2( s1(ind) ) ) yield
+      if ( innerEnum.size == -1 ) return -1
+      else size += innerEnum.size
+    size
+  }
   
   var explored = -1
   

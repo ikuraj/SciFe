@@ -1,6 +1,6 @@
 package insynth.streams.light
 
-case class Singleton[T](el: T) extends Finite[T] {
+case class Singleton[T](protected val el: T) extends Finite[T] {
   
   override def size = 1
   
