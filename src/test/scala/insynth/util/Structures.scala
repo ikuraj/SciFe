@@ -1,20 +1,13 @@
 package insynth.util
 
-import insynth.attrgrammar._
-import insynth.reconstruction.stream._
-
 import org.scalatest._
-import org.scalatest.prop.Checkers
-
-import org.scalacheck._
-import Gen._
+import org.scalatest.prop._
+import org.scalacheck.Gen
 
 import scala.language.implicitConversions
 import scala.language.postfixOps
 
 object Structures {
-  
-  import StreamableAST._
   
   implicit def flatten1[A, B, C](t: ((A, B), C)): (A, B, C) = (t._1._1, t._1._2, t._2)
   implicit def flatten2[A, B, C](t: (A, (B, C))): (A, B, C) = (t._1, t._2._1, t._2._2)
@@ -291,7 +284,7 @@ object Structures {
   
 }
 
-class StructuresTest extends FunSuite with Matchers {
+class StructuresTest extends FunSuite with Matchers with PropertyChecks {
   
   import Structures._
   
@@ -351,7 +344,9 @@ class StructuresTest extends FunSuite with Matchers {
         rbMap2rbTree(rbMap)
       }
       
-    Prop.forAll(rbTreeGen)(invariant) check
+    forAll(rbTreeGen, minSuccessful(50)) {
+      invariant(_) should be (true) 
+    }
   }
   
   test("catalan numbers") {

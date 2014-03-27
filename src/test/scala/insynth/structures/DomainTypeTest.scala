@@ -2,13 +2,12 @@ package insynth.structures
 
 import scala.util.Random
 
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
 // enable implicit conversions
 import scala.language.implicitConversions
 
-class DomainTypeTest extends FunSuite with ShouldMatchers {    
+class DomainTypeTest extends FunSuite with Matchers {    
   
 	implicit def singletonList(x: DomainType) = List(x)
 	implicit def singletonTSet(x: SuccinctType) = TSet(x)

@@ -5,9 +5,8 @@ import insynth.testdomain._
 import insynth.common._
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class SolverTest extends FunSpec with GivenWhenThen with ShouldMatchers {    
+class SolverTest extends FunSpec with GivenWhenThen with Matchers {    
   
   import CommonDeclarations._
   import CommonSuccinctTypes._
