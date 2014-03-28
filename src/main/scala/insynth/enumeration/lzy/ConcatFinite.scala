@@ -1,19 +1,31 @@
 package insynth.enumeration
 package lzy
 
-import scala.collection.mutable
+import combinators._
 
 import _root_.insynth.util.logging._
 
+import scala.collection.mutable
+import scala.reflect.ClassTag
+
 object ConcatFinite {
 
-  def apply[T](left: Finite[T], right: Finite[T]) =
-    new ConcatFiniteVariedSize(streams)
+  def apply[T](left: Finite[T], right: Finite[T])/*(implicit ct: ClassTag[T])*/ =
+    if (left.size == right.size)
+      new ConcatFiniteEqualSize( Array(left, right) )
+    else
+      new ConcatFiniteVariedSize( Array(left, right) )
+
+  def apply[T](finites: Array[Finite[T]])/*(implicit ct: ClassTag[T])*/ =
+    if (finites.map(_.size).distinct.size == 1)
+      new ConcatFiniteEqualSize( finites )
+    else
+      new ConcatFiniteVariedSize( finites )
 
   def fixed[T](streams: Array[Finite[T]]) =
     new ConcatFiniteVariedSize(streams)
 
-  def equal[T](streams: Seq[Finite[T]]) =
+  def equal[T](streams: Array[Finite[T]]) =
     new ConcatFiniteEqualSize(streams)
 
   def buffer[T](streams: Seq[Finite[T]]) =
@@ -31,8 +43,6 @@ abstract class ConcatFinite[T] protected[enumeration]
   
   def limit(ind: Int): Int
   
-  override def size: Int
-
   override def apply(ind: Int) = {
     entering("apply", ind)
     val arrInd = binarySearch(ind)
@@ -62,16 +72,18 @@ abstract class ConcatFinite[T] protected[enumeration]
 
 }
 
-class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val streams: Array[Finite[T]])
-  extends ConcatFinite[T] with HasLogger {
+class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (enumsArray: Array[Finite[T]])
+  extends ConcatFinite[T] with ConcatMul[T, T, T] with HasLogger {
 
-  override def length = streams.length
+  override val enums = enumsArray.toSeq
+  
+  override def length = enumsArray.length
 
   val limits = {
     var _size = 0
     val ab = mutable.ArrayBuffer(0)
     val tail =
-      for (stream <- streams) yield {
+      for (stream <- enumsArray) yield {
         _size += stream.size
         _size
       }
@@ -83,28 +95,27 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val streams
     limits.apply(length)
   }
   
-  override def enum(ind: Int) = streams(ind)
+  override def enum(ind: Int) = enumsArray(ind)
   
   override def limit(ind: Int) = limits(ind)
 
 }
 
 // Union of finite enumerators of equal length
-class ConcatFiniteEqualSize[T] protected[enumeration] (streams: Seq[Enum[T]])
-  extends Finite[T] with HasLogger {
-  assert(streams.map(_.size).distinct.size == 1, "RoundRobbinFiniteEqual should be constructed with streams of equal sizes." +
-    "(sizes are %s)".format(streams.map(_.size).distinct))
+class ConcatFiniteEqualSize[T] protected[enumeration] (enumsArray: Array[Finite[T]])
+  extends Finite[T] with ConcatMul[T, T, T] with HasLogger {
+  assert(enumsArray.map(_.size).distinct.size == 1, "RoundRobbinFiniteEqual should be constructed with streams of equal sizes." +
+    "(sizes are %s)".format(enumsArray.map(_.size).distinct))
+
+  override val enums = enumsArray.toSeq
   
-  val streamsArray = streams.toArray
+  val streamsArray = enumsArray
+  val streamsArraySize = enumsArray.size
   
   override def apply(ind: Int) = {
-    val arrInd = ind % streamsArray.size
-    val elInd = ind / streamsArray.size
+    val arrInd = ind % streamsArraySize
+    val elInd = ind / streamsArraySize
     streamsArray(arrInd)(elInd)
   }
     
-  override def size =
-    if (streams.exists(_.size == -1)) -1
-    else streams.map(_.size).sum
-
 }

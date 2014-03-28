@@ -1,6 +1,6 @@
 package insynth.enumeration
 
-class Map[T, U](val enum: Enum[T], modify: T=>U)
+abstract class Map[T, U](val enum: Enum[T], modify: T=>U)
 	extends combinators.Map(enum, modify) {
 
   override def size = enum.size

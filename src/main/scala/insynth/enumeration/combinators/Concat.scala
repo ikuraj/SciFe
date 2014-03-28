@@ -1,8 +1,19 @@
 package insynth.enumeration
 package combinators
 
-abstract class Concat[T, U, V](left: Enum[T], right: Enum[U]) extends Enum[V] {
+trait Concat[T, U, V] extends Enum[V] {
+  
+  val left: Enum[T]
+  val right: Enum[U]
   
   override def size = left.size + right.size
+
+}
+
+trait ConcatMul[T, U, V] extends Enum[V] {
+  
+  val enums: Seq[Enum[T]]
+  
+  override def size = enums.map(_.size).sum
 
 }

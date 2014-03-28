@@ -1,10 +1,12 @@
 package insynth.enumeration
 package lzy
 
-import scala.reflect._
-import scala.collection.mutable
+import combinators._
 
 import insynth.util.logging._
+
+import scala.collection.mutable
+import scala.reflect._
 
 object ConcatFiniteInfinite {
   
@@ -21,10 +23,13 @@ object ConcatFiniteInfinite {
   
 }
 
-trait ConcatFiniteInfinite[T] extends Infinite[T] with HasLogger {
+trait ConcatFiniteInfinite[T] extends Concat[T, T, T] with Infinite[T] with HasLogger {
   
   val finite: Finite[T]
   val infinite: Infinite[T]
+  
+  override val left = finite
+  override val right = infinite
   
   override def apply(ind: Int) = {
     if (ind < finite.size) finite(ind)
@@ -36,13 +41,13 @@ trait ConcatFiniteInfinite[T] extends Infinite[T] with HasLogger {
 
 class ConcatFiniteInfiniteSingle[T] (
   override val finite: Finite[T], override val infinite: Infinite[T]
-)	extends Infinite[T] with HasLogger {
+)	extends ConcatFiniteInfinite[T] with HasLogger {
     
 }
 
 class ConcatFiniteInfiniteMul[T] protected[enumeration]
 	(finiteStreams: Array[Finite[T]], infiniteStreams: Seq[Infinite[T]])
-  extends ConcatFiniteInfiniteSingle[T] with HasLogger {
+  extends ConcatFiniteInfinite[T] with HasLogger {
   assert(finiteStreams.size > 0 && infiniteStreams.size > 0)
   
   override val finite = ConcatFinite.fixed(finiteStreams)

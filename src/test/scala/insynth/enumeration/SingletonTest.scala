@@ -2,9 +2,8 @@ package insynth
 package enumeration
 
 import org.scalatest._
-import org.scalatest.matchers.ShouldMatchers
 
-class SingletonTest extends FunSuite with ShouldMatchers {    
+class SingletonTest extends FunSuite with Matchers {    
   
   test("Simple") {
     val singleton = Singleton(2)

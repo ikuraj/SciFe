@@ -5,7 +5,9 @@ import scala.reflect._
 
 class WrapArray[@specialized T](val coll: Array[T])
 	extends Finite[T] {
-  require(coll.hasDefiniteSize && coll.size > 1)
+//  require(coll.hasDefiniteSize && coll.size > 1)
+  // check size in the factory that constructs this
+  require(coll.hasDefiniteSize)
   
   override def size = coll.size
   
