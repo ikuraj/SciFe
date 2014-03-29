@@ -13,7 +13,7 @@ class EnumStream[+A](ind: Int, enum: Enum[A]) extends Stream[A] {
     if (!tailDefined) tlVal = EnumStream(ind + 1, enum)
 
     tlVal
-  } 
+  }
 
   private[this] var tlVal: Stream[A] = _
   def tailDefined: Boolean = tlVal ne null

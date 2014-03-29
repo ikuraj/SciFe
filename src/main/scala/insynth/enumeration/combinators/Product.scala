@@ -1,7 +1,10 @@
 package insynth.enumeration
 package combinators
 
-abstract class Product[T, U](left: Enum[T], right: Enum[U]) extends Enum[(T, U)] {
+trait Product[T, U] extends Enum[(T, U)] {
+  
+  val left: Enum[T]
+  val right: Enum[U]
   
   override def size = left.size * right.size
 

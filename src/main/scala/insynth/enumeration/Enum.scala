@@ -15,21 +15,21 @@ trait Enum[+A] {
   
   def toList = ( for (i <- 0 until size) yield this(i) ).toList
   
-//  /* operators */
-//  
-//  // concatenation
-//  def concat[B](e: Enum[B]) =
-//    RoundRobbin(this, e)
-//    
-//  def ++[B](e: Enum[B]) = concat(e)
-//  def ⊕[B](e: Enum[B]) = concat(e)
-//
-//  // products
-//  def product[B](e: Enum[B]): Enum[(A, B)] =
-//    Binary(this, e)
-//    
-//  def **[B](e: Enum[B]) = product(e)
-//  def ⊗[B](e: Enum[B]) = product(e)
+  /* operators */
+  
+  // concatenation
+  def concat[B](e: Enum[B]) =
+    Concat(this, e)
+    
+  def ++[B](e: Enum[B]) = concat(e)
+  def ⊕[B](e: Enum[B]) = concat(e)
+
+  // products
+  def product[B](e: Enum[B]): Enum[(A, B)] =
+    Product(this, e)
+    
+  def **[B](e: Enum[B]) = product(e)
+  def ⊗[B](e: Enum[B]) = product(e)
 //
 //  // map
 //  def map[B](modifyFun: A => B): Enum[B] =
@@ -56,7 +56,11 @@ object Enum {
   def apply[T](stream: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
     fromCollection(stream)
 
-  def apply(range: Range) = Identity
+  def apply(range: scala.Range) =
+    if (range.start == 0) new IdentitySize(range.size)
+    else new WrapRange(range)
+    
+  def identity = Identity
 
   def applyNoTag[T](args: T*): Enum[T] =
     fromCollectionNoTag(args)
@@ -64,7 +68,7 @@ object Enum {
   /* Implicit conversion methods */
   
   implicit def rangeToEnum(range: Range): Enum[Int] =
-    Identity
+    apply(range)
   
   implicit def colToEnum[T](col: Seq[T])(implicit ct: ClassTag[T]) =
     fromCollection(col)
