@@ -30,12 +30,12 @@ trait Enum[+A] {
     
   def **[B](e: Enum[B]) = product(e)
   def ⊗[B](e: Enum[B]) = product(e)
-//
-//  // map
-//  def map[B](modifyFun: A => B): Enum[B] =
-//    Mapper(this, modifyFun)
-//    
-//  def ↑[B](modifyFun: A => B) = map(modifyFun)
+
+  // map
+  def map[B](modifyFun: A => B): Enum[B] =
+    Map(this, modifyFun)
+    
+  def ↑[B](modifyFun: A => B) = map(modifyFun)
 //
 //  // filter
 //  def filter[B](e: Enum[B]) =

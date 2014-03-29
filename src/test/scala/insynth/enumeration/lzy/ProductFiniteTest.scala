@@ -2,9 +2,8 @@ package insynth.enumeration
 package lzy
 
 import org.scalatest._
-import org.scalatest.matchers.ShouldMatchers
 
-class ProductFiniteTest extends FunSuite with ShouldMatchers {    
+class ProductFiniteTest extends FunSuite with Matchers {    
   
   test("simple") {
     val bs = Product(

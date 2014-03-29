@@ -2,7 +2,7 @@ package insynth.enumeration
 package util
 
 /** Same as Scala stream but strictly single-threaded, thus without synchronization */
-class EnumStream[+A](ind: Int, enum: Enum[A]) extends Stream[A] {
+class EnumStream[+A](ind: Int, enum: => Enum[A]) extends Stream[A] {
 
   /* always built from an infinite Enum */
   override def isEmpty = false
@@ -23,11 +23,11 @@ class EnumStream[+A](ind: Int, enum: Enum[A]) extends Stream[A] {
 // EnumStream is by assumption infinite
 object EnumStream {
   
-  def apply[A](ind: Int, enum: => Enum[A]): Stream[A] = {
+  def apply[A](ind: Int, enum: Enum[A]): Stream[A] = {
     new EnumStream(ind, enum)
   }
   
-  def apply[A](enum: => Enum[A]): Stream[A] = {
+  def apply[A](enum: Enum[A]): Stream[A] = {
     require(enum.hasDefiniteSize == false)
     this(0, enum)
   }
