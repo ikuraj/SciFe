@@ -2,7 +2,7 @@ package insynth.enumeration
 package dependent
 package combinators
 
-trait InMap[I, +O, NewIn] extends Depend[NewIn, O] {
+trait InMap[I, NewIn, +O] extends Depend[NewIn, O] {
   
   override type EnumType = inner.EnumType
   
