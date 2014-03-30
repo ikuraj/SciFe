@@ -11,7 +11,8 @@ object Product {
 	  (s1, s2) match {
 	  	case (s1: Finite[T], s2: Finite[V]) => new ProductFinite(s1, s2)
 	  	case (s1: Infinite[T], s2: Infinite[V]) => new ProductInfinite(s1, s2)
-	  	case (s1: Finite[T], s2: Infinite[V]) => new ProductFiniteInfinite(s1, s2)
+	  	case (s1: Finite[T], s2: Infinite[V]) => new ProductFiniteInfiniteLeft(s1, s2)
+	  	case (s1: Infinite[T], s2: Finite[V]) => new ProductFiniteInfiniteRight(s1, s2)
       case (Empty, _) | (_, Empty) =>
         Empty
 //      case (_, _) if s1.hasDefiniteSize && s2.hasDefiniteSize =>

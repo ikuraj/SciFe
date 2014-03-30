@@ -24,7 +24,7 @@ class CombinatorsTest extends FunSuite with ShouldMatchers {
     
     val productEnum = rangeEnum ** streamEnum
     
-    productEnum shouldBe a [ProductFiniteInfinite[_, _]]
+    productEnum shouldBe a [ProductFiniteInfinite[_, _, _]]
     
     val concatEnum = listEnum ++ productEnum
     
@@ -61,7 +61,7 @@ class CombinatorsTest extends FunSuite with ShouldMatchers {
     
     val productEnum = rangeEnum ** streamEnum
     
-    productEnum shouldBe a [ProductFiniteInfinite[_, _]]
+    productEnum shouldBe a [ProductFiniteInfinite[_, _, _]]
     
     val concatEnum = listEnum ++ productEnum
     
@@ -90,7 +90,7 @@ class CombinatorsTest extends FunSuite with ShouldMatchers {
     
     val productEnum = rangeEnum ** streamEnum
     
-    productEnum shouldBe a [ProductFiniteInfinite[_, _]]
+    productEnum shouldBe a [ProductFiniteInfinite[_, _, _]]
     
     val concatEnum = listEnum ++ productEnum
     

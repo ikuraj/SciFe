@@ -50,7 +50,7 @@ object Enum {
   /* Factory methods */
   
   // only sequences are accepted since enumerators enumerate in a defined ordering
-  def apply[T](arg: T, args: T*)(implicit ct: ClassTag[T]): Enum[T] =
+  def apply[T](arg: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
     fromFiniteCollection(arg :: args.toList)
 
   def apply[T](stream: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
@@ -59,6 +59,13 @@ object Enum {
   def apply(range: scala.Range) =
     if (range.start == 0) new IdentitySize(range.size)
     else new WrapRange(range)
+
+  def apply[T](f: Int => T): Infinite[T] =
+    // NOTE in Scala this wont work
+//    if (f == Predef.identity[Int] _)
+//      Identity
+//    else
+    	WrapFunction(f)
     
   def identity = Identity
 
@@ -93,7 +100,8 @@ object Enum {
     	case _ => fromFiniteCollection(col)
 	  }
 
-  private[enumeration] def fromFiniteCollection[T](col: Traversable[T])(implicit ct: ClassTag[T]): Enum[T] =
+  private[enumeration] def fromFiniteCollection[T](col: Traversable[T])
+  	(implicit ct: ClassTag[T]): Finite[T] =
     col match {
       case _ if col.size == 0 => Empty
       case _ if col.size == 1 => Singleton(col.head)
