@@ -9,6 +9,9 @@ import scala.collection.mutable
 
 object ConcatInfinite {
 
+  def apply[T](s1: Infinite[T], s2: Infinite[T]) =
+    new ConcatInfinite( Seq(s1, s2) )
+
   def apply[T](streams: Seq[Infinite[T]]) =
     new ConcatInfinite(streams)
 

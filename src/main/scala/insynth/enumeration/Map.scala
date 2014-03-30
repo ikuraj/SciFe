@@ -15,4 +15,10 @@ object Map {
     	case i: Infinite[_] => new Map(streamable, modify) with Infinite[U]
 	  }
   
+  def apply[T, U](streamable: Finite[T], modify: T=>U) =
+    new Map(streamable, modify) with Finite[U]
+  
+  def apply[T, U](streamable: Infinite[T], modify: T=>U) =
+    new Map(streamable, modify) with Infinite[U]
+  
 }
