@@ -28,8 +28,11 @@ object Product {
 	  	case _ => throw new RuntimeException
 		}
   
-//	def apply[T, V, U](s1: Finite[T], s2: Finite[V])(combine: (T, V) => U) =
-//	  new ProductFinite(s1, s2)(combine)
+	def apply[T, V](s1: Finite[T], s2: Finite[V]): Finite[(T, V)] =
+	  new ProductFinite(s1, s2)
+  
+	def apply[T, V, U](s1: Finite[T], s2: Finite[V], combine: (T, V) => U): Finite[U] =
+	  new ProductFiniteComb(s1, s2)(combine)
 //  
 //	def apply[T, V, U](s1: Infinite[T], s2: Infinite[V])(combine: (T, V) => U) =
 //	  new ProductInfinite(s1, s2)(combine)
