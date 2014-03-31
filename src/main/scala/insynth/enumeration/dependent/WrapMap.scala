@@ -3,10 +3,10 @@ package dependent
 
 import insynth.util.logging._
 
-import scala.collection.immutable.Map
+import scala.collection.immutable.{ Map => ScalaMap }
 import scala.collection.mutable
 
-class WrapMap[I, O, E <: Enum[O]](initMap: Map[I, E] = Map.empty)
+class WrapMap[I, O, E <: Enum[O]](initMap: ScalaMap[I, E] = ScalaMap.empty)
   extends Depend[I, O] with HasLogger {
   
   override type EnumType = E
