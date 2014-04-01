@@ -7,6 +7,9 @@ object Concat {
   def apply[T](left: Enum[T], right: Enum[T]) =
     lzy.Concat(left, right)
   
+  def apply[T](left: Finite[T], right: Finite[T]): Finite[T] =
+    lzy.Concat(left, right)
+  
   def apply[T, U <: Enum[T]](streams: Seq[U])(implicit ct: ClassTag[U]) =
     lzy.Concat[T, U](streams)(ct)
   

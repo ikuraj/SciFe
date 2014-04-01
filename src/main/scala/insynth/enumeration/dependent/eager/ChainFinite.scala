@@ -1,20 +1,24 @@
 package insynth.enumeration
 package dependent
 
+import combinators._
 import insynth.{ enumeration => e }
 
 import insynth.util.logging._
 
 class ChainFinite[I, O]
-  (s1: Finite[I], s2: DependFinite[I, O])
-  extends Finite[O] with HasLogger {
+  (override val left: Finite[I], override val right: DependFinite[I, O])
+  extends Chain[I, O] with Finite[(I, O)] with HasLogger {
   
-  val rr = { 
+  val rr = {
     val rightStreams = 
-      for (ind <- 0 until s1.size; stream = s2.getEnum(s1(ind)); if stream.size > 0 )
-        yield stream
+      for (
+        ind <- 0 until left.size; leftEl = left(ind);
+        stream = right.getEnum(leftEl); if stream.size > 0
+      )
+        yield e.Product(Singleton(leftEl), stream)
         
-    e.lzy.ConcatFinite.fixed[O](
+    e.lzy.ConcatFinite.fixed(
       Array(rightStreams: _*)
     )
   }
@@ -26,16 +30,21 @@ class ChainFinite[I, O]
   
 }
 
+// optimization classes that incorporate chain and combine
+
 class ChainFiniteChain[I, I2, O]
-  (s1: Finite[I], s2: DependFinite[I2, O])(chain: I => I2)
-  extends Finite[O] with HasLogger {
+  (val left: Finite[I], val right: DependFinite[I2, O])(chain: I => I2)
+  extends Finite[(I, O)] with HasLogger {
   
-  val rr = { 
+  val rr = {
     val rightStreams = 
-      for (ind <- 0 until s1.size; stream = s2.getEnum( chain(s1(ind)) ); if stream.size > 0 )
-        yield stream
+      for (
+        ind <- 0 until left.size; leftEl = left(ind);
+        stream = right.getEnum( chain(leftEl) ); if stream.size > 0
+      )
+        yield e.Product(Singleton(leftEl), stream)
         
-    e.lzy.ConcatFinite.fixed[O](
+    e.lzy.ConcatFinite.fixed(
       Array(rightStreams: _*)
     )
   }

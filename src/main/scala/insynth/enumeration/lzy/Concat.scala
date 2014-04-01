@@ -15,6 +15,9 @@ object Concat {
         ConcatInfinite( Seq(left, right) )
     }
   
+  def apply[T](left: Finite[T], right: Finite[T]) =
+    ConcatFinite(left, right)
+  
   def apply[T, U <: Enum[T]](streams: Seq[U])(implicit ct: ClassTag[U]) = {
     val finiteTag = implicitly[ClassTag[Finite[_]]]
     val infiniteTag = implicitly[ClassTag[Infinite[_]]]

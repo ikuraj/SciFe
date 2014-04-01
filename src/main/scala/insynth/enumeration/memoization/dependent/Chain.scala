@@ -15,7 +15,7 @@ object Chain {
     val enum =
 	    (s1, s2) match {
 	      case (f: Finite[I], df: DependFinite[I, O]) =>
-	        new ChainFinite(f, df) with Memoized[O]
+	        new ChainFinite(f, df) with Memoized[(I, O)]
 	      case _ => throw new RuntimeException
 	    }
     
@@ -37,11 +37,11 @@ object Chain {
   }
   
   def apply[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2)
-  	(implicit ms: MemoizationScope = null): Memoized[O] = {
+  	(implicit ms: MemoizationScope = null): Memoized[(I, O)] = {
     val enum =
 	    (s1, s2) match {
 	      case (f: Finite[I], df: DependFinite[I2, O]) =>
-	        new ChainFiniteChain(f, df)( chain ) with Memoized[O]
+	        new ChainFiniteChain(f, df)( chain ) with Memoized[(I, O)]
 	      case _ => throw new RuntimeException
 	    }
     

@@ -38,6 +38,71 @@ class CombinationsTest extends FunSuite with Matchers {
     enum.size should be (1)
   }
 
+  test("funny lists, with single chain") {
+    
+    val maxLength = 10
+    
+    val endElementProducer = Depend(
+      (pair: (List[Int], Range)) => {
+        val (list, range) = pair
+        val sum = list.sum
+        if (sum > range.end) e.Empty
+        else e.WrapArray( sum to range.end map { _ :: list } )
+      }
+    )
+
+    var getList: ( (Int, Range) ) => e.Enum[List[Int]] = null
+    
+    val listDep: Depend[ (Int, Range), List[Int] ] = Depend(
+      ( pair: (Int, Range) ) => {
+        val (size, range) = pair
+        if (size <= 0) e.Singleton( List() )
+        else if (size == 1) e.WrapArray( range map { List(_) } )
+        else {
+          val smallerList = getList( (size-1, range) )
+          Chain.single(smallerList, endElementProducer, (x: List[Int]) => (x, range) )
+        }
+      }
+    )
+    
+    getList = (v: (Int, Range)) => listDep.getEnum(v)
+    
+    var res: e.Enum[List[Int]] = null
+    def clue = (0 until res.size).map(res(_)).mkString(",") 
+    
+    withLazyClue("Elements are: " + clue) {
+      res = listDep.getEnum((0, 1 to 3))
+      res(0) should be (Nil)
+      res.size should be (1)
+      
+      res = listDep.getEnum((1, 1 to 3))
+      res.size should be (3)
+      (0 until res.size).map(res(_)) should contain allOf ( List(1), List(2), List(3) )
+      
+      (1 to 3).end should be (3)
+      res = listDep.getEnum( (3, (1 to 3)) )
+      res.size should be (3)
+      var elements = (0 until res.size) map { res(_) }
+      elements should contain allOf (List(2, 1, 1), List(3, 1, 1), List(3, 2, 1))
+
+      res = listDep.getEnum( (4, (1 to 5)) )
+      res.size should be (3)
+      elements = (0 until res.size) map { res(_) }
+      elements should contain allOf (
+        List(4, 2, 1, 1), List(5, 2, 1, 1),
+        List(5, 3, 1, 1)
+      )
+
+      res = listDep.getEnum( (5, (1 to 10)) )
+      elements = (0 until res.size) map { res(_) }
+      elements should contain only (
+        List(8, 4, 2, 1, 1), List(9, 5, 2, 1, 1), List(10, 5, 2, 1, 1),
+        List(10, 6, 2, 1, 1), List(10, 5, 3, 1, 1),
+        List(9, 4, 2, 1, 1), List(10, 4, 2, 1, 1)
+      )
+    }
+  }
+
   test("funny lists") {
     
     val maxLength = 10
@@ -60,7 +125,7 @@ class CombinationsTest extends FunSuite with Matchers {
         else if (size == 1) e.WrapArray( range map { List(_) } )
         else {
           val smallerList = getList( (size-1, range) )
-          Chain(smallerList, endElementProducer, (x: List[Int]) => (x, range) )
+          Chain(smallerList, endElementProducer, (x: List[Int]) => (x, range) ) map { _._2 }
         }
       }
     )

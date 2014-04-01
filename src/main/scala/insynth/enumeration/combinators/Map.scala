@@ -1,9 +1,12 @@
 package insynth.enumeration
 package combinators
 
-abstract class Map[T, U](e: Enum[T], f: T => U) extends Enum[U] {
+trait Map[T, U] extends Enum[U] {
+
+  val enum: Enum[T]
+  val f: T => U
   
   override def apply(ind: Int) =
-    f( e.apply(ind) )
+    f( enum.apply(ind) )
 
 }

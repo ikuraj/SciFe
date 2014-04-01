@@ -9,9 +9,9 @@ import insynth.util.logging._
 
 class ChainFinite[I, O]
   (override val left: Finite[I], override val right: DependFinite[I, O])
-  extends combinators.Chain[I, O] with Finite[O] with HasLogger {
+  extends combinators.Chain[I, O] with Finite[(I, O)] with HasLogger {
   
-  val rr = ConcatFinite.buffer[O]( Seq.empty )
+  val rr = ConcatFinite.buffer[(I, O)]( Seq.empty )
   
   override def size: Int = {
     var size = 0
@@ -28,7 +28,7 @@ class ChainFinite[I, O]
       explored += 1
       if (explored >= left.size) throw new NoSuchElementException("Went out of range of this lazy structure")
       val leftProduced = left(explored)
-      rr.append( right(leftProduced) )
+      rr.append( e.Product(Singleton(leftProduced), right(leftProduced)) )
     }
     rr(ind)
   }

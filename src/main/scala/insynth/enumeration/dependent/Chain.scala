@@ -23,10 +23,18 @@ object Chain {
     }    
   }
   
-  def apply[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2): Enum[O] = {
+  def apply[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2): Enum[(I, O)] = {
     (s1, s2) match {
       case (f: Finite[I], df: DependFinite[_, _]) =>
         new ChainFiniteChain(f, df)( chain )
+      case _ => throw new RuntimeException
+    }
+  }
+  
+  def single[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2): Enum[O] = {
+    (s1, s2) match {
+      case (f: Finite[I], df: DependFinite[I2, O]) =>
+        new ChainFiniteChainSingle(f, df)( chain )
       case _ => throw new RuntimeException
     }    
   }
