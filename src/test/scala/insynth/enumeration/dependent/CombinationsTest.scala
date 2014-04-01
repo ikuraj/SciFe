@@ -8,7 +8,7 @@ import org.scalatest._
 
 class CombinationsTest extends FunSuite with Matchers {
   import insynth.util.Checks._
-  import Checks._
+  import Util._
 
   test("sorted lists") {
     

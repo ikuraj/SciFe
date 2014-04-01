@@ -9,9 +9,8 @@ object Product {
   
   def apply[I, O1, O2](s1: Depend[I, O1], s2: Depend[I, O2]) = {
     (s1, s2) match {
-      case (df1: DependFinite[_, _], df2: DependFinite[_, _]) =>
+      case (df1: DependFinite[I, O1], df2: DependFinite[I, O2]) =>
       	new ProductFinite(df1, df2)
-      case _ => throw new RuntimeException
     }
   }
   

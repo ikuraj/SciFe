@@ -1,26 +1,30 @@
 package insynth.enumeration
 package dependent
 
-class InMap[I, NewIn, +O](
-  override val inner: Depend[I, O], override val f: NewIn => I  
+import scala.language.higherKinds
+
+class InMap[I, NewIn, +O, DependIn[I, +O] <: Depend[I, O]](
+  override val inner: DependIn[I, O], override val f: NewIn => I  
 ) extends combinators.InMap[I, NewIn, O] {
+  
+  override type DependType[I, +O] = DependIn[I, O]
   
 }
 
-object Map {
+object InMap {
   
   def apply[T, U, O](tde: Depend[T, O], modify: U => T) =
     tde match {
     	case f: DependFinite[T, O] =>
-    	  new InMap(f, modify)
+    	  new InMap(f, modify) with DependFinite[U, O]
     	case i: DependInfinite[T, O] =>
-    	  new InMap(i, modify)
+    	  new InMap(i, modify) with DependInfinite[U, O]
 	  }
   
   def apply[T, U, O](tde: DependFinite[T, O], modify: U => T) =
-	  new InMap(tde, modify)
+	  new InMap(tde, modify) with DependFinite[U, O]
   
   def apply[T, U, O](tde: DependInfinite[T, O], modify: U => T) =
-	  new InMap(tde, modify)
+	  new InMap(tde, modify) with DependInfinite[U, O]
   
 }

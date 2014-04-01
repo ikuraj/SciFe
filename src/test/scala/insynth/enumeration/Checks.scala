@@ -6,7 +6,7 @@ import org.scalatest.Tag
 
 object FocusTag extends Tag("focus")
 
-object Checks {
+object Util {
 
   import scala.language.implicitConversions
 

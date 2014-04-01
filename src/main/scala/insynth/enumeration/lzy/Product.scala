@@ -38,6 +38,9 @@ object Product {
   
   def apply[T, V, U](s1: Singleton[T], s2: Finite[V]): Finite[(T, V)] =
     new ProductSingleton(s1, s2)
+  
+  def apply[T, V, U](s1: T, s2: Finite[V]): Finite[(T, V)] =
+    new ProductSingleton(s1, s2)
 //  
 //	def apply[T, V, U](s1: Infinite[T], s2: Infinite[V])(combine: (T, V) => U) =
 //	  new ProductInfinite(s1, s2)(combine)

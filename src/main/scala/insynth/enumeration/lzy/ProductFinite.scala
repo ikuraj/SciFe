@@ -36,11 +36,15 @@ protected[enumeration] class ProductFiniteComb[T, V, U]
 }
 
 class ProductSingleton[T, V]
-  (override val left: Singleton[T], override val right: Finite[V])
-  extends Product[T, V] with Finite[(T, V)] with HasLogger {
+  (el: T, val right: Finite[V])
+  extends Finite[(T, V)] with HasLogger {
+  
+  override def size = right.size
+  
+  def this(singleton: Singleton[T], right: Finite[V]) = this(singleton.el, right)
   
   override def apply(ind: Int) = {
-    (left.el, right(ind))
+    (el, right(ind))
   }
   
 }
