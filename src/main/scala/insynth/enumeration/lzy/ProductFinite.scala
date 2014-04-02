@@ -1,7 +1,7 @@
 package insynth.enumeration
 package lzy
 
-import combinators.Product
+import combinators.{ Product => CProduct }
 
 import _root_.insynth.util
 import util.Math._
@@ -9,7 +9,7 @@ import util.logging._
 
 protected[enumeration] class ProductFinite[T, V]
 	(override val left: Finite[T], override val right: Finite[V])
-	extends Product[T, V] with Finite[(T, V)] with HasLogger {
+	extends CProduct[T, V] with Finite[(T, V)] with HasLogger {
   
   override def apply(ind: Int) = {
     val i1 = ind % left.size
