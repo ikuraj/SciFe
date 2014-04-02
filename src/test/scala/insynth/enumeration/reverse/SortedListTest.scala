@@ -72,20 +72,20 @@ class SortedListTest extends FunSuite with Matchers with GeneratorDrivenProperty
 
         if (size == 0) Reverser(Nil): Reverse[List[Int]]
         else if (size > 0) {
-          val roots: Reverse[List[Int]] = naturals.getEnum(max)
+          val roots: Reverse[Int] = naturals.getEnum(max)
 
-          val innerLists: Depend[Int, List[Int]] = new InMap(self, { (par: Int) =>
+          val innerLists: rd.DependReverse[Int, List[Int]] = rd.InMap(self, { (par: Int) =>
             (size - 1, par)
           })
 
           val allLists =
-            new dependent.ChainFinite(roots, innerLists)
+            new ChainFinite(roots, innerLists)
                 
 //              (head: Int, l: List[Int]) => {
 //                head :: l
 //              })
 
-          allLists
+          allLists: Reverse[List[Int]]
         } else e.Empty
       })
   }

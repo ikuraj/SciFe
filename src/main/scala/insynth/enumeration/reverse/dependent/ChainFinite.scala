@@ -2,33 +2,30 @@ package insynth.enumeration
 package reverse
 package dependent
 
-import insynth.enumeration.dependent._
 import insynth.{ enumeration => e }
-import insynth.enumeration.lzy._
+import e.{ dependent => dp }
 
 import insynth.util.logging._
 
 class ChainFinite[I, O]
   (override val left: Reverse[I], override val right: DependReverse[I, O])
-  extends lzy.ChainFinite(left, right) with Finite[(I, O)] with Reverse[(I, O)] {
+  extends dp.lzy.ChainFinite(left, right) with Reverse[(I, O)] {
   
-  def reverse[T >: (I, O)](a: T): Finite[(I, O)] = {
-    val (in, out) = a.asInstanceOf[(I, O)]
-    val leftReverse = left.reverse(in)
-    val rightReverse = right(in).reverse(out)
+  def reverse[T >: (I, O)](a: T) = {
+    val (leftIn, rightIn) = a.asInstanceOf[(I, O)]
+
+    val leftInd = left.reverse(leftIn)
     
-    val beginningPart =
-      e.lzy.Product(in, rightReverse)
-    if (leftReverse.size > 1)
-	    e.Concat(
-        beginningPart,
-//	  		e.Map(rightReverse, { (in, _: O) }),
-	  		new e.dependent.lzy.ChainFinite(leftReverse, right)
-	    )
-    // if we hit the last outer stream
-    else
-      beginningPart
-//      e.Map(rightReverse, { (in, _: O) })
+    val beginningPart = {
+      var size = 0
+      for( ind <- leftInd until left.size; innerEnum = right( left(ind) ) )
+        size += innerEnum.size
+
+      size
+    }
+
+    val rightDepPar = left(leftInd)
+    beginningPart + right.apply( rightDepPar ).reverse( rightIn, rightDepPar )
   }
 
 }

@@ -7,7 +7,7 @@ import scala.reflect._
 import scala.language.implicitConversions
 
 // knows how to reverse but needs to have the input parameter I specified
-trait ReverseT[I, +A] {
+trait ReverseT[+A] {
   
 //  def reverse[B >: A](a: B, parameter: I): Finite[A]
   
@@ -23,7 +23,7 @@ trait ReverseT[I, +A] {
 //  
 //}
 
-trait Reverse[I, +O] extends Finite[O] with ReverseT[I, O] {
+trait Reverse[+O] extends Finite[O] with ReverseT[O] {
   
   // TODO do this with pattern matching
 //  def reverse[B >: A](a: B): Finite[A] =

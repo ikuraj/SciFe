@@ -8,7 +8,7 @@ trait DependReverse[I, +O] extends DependFinite[I, O] {
   
   type EnumType <: Reverse[O]
 
-  override def apply(parameter: I) = getEnum(parameter)
+  override def apply(parameter: I): EnumType = getEnum(parameter)
 
   override def getEnum(parameter: I): EnumType
   

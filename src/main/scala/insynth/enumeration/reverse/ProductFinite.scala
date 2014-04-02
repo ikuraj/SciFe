@@ -7,18 +7,16 @@ import _root_.insynth.util
 import util.Math._
 import util.logging._
 
-class ProductFinite[I, T, V]
-	(val left: Reverse[I, T], val right: Reverse[I, V])
-	extends lzy.ProductFinite(left, right) with Reverse[I, (T, V)] {
+class ProductFinite[T, V]
+	(override val left: Reverse[T], override val right: Reverse[V])
+	extends lzy.ProductFinite(left, right) with Reverse[(T, V)] {
   
-  override def reverse[B >: (T, V)](a: B, par: I) = {
+  override def reverse[B >: (T, V)](a: B) = {
     val (leftVal, rightVal) = a.asInstanceOf[(T, V)]
-    val leftInd = left.reverse(leftVal, par)
-    val rightInd = right.reverse(rightVal, par)
+    val leftInd = left.reverse(leftVal)
+    val rightInd = right.reverse(rightVal)
     
-    new lzy.ProductFinite(left, right) with Reversed[(T, V)] {
-      override val pos = rightInd * left.size + leftInd
-    }
+    rightInd * left.size + leftInd
   }
 
 }
