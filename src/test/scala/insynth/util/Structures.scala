@@ -97,7 +97,13 @@ object Structures {
     trait Tree
     case object Leaf extends Tree
     // if c == true then the node is black
-    case class Node(l: Tree, v: Int, r: Tree) extends Tree
+    case class Node(l: Tree, v: Int, r: Tree) extends Tree {
+      def this(v: Int) = this(Leaf, v, Leaf)
+    }
+    
+    object Node {
+      def apply(v: Int) = new Node(v)
+    }
     
     def invariant(tree: Tree) =
       valueOrdering(tree)

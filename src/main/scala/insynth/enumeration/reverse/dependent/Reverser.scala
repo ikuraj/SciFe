@@ -23,6 +23,14 @@ object Reverser {
 //    }
 //  }
   
+//  def apply[I, O](fun: I => Reverse[O]): DependReverse[I, O] = {
+//    new d.WrapFunction[I, O, Reverse[O]](fun) with DependReverse[I, O] with d.DependFinite[I, O]
+//  }
+  
+  def apply[I, O, E <: Reverse[O]](fun: (d.Depend[I, O], I) => E): DependReverse[I, O] = {
+    new d.WrapFunction(fun) with DependReverse[I, O]
+  }
+  
   def apply[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]]): DependReverse[I, O] = {
     val reverseTag = implicitly[ClassTag[Reverse[_]]]

@@ -5,8 +5,11 @@ import scala.reflect._
 
 object Reverser {
 
-  def apply[I, T](arg: T, args: T*)(implicit ct: ClassTag[T]): Reverse[T] =
+  def apply[T](arg: T, args: T*)(implicit ct: ClassTag[T]): Reverse[T] =
     fromFiniteCollection(arg :: args.toList)
+
+  def apply[T](col: Traversable[T])(implicit ct: ClassTag[T]): Reverse[T] =
+    fromFiniteCollection(col)
 
   private[enumeration] def fromFiniteCollection[I, T](col: Traversable[T])
     (implicit ct: ClassTag[T]): Reverse[T] =

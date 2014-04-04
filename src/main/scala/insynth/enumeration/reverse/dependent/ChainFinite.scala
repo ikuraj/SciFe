@@ -9,23 +9,28 @@ import insynth.util.logging._
 
 class ChainFinite[I, O]
   (override val left: Reverse[I], override val right: DependReverse[I, O])
-  extends dp.lzy.ChainFinite(left, right) with Reverse[(I, O)] {
+  extends dp.lzy.ChainFinite(left, right) with Reverse[(I, O)] with HasLogger {
   
   def reverse[T >: (I, O)](a: T) = {
     val (leftIn, rightIn) = a.asInstanceOf[(I, O)]
+    info("(leftIn, rightIn)=" + (leftIn, rightIn))
 
     val leftInd = left.reverse(leftIn)
     
     val beginningPart = {
       var size = 0
-      for( ind <- leftInd until left.size; innerEnum = right( left(ind) ) )
+      for( ind <- 0 until leftInd; innerEnum = right( left(ind) ) )
         size += innerEnum.size
 
       size
     }
 
-    val rightDepPar = left(leftInd)
-    beginningPart + right.apply( rightDepPar ).reverse( rightIn, rightDepPar )
+//    val rightDepPar = left(leftInd)
+    val rightDepPar = leftIn
+    info("Beginning part is %d. Right part is %s (under %s).".format(beginningPart,
+      rightIn, rightDepPar))
+    info("right reversed" + right.apply( rightDepPar ).reverse( rightIn ))
+    beginningPart + right.apply( rightDepPar ).reverse( rightIn )
   }
 
 }

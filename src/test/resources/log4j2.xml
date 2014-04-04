@@ -24,7 +24,10 @@
     <logger name="insynth.streams.light" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.streams.dependent" level="info" additivity="false">
+    <logger name="insynth.enumeration.reverse" level="off" additivity="false">
+      <appender-ref ref="Console" />
+    </logger>
+    <logger name="insynth.enumeration.reverse.dependent" level="all" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="insynth.testcases" level="off" additivity="false">
