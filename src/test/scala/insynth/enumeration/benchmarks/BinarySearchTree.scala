@@ -2,15 +2,17 @@ package insynth
 package enumeration
 package benchmarks
 
-import org.scalatest._
-import org.scalameter.api._
-
 import dependent._
 import memoization._
 import insynth.{ enumeration => e }
 import insynth.util._
 
 import insynth.util.logging._
+
+import org.scalatest._
+import org.scalameter.api._
+
+import scala.language.existentials
 
 class BinarySearchTreeBenchmark extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger {
   import common._
