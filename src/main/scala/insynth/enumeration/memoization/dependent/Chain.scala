@@ -29,7 +29,6 @@ object Chain {
 	    (s1, s2) match {
 	      case (f: Finite[I], df: DependFinite[_, _]) =>
 	        new ChainFiniteCombine(f, df, combine) with Memoized[R]
-	      case _ => throw new RuntimeException
 	    }
     
     if (ms != null) ms add enum

@@ -16,10 +16,12 @@ import org.scalameter.api._
 import scala.language.postfixOps
 import scala.language.existentials
 
-class RedBlackTreeDependentBenchmark extends DependentMemoizedBenchmark[Int, Depend[(Int, Range, Set[Boolean], Int), Tree]]
+class RedBlackTreeDependentBenchmark
+  extends StructuresBenchmark[Depend[(Int, Range, Set[Boolean], Int), Tree]]
+  //extends DependentMemoizedBenchmark[Int, Depend[(Int, Range, Set[Boolean], Int), Tree]]
   with java.io.Serializable with HasLogger {
 
-  val maxSize = 2
+  val maxSize = BenchmarkSuite.maxSize
 
   fixture
 
@@ -38,7 +40,7 @@ class RedBlackTreeDependentBenchmark extends DependentMemoizedBenchmark[Int, Dep
     }
   }
 
-  def generator = Gen.range("size")(1, maxSize, 1)
+//  def generator = Gen.range("size")(1, maxSize, 1)
 
   def warmUp(inEnum: EnumType) {
     val tdEnum = inEnum.asInstanceOf[Depend[(Int, Range, Set[Boolean], Int), Tree]]
@@ -84,14 +86,14 @@ class RedBlackTreeDependentBenchmark extends DependentMemoizedBenchmark[Int, Dep
           val rootLeftSizePairs = e.Product(leftSizes, roots)
           val rootLeftSizeColorTuples = e.Product(rootLeftSizePairs, rootColors)
 
-          val leftTrees: Depend[((Int, Int), Boolean), Tree] = new InMap(self, { (par: ((Int, Int), Boolean)) =>
+          val leftTrees: Depend[((Int, Int), Boolean), Tree] = InMap(self, { (par: ((Int, Int), Boolean)) =>
             val ((leftSize, median), rootColor) = par
             val childColors = if (rootColor) Set(true, false) else Set(true)
             val childBlackHeight = if (rootColor) blackHeight - 1 else blackHeight
             (leftSize, range.start to (median - 1), childColors, childBlackHeight)
           })
 
-          val rightTrees: Depend[((Int, Int), Boolean), Tree] = new InMap(self, { (par: ((Int, Int), Boolean)) =>
+          val rightTrees: Depend[((Int, Int), Boolean), Tree] = InMap(self, { (par: ((Int, Int), Boolean)) =>
             val ((leftSize, median), rootColor) = par
             val childColors = if (rootColor) Set(true, false) else Set(true)
             val childBlackHeight = if (rootColor) blackHeight - 1 else blackHeight

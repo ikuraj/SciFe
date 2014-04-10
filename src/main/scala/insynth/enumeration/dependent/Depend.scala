@@ -5,7 +5,7 @@ import scala.collection.immutable.{ Map => ScalaMap }
 import scala.reflect._
 import scala.language.higherKinds
 
-trait Depend[I, +O] {
+trait Depend[I, +O] extends Serializable {
   
   type EnumType <: Enum[O]
 

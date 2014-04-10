@@ -16,7 +16,9 @@ import org.scalameter.api._
 import scala.language.postfixOps
 import scala.language.existentials
 
-class HeapArrayBenchmark extends DependentMemoizedBenchmark[Int, Depend[(Int, List[Int]), Tree]]
+class HeapArrayBenchmark
+  extends StructuresBenchmark[Depend[(Int, List[Int]), Tree]]
+//  extends DependentMemoizedBenchmark[Int, Depend[(Int, List[Int]), Tree]]
   with java.io.Serializable with HasLogger {
   import common._
   import e.Enum
@@ -37,7 +39,7 @@ class HeapArrayBenchmark extends DependentMemoizedBenchmark[Int, Depend[(Int, Li
     }
   }
 
-  def generator = Gen.range("size")(1, maxSize, 1)
+//  def generator = Gen.range("size")(1, maxSize, 1)
 
   def warmUp(inEnum: EnumType) {
     val tdEnum = inEnum.asInstanceOf[EnumType]
@@ -64,7 +66,7 @@ class HeapArrayBenchmark extends DependentMemoizedBenchmark[Int, Depend[(Int, Li
       else if (!list.isEmpty) {
         val rootsInds = Enum(0 until list.size)
 
-        val childHeaps = new InMap(self, { (rootInd: Int) =>
+        val childHeaps = InMap(self, { (rootInd: Int) =>
           ( (size-1)/2, list.drop(rootInd) )
         })
         val leftRightPairs: Depend[Int, (Tree, Tree)] =

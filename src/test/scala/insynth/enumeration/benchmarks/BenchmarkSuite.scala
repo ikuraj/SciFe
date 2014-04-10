@@ -9,7 +9,14 @@ import Key._
 class BenchmarkSuite extends PerformanceTest.OnlineRegressionReport { 
 //  def persistor = Persistor.None //new persistence.SerializationPersistor
 
-//  include[SortedListDependentBenchmark]
-//  include[RedBlackTreeDependentBenchmark]
+  include[SortedListDependentBenchmark]
+  include[RedBlackTreeDependentBenchmark]
   include[BinarySearchTreeBenchmark]
+  include[HeapArrayBenchmark]
+}
+
+object BenchmarkSuite { 
+  
+  var maxSize = 3
+  
 }

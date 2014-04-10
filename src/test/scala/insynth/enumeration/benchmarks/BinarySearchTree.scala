@@ -9,39 +9,42 @@ import insynth.util._
 
 import insynth.util.logging._
 
+import Structures._
+import BSTrees._
+
 import org.scalatest._
 import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeBenchmark extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger {
+class BinarySearchTreeBenchmark
+  extends StructuresBenchmark[Depend[(Int, Range), Tree]]
+//  extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger
+  {
   import common._
-  import Structures._
-  import BSTrees._
 
-  performance of "scife enumerators" in {
-    measure method "Binary Search Trees" in {
-      val sizes = Gen.range("size")(1, 15, 1)
-      implicit val memScope = new MemoizationScope
-      val enumerator = constructEnumerator
+  fixture
 
-      using(sizes) curve ("Binary Search Trees") warmUp {
-        for (size <- 1 to 10) {
-          val tdEnumVal = enumerator
-          val enum = enumerator.getEnum((size, 1 to size))
-          for (i <- 0 until enum.size) enum(i)
-        }
-      } setUp { _ =>
-        memScope.clear
-      } in { (size: Int) =>
-        val tdEnumVal = enumerator
-        val enum = enumerator.getEnum((size, 1 to size))
-        for (i <- 0 until enum.size) enum(i)
-      }
+  type EnumType = Depend[(Int, Range), Tree]
+  val warmupSize = BenchmarkSuite.maxSize
+
+  override val name = "Binary Search Trees"
+
+  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
+    using in { (size: Int) =>
+      val enum = tdEnum.getEnum((size, 1 to size))
+      for (i <- 0 until enum.size) enum(i)
     }
   }
 
-  private def constructEnumerator(implicit ms: MemoizationScope) = {
+  def warmUp(inEnum: EnumType) {
+    for (size <- 1 to warmupSize) {
+      val enum = inEnum.getEnum((size, 1 to size))
+      for (i <- 0 until enum.size) enum(i)
+    }
+  }
+
+  override def constructEnumerator(ms: MemoizationScope) = {
     val rootProducer = Depend(
       (range: Range) => {
         e.WrapArray(range)
@@ -64,13 +67,13 @@ class BinarySearchTreeBenchmark extends PerformanceTest.OfflineReport with HasLo
 
           val rootLeftSizePairs = e.Product(leftSizes, roots)
 
-          val leftTrees: Depend[(Int, Int), Tree] = new InMap(self, { (par: (Int, Int)) =>
+          val leftTrees: Depend[(Int, Int), Tree] = InMap(self, { (par: (Int, Int)) =>
             val (leftSize, median) = par
             (leftSize, range.start to (median - 1))
           })
 
           val rightTrees: Depend[(Int, Int), Tree] =
-            new InMap(self, { (par: (Int, Int)) =>
+            InMap(self, { (par: (Int, Int)) =>
               val (leftSize, median) = par
               (size - leftSize - 1, (median + 1) to range.end)
             })

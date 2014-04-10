@@ -5,7 +5,7 @@ import util.EnumStream
 import scala.reflect._
 import scala.language.implicitConversions
 
-trait Enum[+A] {
+trait Enum[+A] extends Serializable {
   
   def size: Int
   

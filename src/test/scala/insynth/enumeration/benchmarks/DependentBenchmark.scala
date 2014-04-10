@@ -51,7 +51,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
           measureCode(
             using(generator) config (
               exec.jvmcmd -> javaCommand,
-              exec.jvmflags -> List("-XX:MaxInlineSize=120").mkString(" ")//JVMFlags.mkString(" ")
+              exec.jvmflags -> JVMFlags.mkString(" ")
             ) curve (name) warmUp {
               warmUp(enumerator)
             } setUp {
@@ -115,11 +115,11 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope)
     System.gc
     memScope.clear
-    info("Begin run")
+    info("[DependentBenchmark:] Begin run")
   }
 
   final def tearDownFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
-    info("End run")
+    info("[DependentBenchmark:] End run")
   }
 
   def constructEnumerator(ms: MemoizationScope): DepEnumType

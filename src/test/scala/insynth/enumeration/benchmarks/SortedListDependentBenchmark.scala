@@ -64,7 +64,7 @@ class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depen
         else if (size > 0) {
           val roots = naturals.getEnum(max)
           
-          val innerLists: Depend[Int, List[Int]] = new InMap(self, { (par: Int) =>
+          val innerLists: Depend[Int, List[Int]] = InMap(self, { (par: Int) =>
             (size - 1, par)
           })
           
@@ -93,7 +93,7 @@ class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depen
         else if (size > 0) {
           val roots = naturals.getEnum(max)
           
-          val innerLists: Depend[Int, List[Int]] = new InMap(self, { (par: Int) =>
+          val innerLists: Depend[Int, List[Int]] = InMap(self, { (par: Int) =>
             (size - 1, par - 1)
           })
           
