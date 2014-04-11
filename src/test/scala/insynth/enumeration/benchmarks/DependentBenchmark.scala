@@ -21,13 +21,13 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
     // print important outputs
-    "-XX:+PrintCompilation", "-verbose:gc",
+//    "-XX:+PrintCompilation", "-verbose:gc",
     // compilation
 //    "-Xbatch", "--XX:CICompilerCount=1",
 //    // optimizations
-    "-XX:ReservedCodeCacheSize=512M",
-    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
-    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
+//    "-XX:ReservedCodeCacheSize=512M",
+//    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
+//    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // memory
     "-Xms24G", "-Xmx24G"
   )
@@ -68,7 +68,8 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     generator: Gen[I] = this.generator,
     warmUp: DepEnumType => Any = this.warmUp,
     measureCode: (super.Using[I], DepEnumType) => Any = this.measureCode,
-    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUp) =
+    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUp) = {
+    require(name != null)
     performance of benchmarkMainName in {
       performance of name in {
         implicit val memScope = new MemoizationScope
@@ -88,6 +89,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
         //        measureCode(getUsing(generator, enumerator, memScope), enumerator)
       }
     }
+  }
 
   def getUsing(generator: Gen[I], enumerator: DepEnumType, memScope: MemoizationScope): super.Using[I] =
     using(generator) config (

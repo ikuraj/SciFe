@@ -23,13 +23,13 @@ class HeapArrayBenchmark
   import common._
   import e.Enum
 
+  override def name = "HeapArray"
+
   val maxSize = 10
 
   fixture
 
   type EnumType = Depend[(Int, List[Int]), Tree]
-
-  override def name = "HeapArray"
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>

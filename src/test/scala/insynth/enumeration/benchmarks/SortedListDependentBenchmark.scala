@@ -24,12 +24,12 @@ class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depen
 
   val maxSize = 15
 
+  override def name = "SortedList"
+
   fixtureRun("strictly", constructEnumerator = constructEnumeratorStrict)
   fixtureRun("equal", constructEnumerator = constructEnumerator)
 
   type EnumType = Depend[(Int, Int), List[Int]]
-
-  override def name = "SortedList"
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>

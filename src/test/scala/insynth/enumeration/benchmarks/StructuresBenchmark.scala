@@ -16,5 +16,5 @@ trait StructuresBenchmark[DepEnumType] extends DependentMemoizedBenchmark[Int, D
 
   def generator: Gen[Int] =
     Gen.range("size")(1, BenchmarkSuite.maxSize, 1)
-
+    
 }

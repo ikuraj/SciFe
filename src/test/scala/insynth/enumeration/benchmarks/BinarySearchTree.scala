@@ -23,12 +23,13 @@ class BinarySearchTreeBenchmark
   {
   import common._
 
+  // NOTE: declare name first - otherwise fixture will use uninitialized field
+  override val name = "Binary Search Trees"
+
   fixture
 
   type EnumType = Depend[(Int, Range), Tree]
   val warmupSize = BenchmarkSuite.maxSize
-
-  override val name = "Binary Search Trees"
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>

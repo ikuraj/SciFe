@@ -21,13 +21,13 @@ class RedBlackTreeDependentBenchmark
   //extends DependentMemoizedBenchmark[Int, Depend[(Int, Range, Set[Boolean], Int), Tree]]
   with java.io.Serializable with HasLogger {
 
+  override val name = "Red Black Tree"
+
   val maxSize = BenchmarkSuite.maxSize
 
   fixture
 
   type EnumType = Depend[(Int, Range, Set[Boolean], Int), Tree]
-
-  override val name = "Red Black Tree"
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>

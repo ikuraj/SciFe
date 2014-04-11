@@ -17,6 +17,6 @@ class BenchmarkSuite extends PerformanceTest.OnlineRegressionReport {
 
 object BenchmarkSuite { 
   
-  var maxSize = 3
+  var maxSize = 5
   
 }
