@@ -5,8 +5,6 @@ package dependent
 import insynth.{ enumeration => e }
 import e.{ dependent => dp }
 
-import insynth.util.logging._
-
 class ChainFinite[I, O]
   (override val left: Reverse[I], override val right: DependReverse[I, O])
   extends dp.lzy.ChainFinite(left, right) with Reverse[(I, O)] with HasLogger {

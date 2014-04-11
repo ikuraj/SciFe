@@ -4,8 +4,6 @@ package reverse
 
 import insynth.{ enumeration => e }
 
-import insynth.util.logging._
-
 import scala.{ collection => col }
 import scala.reflect._
 

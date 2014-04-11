@@ -3,8 +3,6 @@ package dependent
 
 import scala.collection.mutable
 
-import insynth.util.logging._
-
 class WrapFunction[I, O, E <: Enum[O]](val producerFunction: (Depend[I, O], I) => E)
 	extends Depend[I, O] with HasLogger with Serializable {
   

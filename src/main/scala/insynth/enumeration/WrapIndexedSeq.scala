@@ -1,8 +1,6 @@
 package insynth
 package enumeration
 
-import insynth.util.logging._
-
 import scala.reflect._
 
 class WrapIndexedSeq[@specialized T](val coll: IndexedSeq[T])

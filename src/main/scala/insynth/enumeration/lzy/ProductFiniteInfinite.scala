@@ -5,7 +5,6 @@ import insynth.enumeration.{ combinators => comb }
 
 import _root_.insynth.util
 import util.Math._
-import util.logging._
 
 trait ProductFiniteInfinite[T, V, U <: Pair[_, _]] extends Infinite[U]  {
   

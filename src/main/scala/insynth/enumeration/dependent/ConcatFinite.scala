@@ -3,8 +3,6 @@ package dependent
 
 import insynth.enumeration.lzy._
 
-import insynth.util.logging._
-
 class ConcatFinite[I, O]
   (s1: DependFinite[I, O], s2: DependFinite[I, O])
   extends DependFinite[I, O] with HasLogger {

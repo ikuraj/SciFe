@@ -1,8 +1,10 @@
 package insynth.util.logging
 
-class DummyLogger {
+trait DummyLogger {
 
   def severe(msg: => String) = {} 
+
+  def error(msg: => String) = {}
 
   def warning(msg: => String) = {}
 
@@ -13,5 +15,11 @@ class DummyLogger {
   def finer(msg: => String) = {}
 
   def finest(msg: => String) = {}
+  
+  def entering(method: => String, arguments: Any*) = {}
+    
+  def exiting(method: => String, result: => String) = {}
+   
+  def exiting[T](method: => String, result: T): T = result
   
 }

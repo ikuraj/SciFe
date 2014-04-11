@@ -1,8 +1,6 @@
 package insynth.enumeration
 package memoization
 
-import insynth.util.logging.HasLogger
-
 import scala.collection.mutable._
 
 trait Memoized[T] extends Enum[T] with Memoizable with HasLogger {

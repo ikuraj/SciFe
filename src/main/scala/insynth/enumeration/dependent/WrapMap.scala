@@ -1,8 +1,6 @@
 package insynth.enumeration
 package dependent
 
-import insynth.util.logging._
-
 import scala.collection.immutable.{ Map => ScalaMap }
 import scala.collection.mutable
 

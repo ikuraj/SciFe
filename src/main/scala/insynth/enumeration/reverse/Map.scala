@@ -3,8 +3,6 @@ package reverse
 
 import insynth.{ enumeration => en }
 
-import insynth.util.logging._
-
 class Map[T, U](enum: Reverse[T], modify: T=>U, revFun: U => T)
 	extends en.Map[T, U](enum, modify) with Reverse[U] with HasLogger {
 

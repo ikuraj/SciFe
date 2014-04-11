@@ -3,8 +3,6 @@ package lzy
 
 import combinators._
 
-import _root_.insynth.util.logging._
-
 import scala.collection.mutable
 import scala.reflect.ClassTag
 

@@ -5,8 +5,6 @@ package lzy
 import insynth.{ enumeration => e }
 import insynth.enumeration.lzy._
 
-import insynth.util.logging._
-
 class ChainFiniteSingle[I, O]
   (override val left: Finite[I], override val right: DependFinite[I, O])
   extends combinators.ChainSingle[I, O] with Finite[O] with HasLogger {

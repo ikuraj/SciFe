@@ -4,8 +4,6 @@ package dependent
 import combinators._
 import insynth.{ enumeration => e }
 
-import insynth.util.logging._
-
 class ChainFinite[I, O]
   (override val left: Finite[I], override val right: DependFinite[I, O])
   extends Chain[I, O] with Finite[(I, O)] with HasLogger {

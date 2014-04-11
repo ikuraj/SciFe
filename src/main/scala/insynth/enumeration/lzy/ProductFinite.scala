@@ -5,7 +5,6 @@ import combinators.{ Product => CProduct }
 
 import _root_.insynth.util
 import util.Math._
-import util.logging._
 
 protected[enumeration] class ProductFinite[T, V]
 	(override val left: Finite[T], override val right: Finite[V])
