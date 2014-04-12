@@ -115,7 +115,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
   final def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope)
-    System.gc
+//    System.gc
     memScope.clear
     info("[DependentBenchmark:] Begin run")
   }

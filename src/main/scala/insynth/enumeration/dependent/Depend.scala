@@ -39,6 +39,10 @@ object Depend {
     }
   }
   
+  def fin[I, O](fun: I => Finite[O]): DependFinite[I, O] = {
+    new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O]
+  }
+  
 //  def apply[I, O](producerFunction: I => Finite[O]) =
 //    new WrapFunction[I, O, Finite[O]](producerFunction) with DependFinite[I, O]
 //  
@@ -89,6 +93,15 @@ object Depend {
         case _ =>
           new WrapFunction[I, O, F[O]](producerFunction) with Memoized[I, O]
       }
+        
+    if (ms != null) ms add enum
+    enum
+  }
+    
+  def memoizedFin[I, O](fun: (DependFinite[I, O], I) => Finite[O])
+    (implicit ms: MemoizationScope = null): DependFinite[I, O] = {
+    val enum =
+      new WrapFunctionFin[I, O](fun) with DependFinite[I, O] with Memoized[I, O]
         
     if (ms != null) ms add enum
     enum

@@ -8,7 +8,11 @@ scalaVersion := "2.10.3"
 
 scalaBinaryVersion := "2.10"
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
+//scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
+// for benchmarking
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions")
+
+scalacOptions ++= Seq("-Xelide-below", "OFF") 
 
 javacOptions += "-Xlint:unchecked"
 
