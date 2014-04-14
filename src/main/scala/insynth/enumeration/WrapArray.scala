@@ -4,7 +4,8 @@ package enumeration
 import scala.reflect._
 
 class WrapArray[@specialized T](val coll: Array[T])
-	extends Finite[T] {
+	extends Finite[T]
+  with Serializable {
 //  require(coll.hasDefiniteSize && coll.size > 1)
   // check size in the factory that constructs this
   require(coll.hasDefiniteSize)

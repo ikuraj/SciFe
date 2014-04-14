@@ -17,7 +17,7 @@ import scala.language.postfixOps
 import scala.language.existentials
 
 class HeapArrayBenchmark
-  extends StructuresBenchmark[Depend[(Int, List[Int]), Tree]]
+  extends StructuresBenchmark[Depend[(Int, Array[Int]), Tree]]
 //  extends DependentMemoizedBenchmark[Int, Depend[(Int, List[Int]), Tree]]
   with java.io.Serializable with HasLogger {
   import common._
@@ -25,17 +25,18 @@ class HeapArrayBenchmark
 
   override def name = "HeapArray"
 
-  val maxSize = 10
+  val maxSize = BenchmarkSuite.maxSize
 
   fixture
 
-  type EnumType = Depend[(Int, List[Int]), Tree]
+  type EnumType = Depend[(Int, Array[Int]), Tree]
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>
       val enum = tdEnum.getEnum((size, rangeList(size)))
-      val elements =
-        for ( ind <- 0 until enum.size ) yield enum(ind)
+//      val elements =
+//        for ( ind <- 0 until enum.size ) yield enum(ind)
+      for ( ind <- 0 until enum.size ) enum(ind)
     }
   }
 
@@ -52,22 +53,23 @@ class HeapArrayBenchmark
     }
   }
   
-  def rangeList(m: Int) = m to 0 by -1 toList
+  def rangeList(m: Int) = m to 0 by -1 toArray
 
-  def constructEnumerator(ms: MemoizationScope) = {
+  def constructEnumerator(implicit ms: MemoizationScope) = {
     Depend.memoized(
-      (self: EnumType, pair: (Int, List[Int])) => {
+      (self: EnumType, pair: (Int, Array[Int])) => {
       // list sorted descendingly
-      val (size, list) = pair
+      val (size, array) = pair
 
       if (size <= 0) e.Singleton(Leaf)
       else if (size == 1)
-        (e.Enum(list): Enum[Int]) map { v => Node(Leaf, v, Leaf) }
-      else if (!list.isEmpty) {
-        val rootsInds = Enum(0 until list.size)
+//        (e.Enum(list): Enum[Int]) map { v => Node(Leaf, v, Leaf) }
+        e.WrapArray( array map { v => Node(Leaf, v, Leaf) } )
+      else if (!array.isEmpty) {
+        val rootsInds = Enum(0 until array.size)
 
         val childHeaps = InMap(self, { (rootInd: Int) =>
-          ( (size-1)/2, list.drop(rootInd) )
+          ( (size-1)/2, array.drop(rootInd) )
         })
         val leftRightPairs: Depend[Int, (Tree, Tree)] =
           Product(childHeaps, childHeaps)
@@ -77,7 +79,7 @@ class HeapArrayBenchmark
             (rootInd: Int, p2: (Tree, Tree)) => {
               val (leftTree, rightTree) = p2
 
-              Node(leftTree, list(rootInd), rightTree)
+              Node(leftTree, array(rootInd), rightTree)
             })
 
         allNodes

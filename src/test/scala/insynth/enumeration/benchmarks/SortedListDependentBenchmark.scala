@@ -22,20 +22,19 @@ import scala.language.existentials
 class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depend[(Int, Int), List[Int]]]
   with java.io.Serializable with HasLogger {
 
-  val maxSize = 15
+  val maxSize = BenchmarkSuite.maxSize
 
   override def name = "SortedList"
 
-  fixtureRun("strictly", constructEnumerator = constructEnumeratorStrict)
-  fixtureRun("equal", constructEnumerator = constructEnumerator)
+  fixtureRun("strictly", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
+  fixtureRun("equal", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
 
   type EnumType = Depend[(Int, Int), List[Int]]
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>
       val enum = tdEnum.getEnum((size, size))
-      val elements =
-        for ( ind <- 0 until enum.size ) yield enum(ind)
+      for ( ind <- 0 until enum.size ) enum(ind)
     }
   }
 
@@ -52,7 +51,7 @@ class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depen
     }
   }
 
-  def constructEnumerator(ms: MemoizationScope) = {
+  def constructEnumerator(implicit ms: MemoizationScope) = {
     
     val naturals = Depend( (range: Int) => { e.WrapArray( 1 to range ) })
     

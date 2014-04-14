@@ -35,6 +35,10 @@ class BinarySearchTreeBenchmark
     using in { (size: Int) =>
       val enum = tdEnum.getEnum((size, 1 to size))
       for (i <- 0 until enum.size) enum(i)
+//      val list =
+//      	for (i <- 0 until enum.size) yield enum(i)
+//      println(enum.size == (Catalan.catalan(size)))
+//      println(list.size == (Catalan.catalan(size)))
     }
   }
 
@@ -45,7 +49,7 @@ class BinarySearchTreeBenchmark
     }
   }
 
-  override def constructEnumerator(ms: MemoizationScope) = {
+  override def constructEnumerator(implicit ms: MemoizationScope) = {
     val rootProducer = Depend(
       (range: Range) => {
         e.WrapArray(range)
@@ -61,7 +65,8 @@ class BinarySearchTreeBenchmark
         val (size, range) = pair
 
         if (size <= 0) e.Singleton(Leaf)
-        else if (size == 1) e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
+        else if (size == 1)
+          e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
         else {
           val roots = rootProducer.getEnum(range)
           val leftSizes = sizeProducer.getEnum(size)

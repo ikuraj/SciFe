@@ -30,7 +30,7 @@ class BinarySearchTreeBenchmarkOld
     measure method "Binary Search Trees" in {
       val sizes = Gen.range("size")(1, 5, 1)
       implicit val memScope = new MemoizationScope
-      val enumerator = constructEnumerator
+      val enumerator = constructEnumerator(memScope)
                 
 //      enumerator shouldBe a [memoization.dependent.Memoized[_, _]]
 
@@ -51,12 +51,12 @@ class BinarySearchTreeBenchmarkOld
   }
 
   private def constructEnumerator(implicit ms: MemoizationScope) = {
-    val rootProducer = Depend.fin(
+    val rootProducer = Depend.memoized(
         (range: Range) => {
           e.WrapArray(range)
         })
 
-      val sizeProducer = Depend.fin(
+      val sizeProducer = Depend.memoized(
         (size: Int) => {
           e.WrapArray(0 until size)
         })
@@ -68,25 +68,25 @@ class BinarySearchTreeBenchmarkOld
           if (size <= 0) e.Singleton(Leaf)
           else if (size == 1) e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
           else {
-            val roots: Finite[Int] = rootProducer.getEnum(range)
-            val leftSizes: Finite[Int] = sizeProducer.getEnum(size)
+            val roots = rootProducer.getEnum(range)
+            val leftSizes = sizeProducer.getEnum(size)
 
-            val rootLeftSizePairs = new e.lzy.ProductFinite(leftSizes, roots)
+            val rootLeftSizePairs = e.Product(leftSizes, roots)
 
             val leftTrees: DependFinite[(Int, Int), Tree] = 
-              new InMap(self, { (par: (Int, Int)) =>
+              InMap(self, { (par: (Int, Int)) =>
                 val (leftSize, median) = par
                 (leftSize, range.start to (median - 1))
-              }) with DependFinite[(Int, Int), Tree]
+              })
 
             val rightTrees: DependFinite[(Int, Int), Tree] =
-              new InMap(self, { (par: (Int, Int)) =>
+              InMap(self, { (par: (Int, Int)) =>
                 val (leftSize, median) = par
                 (size - leftSize - 1, (median + 1) to range.end)
-              }) with DependFinite[(Int, Int), Tree]
+              })
 
             val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-              new ProductFinite(leftTrees, rightTrees)
+              Product(leftTrees, rightTrees)
 
             val allNodes =
               memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,

@@ -31,12 +31,17 @@ class RedBlackTreeDependentBenchmark
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>
-      val elements =
-        for (
-          blackHeight <- 0 to (size + 1);
-          enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
-          ind <- 0 until enum.size
-        ) yield enum(ind)
+      for (
+        blackHeight <- 0 to (size + 1);
+        enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
+        ind <- 0 until enum.size
+      ) enum(ind)
+//      val elements =
+//        for (
+//          blackHeight <- 0 to (size + 1);
+//          enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
+//          ind <- 0 until enum.size
+//        ) yield enum(ind)
     }
   }
 
@@ -55,7 +60,7 @@ class RedBlackTreeDependentBenchmark
     }
   }
 
-  def constructEnumerator(ms: MemoizationScope) = {
+  def constructEnumerator(implicit ms: MemoizationScope) = {
     val rootProducer = Depend(
       (range: Range) => {
         e.WrapArray(range)
