@@ -7,8 +7,8 @@ import reporting._
 import Key._
 
 package suite {
-  class BenchmarkSuite extends PerformanceTest.OnlineRegressionReport { 
-    //def persistor = Persistor.None //new persistence.SerializationPersistor
+  class BenchmarkSuite extends PerformanceTest.OfflineRegressionReport { 
+    override def persistor = new persistence.SerializationPersistor
   
     include[SortedListDependentBenchmark]
     include[RedBlackTreeDependentBenchmark]
@@ -19,6 +19,6 @@ package suite {
 
 object BenchmarkSuite { 
   
-  var maxSize = 3
+  var maxSize = 15
   
 }
