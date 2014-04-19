@@ -29,7 +29,8 @@ class BinarySearchTreeBenchmark
   fixture
 
   type EnumType = Depend[(Int, Range), Tree]
-  val warmupSize = BenchmarkSuite.maxSize
+
+  override val maxSize = BenchmarkSuite.sizeBinarySearchTree
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>
@@ -43,7 +44,7 @@ class BinarySearchTreeBenchmark
   }
 
   def warmUp(inEnum: EnumType) {
-    for (size <- 1 to warmupSize) {
+    for (size <- 1 to maxSize) {
       val enum = inEnum.getEnum((size, 1 to size))
       for (i <- 0 until enum.size) enum(i)
     }

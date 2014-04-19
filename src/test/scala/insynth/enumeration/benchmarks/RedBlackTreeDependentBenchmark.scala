@@ -23,7 +23,7 @@ class RedBlackTreeDependentBenchmark
 
   override val name = "Red Black Tree"
 
-  val maxSize = BenchmarkSuite.maxSize
+  val maxSize = BenchmarkSuite.sizeRedBlackTree
 
   fixture
 

@@ -25,7 +25,7 @@ class HeapArrayBenchmark
 
   override def name = "HeapArray"
 
-  val maxSize = BenchmarkSuite.maxSize
+  val maxSize = BenchmarkSuite.sizeHeapArray
 
   fixture
 

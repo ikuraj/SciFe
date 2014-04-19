@@ -1,6 +1,7 @@
 package insynth
 package enumeration
 package benchmarks
+package test
 
 import dependent._
 import memoization._

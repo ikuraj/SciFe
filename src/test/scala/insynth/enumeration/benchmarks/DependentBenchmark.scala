@@ -16,6 +16,8 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   with java.io.Serializable with HasLogger {
   import Structures._
 
+
+val JVMs = 1
   val benchmarkMainName = "SciFe_Dependent_Enumerators"
 
   lazy val javaCommand = "java -server"
@@ -29,9 +31,11 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // memory
-    "-Xms24G", "-Xmx24G"
+    "-Xms28G", "-Xmx28G"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
+  
+  def maxSize: Int
 
   def fixture: Unit = fixture()
 
@@ -51,9 +55,11 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
           measureCode(
             using(generator) config (
+              exec.independentSamples -> JVMs,
               exec.jvmcmd -> javaCommand,
               exec.jvmflags -> JVMFlags.mkString(" ")
             ) curve (name) warmUp {
+System.gc()
               warmUp(enumerator)
             } setUp {
               setUp(_, enumerator, memScope)
@@ -79,9 +85,11 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
         measureCode(
           using(generator) config (
+              exec.independentSamples -> JVMs,
             exec.jvmcmd -> javaCommand,
             exec.jvmflags -> JVMFlags.mkString(" ")
           ) curve (name) warmUp {
+System.gc()
             warmUp(enumerator)
           } setUp {
             setUp(_, enumerator, memScope)
@@ -129,5 +137,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   }
 
   def constructEnumerator(implicit ms: MemoizationScope): DepEnumType
+  
+//  @transient override lazy val reporter = new LoggingReporter
 
 }

@@ -19,14 +19,16 @@ import scala.language.existentials
 //package object RedBlackTreeDependentBenchmark {
 //  type EnumType = Dependent[(Int, Range, Set[Boolean], Int), Tree]
 
-class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depend[(Int, Int), List[Int]]]
+class SortedListDependentBenchmark
+  extends StructuresBenchmark[Depend[(Int, Int), List[Int]]]
+	//extends DependentMemoizedBenchmark[Int, Depend[(Int, Int), List[Int]]]
   with java.io.Serializable with HasLogger {
 
-  val maxSize = BenchmarkSuite.maxSize
+  val maxSize = BenchmarkSuite.sizeSortedList
 
   override def name = "SortedList"
 
-  fixtureRun("strictly", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
+  //fixtureRun("strictly", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
   fixtureRun("equal", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
 
   type EnumType = Depend[(Int, Int), List[Int]]
@@ -38,7 +40,7 @@ class SortedListDependentBenchmark extends DependentMemoizedBenchmark[Int, Depen
     }
   }
 
-  def generator = Gen.range("size")(1, maxSize, 1)
+//  def generator = Gen.range("size")(1, maxSize, 1)
 
   def warmUp(inEnum: EnumType) {
     val tdEnum = inEnum.asInstanceOf[EnumType]

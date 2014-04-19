@@ -15,6 +15,7 @@ import insynth.util.logging._
 trait StructuresBenchmark[DepEnumType] extends DependentMemoizedBenchmark[Int, DepEnumType] {
 
   def generator: Gen[Int] =
-    Gen.range("size")(1, BenchmarkSuite.maxSize, 1)
+    //Gen.range("size")(1, this.maxSize, 1)
+    Gen.range("size")(14, 16, 1)
     
 }

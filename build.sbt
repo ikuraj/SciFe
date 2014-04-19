@@ -29,9 +29,9 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-core" % "2.0-beta3"
 )
 
-seq(ScctPlugin.instrumentSettings : _*)
-
-seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
+//seq(ScctPlugin.instrumentSettings : _*)
+//
+//seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
 
 libraryDependencies +=  "com.googlecode.kiama" %% "kiama" % "1.5.1"
 
