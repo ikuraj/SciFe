@@ -1,6 +1,7 @@
 package insynth.enumeration
 package dependent
 
+import insynth.{ enumeration => e }
 import insynth.enumeration.{ combinators => ecomb }
 
 import insynth.util.logging._
@@ -10,7 +11,7 @@ object Product {
   def apply[I, O1, O2](s1: Depend[I, O1], s2: Depend[I, O2]) = {
     (s1, s2) match {
       case (df1: DependFinite[I, O1], df2: DependFinite[I, O2]) =>
-      	new ProductFinite(df1, df2)
+      	ProductFinite(df1, df2)
     }
   }
   

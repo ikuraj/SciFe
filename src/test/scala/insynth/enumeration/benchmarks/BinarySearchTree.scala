@@ -22,7 +22,10 @@ class BinarySearchTreeBenchmark
 //  extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger
   {
   import common._
-
+  
+//  def generator: Gen[Int] =
+//    Gen.range("size")(1, this.maxSize, 1)
+    
   // NOTE: declare name first - otherwise fixture will use uninitialized field
   override val name = "Binary Search Trees"
 

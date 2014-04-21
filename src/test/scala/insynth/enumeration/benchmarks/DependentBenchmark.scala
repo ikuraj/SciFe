@@ -4,21 +4,31 @@ package benchmarks
 
 import org.scalatest._
 import org.scalameter.api._
-
 import dependent._
 import memoization._
 import insynth.{ enumeration => e }
 import insynth.util._
-
 import insynth.util.logging._
+import org.scalameter.reporting.DsvReporter
 
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
   import Structures._
 
+//  @transient override lazy val reporter = new DsvReporter(',')
 
-val JVMs = 1
+  val warmUps = 2
+	val numberOfRuns = 2
+	val JVMs = 1
   val benchmarkMainName = "SciFe_Dependent_Enumerators"
+    
+  val configArguments = org.scalameter.Context(
+    exec.maxWarmupRuns -> warmUps,
+    exec.benchRuns -> numberOfRuns, 
+    exec.independentSamples -> JVMs,
+    exec.jvmcmd -> javaCommand,
+    exec.jvmflags -> JVMFlags.mkString(" ")
+  )
 
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
@@ -39,36 +49,39 @@ val JVMs = 1
 
   def fixture: Unit = fixture()
 
-  def fixtureRun(
-    run: String,
-    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
-    generator: Gen[I] = this.generator,
-    warmUp: DepEnumType => Any = this.warmUp,
-    measureCode: (super.Using[I], DepEnumType) => Any = this.measureCode,
-    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed) =
-    performance of benchmarkMainName in {
-      performance of name in {
-        measure method run in {
-          val memScope = new MemoizationScope
-          val enumerator = constructEnumerator(memScope)
-          assert(memScope.memoizations.size > 0)
-
-          measureCode(
-            using(generator) config (
-              exec.independentSamples -> JVMs,
-              exec.jvmcmd -> javaCommand,
-              exec.jvmflags -> JVMFlags.mkString(" ")
-            ) curve (name) warmUp {
-System.gc()
-              warmUp(enumerator)
-            } setUp {
-              setUp(_, enumerator, memScope)
-            } tearDown {
-              tearDownFixed(_, enumerator, memScope)
-            }, enumerator)
-        }
-      }
-    }
+//  def fixtureRun(
+//    run: String,
+//    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
+//    generator: Gen[I] = this.generator,
+//    warmUp: DepEnumType => Any = this.warmUp,
+//    measureCode: (super.Using[I], DepEnumType) => Any = this.measureCode,
+//    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed) =
+//    performance of benchmarkMainName in {
+//      performance of name in {
+//        measure method run in {
+//          val memScope = new MemoizationScope
+//          val enumerator = constructEnumerator(memScope)
+//          assert(memScope.memoizations.size > 0)
+//
+//          measureCode(
+//            using(generator) config (
+//              exec.maxWarmupRuns -> warmUps,
+//          		exec.benchRuns -> numberOfRuns, 
+//              exec.independentSamples -> JVMs,
+//              exec.jvmcmd -> javaCommand,
+//              exec.jvmflags -> JVMFlags.mkString(" ")
+//            ) curve (name) warmUp {
+//System.gc()
+//System.gc()
+//              warmUp(enumerator)
+//            } setUp {
+//              setUp(_, enumerator, memScope)
+//            } tearDown {
+//              tearDownFixed(_, enumerator, memScope)
+//            }, enumerator)
+//        }
+//      }
+//    }
 
   def fixture(
     constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
@@ -85,12 +98,13 @@ System.gc()
 
         measureCode(
           using(generator) config (
-              exec.independentSamples -> JVMs,
-            exec.jvmcmd -> javaCommand,
-            exec.jvmflags -> JVMFlags.mkString(" ")
+            configArguments
           ) curve (name) warmUp {
 System.gc()
+System.gc()
             warmUp(enumerator)
+System.gc()
+System.gc()
           } setUp {
             setUp(_, enumerator, memScope)
           } tearDown {

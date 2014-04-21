@@ -2,6 +2,7 @@ package insynth
 package enumeration
 package dependent
 
+import insynth.{ enumeration => e }
 import enumeration.{ lzy => elzy }
 
 import insynth.util.logging._
@@ -16,7 +17,7 @@ case class ProductFinite[I, O1, O2]
     val e1 = s1.getEnum(parameter)
     val e2 = s2.getEnum(parameter)
     
-    elzy.Product( e1, e2 )
+    e.Product( e1, e2 )
   }
     
 }

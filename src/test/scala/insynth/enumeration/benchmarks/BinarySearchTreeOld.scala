@@ -99,7 +99,7 @@ class BinarySearchTreeBenchmarkOld
                 
 //            allNodes shouldBe a [Memoized[_]]
 
-            allNodes
+            allNodes: Finite[Node]
           }
         })
   }

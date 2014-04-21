@@ -53,6 +53,9 @@ object Enum {
   def apply[T](arg: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
     fromFiniteCollection(arg :: args.toList)
 
+  def apply[T](stream: List[T])(implicit ct: ClassTag[T]): Finite[T] =
+    fromFiniteCollection(stream)
+
   def apply[T](stream: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
     fromCollection(stream)
 

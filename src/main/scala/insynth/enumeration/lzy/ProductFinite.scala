@@ -47,3 +47,17 @@ class ProductSingleton[T, V]
   }
   
 }
+
+class ProductSingletonRight[T, V]
+  (val left: Finite[V], el: T)
+  extends Finite[(V, T)] with HasLogger {
+  
+  override def size = left.size
+  
+  def this(left: Finite[V], singleton: Singleton[T]) = this(left, singleton.el)
+  
+  override def apply(ind: Int) = {
+    (left(ind), el)
+  }
+  
+}

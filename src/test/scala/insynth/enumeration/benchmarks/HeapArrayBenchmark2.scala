@@ -16,16 +16,16 @@ import org.scalameter.api._
 import scala.language.postfixOps
 import scala.language.existentials
 
-class HeapArrayBenchmark
+class HeapArrayBenchmark2
   extends StructuresBenchmark[Depend[(Int, Range), Tree]]
 //  extends DependentMemoizedBenchmark[Int, Depend[(Int, List[Int]), Tree]]
   with java.io.Serializable with HasLogger {
   import common._
   import e.Enum
 
-  override def name = "HeapArray"
+  override def name = "HeapArray2"
 
-  val maxSize = BenchmarkSuite.sizeHeapArray
+  val maxSize = BenchmarkSuite.sizeHeapArray2
 
   fixture
 
@@ -36,7 +36,7 @@ class HeapArrayBenchmark
       val enum = tdEnum.getEnum((size, getRange(size)))
 //      val elements =
 //        for ( ind <- 0 until enum.size ) yield enum(ind)
-      for ( ind <- 0 until Int.MaxValue ) enum(ind)
+      for ( ind <- 0 until enum.size ) enum(ind)
     }
   }
 
@@ -44,8 +44,7 @@ class HeapArrayBenchmark
 
   def warmUp(inEnum: EnumType) {
     val tdEnum = inEnum.asInstanceOf[EnumType]
-    for (size <- 1 to 10) {
-//    for (size <- maxSize to maxSize) {
+    for (size <- 1 to maxSize) {
       val enum= tdEnum.getEnum((size, getRange(size)))
       val elements =
         for (
@@ -75,31 +74,20 @@ class HeapArrayBenchmark
       else if (!range.isEmpty) {
         val rootsInds = Enum(range): Finite[Int]
 
-        val leftSize = (size-1)/2
-        val childHeaps1 = InMap(self, { (rootInd: Int) =>
-          ( size - 1 - leftSize, getRange(rootInd): Range )
-        })
-        val childHeaps2 = InMap(self, { (rootInd: Int) =>
+        val leftSize = size/2
+        val childHeaps = InMap(self, { (rootInd: Int) =>
           ( leftSize, getRange(rootInd): Range )
         })
         val leftRightPairs: Depend[Int, (Tree, Tree)] =
-          Product(childHeaps1, childHeaps2)
+          Product(childHeaps, childHeaps)
         
         val allNodes =
-          if (size < 9)
-	          memoization.Chain[Int, (Tree, Tree), Node](rootsInds, leftRightPairs,
-	            (rootInd: Int, p2: (Tree, Tree)) => {
-	              val (leftTree, rightTree) = p2
-	
-	              Node(leftTree, rootInd, rightTree)
-	            })
-          else
-            e.dependent.Chain[Int, (Tree, Tree), Node](rootsInds, leftRightPairs,
-	            (rootInd: Int, p2: (Tree, Tree)) => {
-	              val (leftTree, rightTree) = p2
-	
-	              Node(leftTree, rootInd, rightTree)
-	            })
+          memoization.Chain[Int, (Tree, Tree), Node](rootsInds, leftRightPairs,
+            (rootInd: Int, p2: (Tree, Tree)) => {
+              val (leftTree, rightTree) = p2
+
+              Node(leftTree, rootInd, rightTree)
+            })
 
         allNodes
       } else e.Empty

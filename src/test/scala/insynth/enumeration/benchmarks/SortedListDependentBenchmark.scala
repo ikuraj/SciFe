@@ -29,7 +29,7 @@ class SortedListDependentBenchmark
   override def name = "SortedList"
 
   //fixtureRun("strictly", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
-  fixtureRun("equal", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
+  fixture(constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
 
   type EnumType = Depend[(Int, Int), List[Int]]
 
@@ -55,14 +55,16 @@ class SortedListDependentBenchmark
 
   def constructEnumerator(implicit ms: MemoizationScope) = {
     
-    val naturals = Depend( (range: Int) => { e.WrapArray( 1 to range ) })
+    val naturals = Depend.memoized( (range: Int) => { e.Enum( 1 to range ) })
     
     Depend.memoized(
       ( self: EnumType, pair: (Int, Int) ) => {
         val (size, max) = pair
 
+        if (size > max) e.Empty
+        else
         if (size == 0) e.Singleton( Nil )
-        else if (size > 0) {
+        else /*if (size > 0)*/ {
           val roots = naturals.getEnum(max)
           
           val innerLists: Depend[Int, List[Int]] = InMap(self, { (par: Int) =>
@@ -70,14 +72,21 @@ class SortedListDependentBenchmark
           })
           
           val allLists =
-            memoization.Chain[Int, List[Int], List[Int]](roots, innerLists,
-              (head: Int, l: List[Int]) => {
-                head :: l
-              }
-            )
+            if (size < 10)
+              memoization.Chain[Int, List[Int], List[Int]](roots, innerLists,
+                (head: Int, l: List[Int]) => {
+                  head :: l
+                }
+              )
+            else
+              e.dependent.Chain[Int, List[Int], List[Int]](roots, innerLists,
+                (head: Int, l: List[Int]) => {
+                  head :: l
+                }
+              )
           
           allLists
-        } else e.Empty
+        }// else e.Empty
       }
     )
   }
@@ -99,11 +108,18 @@ class SortedListDependentBenchmark
           })
           
           val allLists =
-            memoization.Chain[Int, List[Int], List[Int]](roots, innerLists,
-              (head: Int, l: List[Int]) => {
-                head :: l
-              }
-            )
+            if (size < 5)
+              memoization.Chain[Int, List[Int], List[Int]](roots, innerLists,
+                (head: Int, l: List[Int]) => {
+                  head :: l
+                }
+              )
+            else
+              e.dependent.Chain[Int, List[Int], List[Int]](roots, innerLists,
+                (head: Int, l: List[Int]) => {
+                  head :: l
+                }
+              )
           
           allLists
         } else e.Empty
