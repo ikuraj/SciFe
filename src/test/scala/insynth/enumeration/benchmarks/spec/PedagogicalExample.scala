@@ -64,7 +64,7 @@ class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenProp
 //\end{lstlisting}
   
   
-  def constructEnumerator(implicit ms: MemoizationScope) = {
+  def constructEnumerator1(implicit ms: MemoizationScope) = {
     import e._
     import Enum._
    
@@ -72,6 +72,21 @@ class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenProp
       product (Stream.from(0) ⊘ { _ % 5 == 0 })
     ) ↑ { case (x, y) => ("valid", x, y) }
 
+  }
+
+  def constructEnumerator2(implicit ms: MemoizationScope) = {
+    import e._
+    import Enum._
+//   
+//    val enum = rec(self, ind) {
+//      Enum(2, 3) concat
+//        inmap(ind - 2)self 
+//    }
+
+    val res: Enum[(String, ((Int, Int), Int))] =
+    ((Enum(1 to 31) ** Enum(1 to 12) ** Enum(Stream.from(2014)) ⊘ {
+      _ => true; // whether its a good year
+    }): Enum[((Int, Int), Int)]) ↑ { case p@((x, y), z) => if (true) ("leap", p) else ("no", p) }
   }
 
 
