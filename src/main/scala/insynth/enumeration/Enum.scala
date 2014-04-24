@@ -36,12 +36,12 @@ trait Enum[+A] extends Serializable {
     Map(this, modifyFun)
     
   def ↑[B](modifyFun: A => B) = map(modifyFun)
-//
-//  // filter
-//  def filter[B](e: Enum[B]) =
-//    throw new UnsupportedOperationException("Implement me!")
-//    
-//  def ⊘[B](e: Enum[B]) = filter(e)
+
+  // filter
+  def filter(predicate: A => Boolean) =
+    throw new UnsupportedOperationException("Implement me!")
+    
+  def ⊘(predicate: A => Boolean) = filter(predicate)
   
 }
 
