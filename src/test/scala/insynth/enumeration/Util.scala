@@ -17,7 +17,9 @@ object Util {
 
   class CheckerHelper[T] {
     var _res: Enum[T] = null
-    var elements: Seq[T] = null
+    var _elements: Seq[T] = null
+    def elements = _elements
+    def elements_=(n: Seq[T]) = _elements = n
     def res = _res
     def res_=(n: Enum[T]) = {
       _res = n
@@ -25,6 +27,14 @@ object Util {
     }
     var addMessage: String = ""
     def clue =
-      (0 until res.size).map(res(_)).mkString("\n") + "\n" + addMessage
+      if (res == null) elements.mkString("\n") + "\n" + addMessage
+      else (0 until res.size).map(res(_)).mkString("\n") + "\n" + addMessage
+  }
+
+  class CheckerHelperFun[T]( fun: (Seq[T] => _) ) extends CheckerHelper[T] {
+    override def elements_=(n: Seq[T]) = {
+      super.elements_=(n)
+      fun(n)
+    }
   }
 }

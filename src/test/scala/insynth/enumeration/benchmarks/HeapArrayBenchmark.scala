@@ -50,7 +50,7 @@ class HeapArrayBenchmark
       val elements =
         for (
           ind <- 0 until enum.size
-        ) yield enum(ind)
+        ) enum(ind)
     }
   }
   

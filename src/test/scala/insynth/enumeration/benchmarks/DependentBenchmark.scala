@@ -17,8 +17,8 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
 //  @transient override lazy val reporter = new DsvReporter(',')
 
-  val warmUps = 2
-	val numberOfRuns = 2
+  val warmUps = 8
+	val numberOfRuns = 3
 	val JVMs = 1
   val benchmarkMainName = "SciFe_Dependent_Enumerators"
     

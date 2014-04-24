@@ -10,5 +10,8 @@ object Math {
 //    fine("For z=%d, we got reverse (%d, %d)".format(z, x, y))
     (x, y)
 	}
+  
+  val lnOf2 = scala.math.log(2) // natural log of 2
+  def log2(x: Double): Double = scala.math.log(x) / lnOf2
 
 }

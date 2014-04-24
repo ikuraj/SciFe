@@ -33,7 +33,7 @@ class BinarySearchTreeBenchmark
 
   type EnumType = Depend[(Int, Range), Tree]
 
-  override val maxSize = BenchmarkSuite.sizeBinarySearchTree
+  override def maxSize = BenchmarkSuite.sizeBinarySearchTree
 
   def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
     using in { (size: Int) =>
@@ -54,16 +54,6 @@ class BinarySearchTreeBenchmark
   }
 
   override def constructEnumerator(implicit ms: MemoizationScope) = {
-    val rootProducer = Depend(
-      (range: Range) => {
-        e.WrapArray(range)
-      })
-
-    val sizeProducer = Depend(
-      (size: Int) => {
-        e.WrapArray(0 until size)
-      })
-
     Depend.memoized(
       (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
         val (size, range) = pair
@@ -72,8 +62,8 @@ class BinarySearchTreeBenchmark
         else if (size == 1)
           e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
         else {
-          val roots = rootProducer.getEnum(range)
-          val leftSizes = sizeProducer.getEnum(size)
+          val roots = e.Enum(range)
+          val leftSizes = e.Enum(0 until size)
 
           val rootLeftSizePairs = e.Product(leftSizes, roots)
 

@@ -14,6 +14,7 @@ object Chain {
   	(implicit ms: MemoizationScope = null) = {
     val enum =
 	    (s1, s2) match {
+        case (Empty, _) => Empty
 	      case (s: Singleton[I], df: DependFinite[_, _]) =>
 	        df.apply(s.el)
 	      case (f: Finite[I], df: DependFinite[I, O]) =>
@@ -25,9 +26,10 @@ object Chain {
   def apply[I, O, R](s1: Enum[I], s2: Depend[I, O], combine: (I, O) => R) 
   	(implicit ms: MemoizationScope = null) = {
 	    (s1, s2) match {
+        case (Empty, _) => Empty
 	      case (s: Singleton[I], df: DependFinite[_, _]) =>
 	        //this !
-	        Map.memoized( df.apply(s.el), { (v: O) => combine(s.el, v) } )
+	        this ! Map.memoized( df.apply(s.el), { (v: O) => combine(s.el, v) } )
 	      case (f: Finite[I], df: DependFinite[_, _]) =>
 	        this ! new ChainFiniteCombine(f, df, combine) with Memoized[R]
 	    }
@@ -36,6 +38,9 @@ object Chain {
   def apply[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2)
   	(implicit ms: MemoizationScope = null) = {
 	    (s1, s2) match {
+      case (Empty, _) => Empty
+      case (s: Singleton[I], df: DependFinite[I2, O]) =>
+        this ! Map.memoized( df.apply( chain(s.el) ), { (v: O) => (s.el, v) } )
 	      case (f: Finite[I], df: DependFinite[I2, O]) =>
 	        this ! new ChainFiniteChain(f, df)( chain ) with Memoized[(I, O)]
 	      case _ => throw new RuntimeException
@@ -46,6 +51,7 @@ object Chain {
     chain: I => I2, combine: (I, O) => R) 
   	(implicit ms: MemoizationScope = null) = {
 	    (s1, s2) match {
+      case (Empty, _) => Empty
 	//      case (f: Finite[I], df: DependFinite[_, _]) =>
 	//        new ChainFiniteCombine(f, df, combine) with Memoized[R]
 	      case _ => throw new RuntimeException

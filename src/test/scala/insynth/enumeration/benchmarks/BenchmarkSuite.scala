@@ -21,7 +21,7 @@ object BenchmarkSuite {
   
   var maxSize = 15
   
-  val sizeBinarySearchTree = 14
+  val sizeBinarySearchTree = 15//14
   val sizeHeapArray = 12
   val sizeRedBlackTree = 15//20
   val sizeSortedList = 15//16
