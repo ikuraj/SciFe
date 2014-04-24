@@ -33,6 +33,21 @@ class WrapFunctionFin[I, O](val producerFunction: (DependFinite[I, O], I) => Fin
   
 }
 
+class WrapFunctionP[I, O, E <: Enum[O]](val producerFunction: PartialFunction[(Depend[I, O], I), E])
+	extends Depend[I, O] with HasLogger with Serializable {
+  
+  override type EnumType = E
+  
+  val partiallyApplied = producerFunction(this, _: I)
+  
+//  def this(producerFunction: PartialFunction[I, E]) =
+//    this( { case (td: Depend[I, O], i: I) => producerFunction(i) } )
+
+  override def getEnum(parameter: I) =
+    producerFunction(this, parameter)
+  
+}
+
 //class WrapFunctionInf[I, O](val producerFunction: (DependInfinite[I, O], I) => E)
 //  extends Depend[I, O] with HasLogger with Serializable {
 //  

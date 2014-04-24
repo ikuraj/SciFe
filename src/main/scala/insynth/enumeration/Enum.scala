@@ -85,6 +85,9 @@ object Enum {
     
   implicit def elemsToEnum[T](elems: T*)(implicit ct: ClassTag[T]) =
     fromFiniteCollection(elems)
+    
+  implicit def elToEnum[T](el: T) =
+    Singleton(el)
 
   implicit def streamToEnum[T](col: Stream[T]): Enum[T] =
     fromCollectionNoTag(col)
@@ -96,7 +99,7 @@ object Enum {
     if (e.hasDefiniteSize)
       e.toList
     else EnumStream(e)
-
+    
   private[enumeration] def fromCollection[T](col: Traversable[T])(implicit ct: ClassTag[T]): Enum[T] =
     col match {
       case (stream: Stream[T]) if !stream.hasDefiniteSize => new WrapStream(stream)

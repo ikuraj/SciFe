@@ -7,10 +7,11 @@ import insynth.util.logging._
 
 object Chain {
   
-  def apply[I, O](s1: Enum[I], s2: Depend[I, O]) = {
+  def apply[I, O](s1: Enum[I], s2: Depend[I, O]): Enum[(I, O)] = {
     (s1, s2) match {
       case (Empty, _) => Empty
-      case (s: Singleton[I], df: DependFinite[I, O]) => df.apply(s.el)
+      case (s: Singleton[I], df: DependFinite[I, O]) => Map(df.apply(s.el),
+        (x: O) => { (s.el, x) })
       case (f: Finite[I], df: DependFinite[I, O]) =>
         new ChainFinite(f, df)
     }    
