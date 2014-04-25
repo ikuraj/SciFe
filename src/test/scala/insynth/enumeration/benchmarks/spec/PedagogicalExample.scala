@@ -68,9 +68,9 @@ class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenProp
     import e._
     import Enum._
    
-    (Enum( (1, 1), (3, 3) ): Enum[(Int, Int)] ) ⊕ ( Enum(1 to 9)
-      product (Stream.from(0) ⊘ { _ % 5 == 0 })
-    ) ↑ { case (x, y) => ("valid", x, y) }
+//    (Enum( (1, 1), (3, 3) ): Enum[(Int, Int)] ) ⊕ ( Enum(1 to 9)
+//      product (Stream.from(0) ⊘ { _ % 5 == 0 })
+//    ) ↑ { case (x, y) => ("valid", x, y) }
 
   }
 
@@ -83,10 +83,21 @@ class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenProp
 //        inmap(ind - 2)self 
 //    }
 
-    val res: Enum[(String, ((Int, Int), Int))] =
-    ((Enum(1 to 31) ** Enum(1 to 12) ** Enum(Stream.from(2014)) ⊘ {
-      _ => true; // whether its a good year
-    }): Enum[((Int, Int), Int)]) ↑ { case p@((x, y), z) => if (true) ("leap", p) else ("no", p) }
+//    val res: Enum[(String, ((Int, Int), Int))] =
+//    ((Enum(1 to 31) ** Enum(1 to 12) ** Enum(Stream.from(2014)) ⊘ {
+//      _ => true; // whether its a good year
+//    }): Enum[((Int, Int), Int)]) ↑ { case p@((x, y), z) => if (true) ("leap", p) else ("no", p) }
+//    
+//
+//    val res2 =
+//    (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ⊘ {
+//      case ((d, m), y) => true } ↑ { ("leap", _) }
+//    
+//    
+//    // lazy fibonacci are doable!
+//    val fibs: Enum[Int] = (Enum(0, 1): Enum[Int])
+//    val fibs2: Enum[Int] = (Enum(Stream.from(0)).map{ (i: Int) => fibs(i-1) + fibs(i-2) })
+//    val fib = fibs ++ fibs2
   }
 
 

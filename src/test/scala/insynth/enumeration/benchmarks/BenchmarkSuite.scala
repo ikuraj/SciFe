@@ -25,6 +25,7 @@ object BenchmarkSuite {
   val sizeHeapArray = 12
   val sizeRedBlackTree = 15//20
   val sizeSortedList = 15//16
+  val sizeDAGStructure = 10//16
 
   val sizeHeapArray2 = 10
   

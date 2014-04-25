@@ -48,60 +48,67 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
 //        res.size should be (0)
 //      }
       
-      // (size, #class, #interface, #overridableMethods)
-      res = enum.getEnum((1, 0, 0, Nil))
-      res shouldBe a [Map[_, _]]
+      
+      for (c <- 1 to 5; m <- 1 to 5) {
+      res = enum.getEnum((c, m, 0, Nil))
       // class or interface
-      res.size should be (2)
-      
-      res = enum.getEnum((1, 1, 0, Nil))
-      res shouldBe a [Map[_, _]]
-      // class or interface
-      res.size should be (3)
-      
-      res = enum.getEnum((1, 0, 1, Nil))
-      res shouldBe a [Map[_, _]]
-      // class or interface
-      res.size should be (4)
-      
-      res = enum.getEnum((1, 1, 0, List(1)))
-      // class or interface
-      res.size should be (9)
-      
-      res = enum.getEnum((1, 1, 1, Nil))
-      res shouldBe a [Map[_, _]]
-      // class or interface
-      res.size should be (6)
-      
-      res = enum.getEnum((2, 0, 0, Nil))
-      res shouldBe a [ChainFiniteCombine[_, _, _]]
-      // class or interface
-      res.size should be (
-        2 // first: 1, 0, 0
-        + 2 // second
-        + 1 // can extend a class, in one case
-        + 2 // can implement an interface, in both cases
-      )
-      
-      res = enum.getEnum((1, 0, 0, List(1)))
-      res.size should be (6)
-      
-      res = enum.getEnum((1, 0, 0, List(1, 2)))
-      res.distinct.size should be (res.size)
-//      val resSet = res.map( _.toSet )
-//      resSet.distinct.size should be (resSet.size)
-      res.size should be (18)
-      
-      res = enum.getEnum((2, 0, 0, List(1)))
-      res.distinct.size should be (res.size)
-//      val resSet = res.map( _.toSet )
-//      resSet.distinct.size should be (resSet.size)
-      res.size should be (49)
-      
-      res = enum.getEnum((3, 0, 0, Nil))
-      res shouldBe a [ChainFiniteCombine[_, _, _]]
-      // class or interface
-      res.size should be ( 35 )
+        println(res.size)
+      }
+
+//      // (size, #class, #interface, #overridableMethods)
+//      res = enum.getEnum((1, 0, 0, Nil))
+//      res shouldBe a [Map[_, _]]
+//      // class or interface
+//      res.size should be (2)
+//      
+//      res = enum.getEnum((1, 1, 0, Nil))
+//      res shouldBe a [Map[_, _]]
+//      // class or interface
+//      res.size should be (3)
+//      
+//      res = enum.getEnum((1, 0, 1, Nil))
+//      res shouldBe a [Map[_, _]]
+//      // class or interface
+//      res.size should be (4)
+//      
+//      res = enum.getEnum((1, 1, 0, List(1)))
+//      // class or interface
+//      res.size should be (9)
+//      
+//      res = enum.getEnum((1, 1, 1, Nil))
+//      res shouldBe a [Map[_, _]]
+//      // class or interface
+//      res.size should be (6)
+//      
+//      res = enum.getEnum((2, 0, 0, Nil))
+//      res shouldBe a [ChainFiniteCombine[_, _, _]]
+//      // class or interface
+//      res.size should be (
+//        2 // first: 1, 0, 0
+//        + 2 // second
+//        + 1 // can extend a class, in one case
+//        + 2 // can implement an interface, in both cases
+//      )
+//      
+//      res = enum.getEnum((1, 0, 0, List(1)))
+//      res.size should be (6)
+//      
+//      res = enum.getEnum((1, 0, 0, List(1, 2)))
+//      res.distinct.size should be (res.size)
+////      val resSet = res.map( _.toSet )
+////      resSet.distinct.size should be (resSet.size)
+//      res.size should be (18)
+//      
+//      res = enum.getEnum((2, 0, 0, List(1)))
+//      res.distinct.size should be (res.size)
+////      val resSet = res.map( _.toSet )
+////      resSet.distinct.size should be (resSet.size)
+//      res.size should be (49)
+//      
+//      res = enum.getEnum((3, 0, 0, Nil))
+//      res shouldBe a [ChainFiniteCombine[_, _, _]]
+//      // class or interface
+//      res.size should be ( 35 )
 //
 //	    for (m <- 2 to 10) {
 //      	res = enum.getEnum( (1, rangeList(m: Int)) )

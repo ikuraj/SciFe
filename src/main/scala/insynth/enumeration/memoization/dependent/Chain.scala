@@ -11,12 +11,11 @@ import scala.language.existentials
 object Chain {
   
   def apply[I, O](s1: Enum[I], s2: Depend[I, O]) 
-  	(implicit ms: MemoizationScope = null) = {
-    val enum =
+  	(implicit ms: MemoizationScope = null): Finite[(I, O)] = {
 	    (s1, s2) match {
         case (Empty, _) => Empty
 	      case (s: Singleton[I], df: DependFinite[_, _]) =>
-	        df.apply(s.el)
+	        df.apply(s.el) map { (o: O) => (s.el, o) }
 	      case (f: Finite[I], df: DependFinite[I, O]) =>
 	        this ! new ChainFinite(f, df) with Memoized[(I, O)]
 	      case _ => throw new RuntimeException
@@ -62,6 +61,30 @@ object Chain {
 	  if (ms != null) ms add m
 	  m
 	}
+  
+  def fin[I, O](s1: Finite[I], s2: DependFinite[I, O]) 
+    (implicit ms: MemoizationScope = null) = {
+      (s1, s2) match {
+        case (Empty, _) => Empty
+        case (s: Singleton[I], df: DependFinite[_, _]) =>
+          df.apply(s.el) map { (o: O) => (s.el, o) }
+        case (f: Finite[I], df: DependFinite[I, O]) =>
+          this ! new ChainFinite(f, df) with Memoized[(I, O)]
+        case _ => throw new RuntimeException
+      }
+  }
+  
+  def fin[I, O, R](s1: Finite[I], s2: DependFinite[I, O], combine: (I, O) => R) 
+    (implicit ms: MemoizationScope = null) = {
+      (s1, s2) match {
+        case (Empty, _) => Empty
+        case (s: Singleton[I], df: DependFinite[_, _]) =>
+          //this !
+          this ! Map.memoized( df.apply(s.el), { (v: O) => combine(s.el, v) } )
+        case (f: Finite[I], df: DependFinite[_, _]) =>
+          this ! new ChainFiniteCombine(f, df, combine) with Memoized[R]
+      }
+  }
   
 //  def eager[I, O, R](s1: Enum[I], s2: Depend[I, O], combine: (I, O) => R) 
 //  	(implicit ms: MemoizationScope = null) = {

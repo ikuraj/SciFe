@@ -17,7 +17,7 @@ object Util {
 
   class CheckerHelper[T] {
     var _res: Enum[T] = null
-    var _elements: Seq[T] = null
+    var _elements: Seq[T] = Seq()
     def elements = _elements
     def elements_=(n: Seq[T]) = _elements = n
     def res = _res
