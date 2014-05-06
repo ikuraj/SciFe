@@ -16,7 +16,7 @@ scalacOptions ++= Seq("-Xelide-below", "OFF")
 
 javacOptions += "-Xlint:unchecked"
 
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.1.4" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
 
@@ -43,7 +43,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.11.3"
 )
 
 // micro-benchmarks

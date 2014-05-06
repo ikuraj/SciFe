@@ -57,8 +57,11 @@ object Enum {
   /* Factory methods */
   
   // only sequences are accepted since enumerators enumerate in a defined ordering
-  def apply[T](arg: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
-    fromFiniteCollection(arg :: args.toList)
+  def apply[T](arg1: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
+    fromFiniteCollection( (arg1 :: args.toList).toArray ) 
+
+  def apply[T](arr: Array[T]): Finite[T] =
+    fromFiniteCollection( arr )
 
   def apply[T](stream: List[T])(implicit ct: ClassTag[T]): Finite[T] =
     fromFiniteCollection(stream)
@@ -111,7 +114,14 @@ object Enum {
     col match {
       case (stream: Stream[T]) if !stream.hasDefiniteSize => new WrapStream(stream)
     	case _ => fromFiniteCollection(col)
-	  }
+    }
+
+  private[enumeration] def fromFiniteCollection[T](col: Array[T]): Finite[T] =
+    col match {
+      case _ if col.size == 0 => Empty
+      case _ if col.size == 1 => Singleton(col.head)
+      case _ => WrapArray(col)
+    }
 
   private[enumeration] def fromFiniteCollection[T](col: Traversable[T])
   	(implicit ct: ClassTag[T]): Finite[T] =

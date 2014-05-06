@@ -26,8 +26,8 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
   import BSTrees._
   import Util._
   
-  // (size, #class, #interface, #overridableMethods, map(node->sealed))
-  type Input = (Int, Int, Int, List[Int], Predef.Map[Int, Set[Int]])
+  // (size, Id, #class, #interface, #overridableMethods, map(node->sealed))
+  type Input = (Int, Int, Set[Int], Set[Int], List[Int], Predef.Map[Int, Set[Int]])
   // list of (extends - -1 for trait, implementing, overrides, seals)
   type Output = List[(Int, List[Int], List[Int], List[Int])]
   type EnumType = Depend[Input, Output]
@@ -44,14 +44,14 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
 	      ( (-1, List(3), List(), List() ) )
 	    )
     
-    println( toGraph( (4, 0, 0, List(1, 2), defMap), l1) )
+//    println( toGraph( (4, , 0, List(1, 2), defMap), l1) )
     
   }
   
   def toGraph(i: Input, o: Output) = {
     import insynth.enumeration.testcases.really._
     
-    val (size, classes, interfaces, overridableMethods, sealedMap) = i
+    val (size, myId, classes, interfaces, overridableMethods, sealedMap) = i
     
     val graph = new DAG
     graph.setSize(size)
@@ -112,32 +112,32 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
 //        res.size should be (0)
 //      }
       
-      res = enum.getEnum((2, 0, 0, 1 to 1 toList, defMap))
+      res = enum.getEnum((2, 0, Set(), Set(), 1 to 1 toList, defMap))
       // class or interface
       println(res.mkString("\n"))
       
-      for (c <- 1 to 3; m <- 0 to 2) {
-        val input = (c, 0, 0, 1 to m toList, defMap)
-        
-        res = enum.getEnum(input)
-    		res.distinct.size should be (res.size)
-        for (el <- res; g = toGraph(input, el))
-          withClue(el + "\nGraph:\n" + g) {
-	          g.repOK() should be (true)
-	        }
-      // class or interface
-        println("for (c,m) " + (c,m) + " size=" + res.size)
+//      for (c <- 1 to 3; m <- 0 to 2) {
+//        val input = (c, 0, 0, 1 to m toList, defMap)
+//        
+//        res = enum.getEnum(input)
+//    		res.distinct.size should be (res.size)
+//        for (el <- res; g = toGraph(input, el))
+//          withClue(el + "\nGraph:\n" + g) {
+//	          g.repOK() should be (true)
+//	        }
+//      // class or interface
+//        println("for (c,m) " + (c,m) + " size=" + res.size)
 
-//      // (size, #class, #interface, #overridableMethods)
-//      res = enum.getEnum((1, 0, 0, Nil))
-//      res shouldBe a [Map[_, _]]
-//      // class or interface
-//      res.size should be (2)
-//      
-//      res = enum.getEnum((1, 1, 0, Nil))
-//      res shouldBe a [Map[_, _]]
-//      // class or interface
-//      res.size should be (3)
+      // (size, id, #class, #interface, #overridableMethods, sealedMap)
+      res = enum.getEnum((1, 0, Set(), Set(), Nil, defMap))
+      res shouldBe a [Map[_, _]]
+      // class or interface
+      res.size should be (2)
+      
+      res = enum.getEnum((1, 0, Set(1), Set(), Nil, defMap))
+      res shouldBe a [Map[_, _]]
+      // class or interface
+      res.size should be (3)
 //      
 //      res = enum.getEnum((1, 0, 1, Nil))
 //      res shouldBe a [Map[_, _]]
@@ -209,7 +209,6 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
 //    	res = enum.getEnum( (7, rangeList(7)) )
 //      elements.size should be (elements.distinct.size)
 //    	res.size should be (73644)
-    }
   }
   
   test("subListChooser") {
@@ -324,29 +323,31 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
   }
     
   // pick which to implement
-  def implements_(implicit interfaces: Int)=
+  def implements_(implicit interfaces: Set[Int])=
     Map(e.dependent.Chain(
-      Map(e.Enum(0 to interfaces): Finite[Int], { (_: Int, 1 to interfaces toList)  }), subListChooser
+      // sizes
+      Map(e.Enum(0 to interfaces.size): Finite[Int], { (_: Int, interfaces.toList)  }),
+      subListChooser
     ), { (_: (_, List[Int]))._2 })
     
   // pick which to extend
-  def extends_(implicit classes: Int) =
+  def extends_(implicit classes: Set[Int]) =
     // -1 interface, 0 class that does not extend anything, 1 to #classes which to extend
-    e.Enum(-1 to classes)
+    e.Enum(classes.toArray): Finite[Int]
   
   test("extends and implements") {
     for(c <- 0 to 10; i <- 0 to (10 - c)) {
       withClue( "(c, i):" + (c, i) ) {
       
-        extends_(c).size should be (c + 2)
+        extends_(-1 to c toSet).size should be (c + 2)
         
-        implements_(i).size should be (math.pow(2, i).toInt)
+        implements_(1 to i toSet).size should be (math.pow(2, i).toInt)
         
       }
     }
   }
     
-  def makeAll(size: Int, classes: Int, interfaces: Int,
+  def makeAll(size: Int, classes: Set[Int], interfaces: Set[Int],
     overridableMethods: List[Int], map: Predef.Map[Int, Set[Int]]):
   Finite[((List[Int], Int), (Int, ((Int, List[Int]), List[Int])))] =
     e.dependent.Chain(
@@ -364,7 +365,7 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
     Depend.memoized(
       (self: EnumType, par: Input) => {
       // list sorted descendingly
-      implicit val (size, classes, interfaces, overridableMethods, sealedMap) = par
+      implicit val (size, myId, classes, interfaces, overridableMethods, sealedMap) = par
       
 //      if (size <= 0) e.Singleton(Nil): Finite[Output]
 //      else 
@@ -378,12 +379,12 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
             val lastAdded = par
             val ((impl, ext), (_, ((_, overriden), sealed_) )) = lastAdded
             
-            val newClasses = if (ext >= 0) classes + 1 else classes
-            val newInterfaces = if (ext < 0) interfaces + 1 else interfaces
+            val newClasses = if (ext >= 0) classes + myId else classes
+            val newInterfaces = if (ext < 0) interfaces + myId else interfaces
 //            val newMethods = overridableMethods.diff(sealed_)
-            val newMap = sealedMap + ( (newClasses + newInterfaces) -> sealed_.toSet )
+            val newMap = sealedMap + ( myId -> sealed_.toSet )
             
-            (size - 1, newClasses, newInterfaces, overridableMethods, newMap)
+            (size - 1, myId + 1, newClasses, newInterfaces, overridableMethods, newMap)
           })
         
         e.dependent.Chain[((List[Int], Int), (Int, ((Int, List[Int]), List[Int]))), Output, Output] (
