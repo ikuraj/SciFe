@@ -1,5 +1,4 @@
-package insynth
-package enumeration
+package insynth.enumeration
 
 import util.EnumStream
 

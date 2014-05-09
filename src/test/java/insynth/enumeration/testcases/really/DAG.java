@@ -51,6 +51,18 @@ public class DAG {
       for (int i=0; i< getNodes().size(); i++) {
         DAGNode node = getNodes().get(i);
 
+        if (node == null) return false;
+        if (node.allBools == null) return false;
+        boolean d = node.isClass;
+        for (int j=0; j< size + 2*methodsNum; j++) {
+        	boolean dummy = node.allBools[j];
+        }
+        int d2 = node.numChildren;
+      }
+
+      for (int i=0; i< getNodes().size(); i++) {
+        DAGNode node = getNodes().get(i);
+
           if (node == null) return false;
           if (node.allBools == null) return false;
 //          if (node.getOverriden() == null) return false;
@@ -135,9 +147,9 @@ public class DAG {
           return false;
         }
         if (child.isClass && numExtendsForThisChild > 1) {
-          System.out.println("bad2: " + (!child.isClass && numExtendsForThisChild > 0));
-          System.out.println("numExtendsForThisChild" + numExtendsForThisChild);
-          System.out.println(this.toString());
+//          System.out.println("bad2: " + (!child.isClass && numExtendsForThisChild > 0));
+//          System.out.println("numExtendsForThisChild" + numExtendsForThisChild);
+//          System.out.println(this.toString());
           return false;
         }
 
@@ -204,9 +216,10 @@ public class DAG {
     public String toString() {
         String ans = "";
         for (DAGNode n : nodes) {
-            ans += n.toString() + "\n";
+//            ans += n.toString() + "\n";
+            ans += n.toString() + " ";
         }
-        ans += "------------------------";
+//        ans += "------------------------";
         return ans;
     }
 

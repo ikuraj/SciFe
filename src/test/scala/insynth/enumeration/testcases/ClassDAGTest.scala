@@ -1,10 +1,10 @@
-package insynth.enumeration
-package testcases
+package insynth.enumeration.testcases
 
 import org.scalatest._
 import org.scalatest.prop._
 import org.scalatest.matchers._
 
+import insynth.enumeration._
 import dependent._
 import insynth.{ enumeration => e }
 import memoization._
@@ -20,7 +20,7 @@ import scala.language.postfixOps
 import scala.language.existentials
 
 class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger { 
+	logging.HasLogger with ProfileLogger { 
   import Checks._
   import Structures._
   import BSTrees._
@@ -104,111 +104,68 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
-        
-      // for size 0 we do not support
-//      for (m <- 0 to 5) {
-//        res = enum.getEnum((0, 0, 0, 1 to m toList))
-//        res shouldBe a [Singleton[_]]
-//        res.size should be (0)
-//      }
-      
-      res = enum.getEnum((2, 0, Set(), Set(), 1 to 1 toList, defMap))
-      // class or interface
-      println(res.mkString("\n"))
-      
-//      for (c <- 1 to 3; m <- 0 to 2) {
-//        val input = (c, 0, 0, 1 to m toList, defMap)
-//        
-//        res = enum.getEnum(input)
-//    		res.distinct.size should be (res.size)
-//        for (el <- res; g = toGraph(input, el))
-//          withClue(el + "\nGraph:\n" + g) {
-//	          g.repOK() should be (true)
-//	        }
-//      // class or interface
-//        println("for (c,m) " + (c,m) + " size=" + res.size)
+    // (size, id, #class, #interface, #overridableMethods, sealedMap)
+    res = enum.getEnum((1, 1, Set(), Set(), Nil, defMap))
+    res shouldBe a[Map[_, _]]
+    res.size should be(2)
 
-      // (size, id, #class, #interface, #overridableMethods, sealedMap)
-      res = enum.getEnum((1, 0, Set(), Set(), Nil, defMap))
-      res shouldBe a [Map[_, _]]
-      // class or interface
-      res.size should be (2)
-      
-      res = enum.getEnum((1, 0, Set(1), Set(), Nil, defMap))
-      res shouldBe a [Map[_, _]]
-      // class or interface
-      res.size should be (3)
-//      
-//      res = enum.getEnum((1, 0, 1, Nil))
-//      res shouldBe a [Map[_, _]]
-//      // class or interface
-//      res.size should be (4)
-//      
-//      res = enum.getEnum((1, 1, 0, List(1)))
-//      // class or interface
-//      res.size should be (9)
-//      
-//      res = enum.getEnum((1, 1, 1, Nil))
-//      res shouldBe a [Map[_, _]]
-//      // class or interface
-//      res.size should be (6)
-//      
-//      res = enum.getEnum((2, 0, 0, Nil))
-//      res shouldBe a [ChainFiniteCombine[_, _, _]]
-//      // class or interface
-//      res.size should be (
-//        2 // first: 1, 0, 0
-//        + 2 // second
-//        + 1 // can extend a class, in one case
-//        + 2 // can implement an interface, in both cases
-//      )
-//      
-//      res = enum.getEnum((1, 0, 0, List(1)))
-//      res.size should be (6)
-//      
-//      res = enum.getEnum((1, 0, 0, List(1, 2)))
-//      res.distinct.size should be (res.size)
-////      val resSet = res.map( _.toSet )
-////      resSet.distinct.size should be (resSet.size)
-//      res.size should be (18)
-//      
-//      res = enum.getEnum((2, 0, 0, List(1)))
-//      res.distinct.size should be (res.size)
-////      val resSet = res.map( _.toSet )
-////      resSet.distinct.size should be (resSet.size)
-//      res.size should be (49)
-//      
-//      res = enum.getEnum((3, 0, 0, Nil))
-//      res shouldBe a [ChainFiniteCombine[_, _, _]]
-//      // class or interface
-//      res.size should be ( 35 )
-//
-//	    for (m <- 2 to 10) {
-//      	res = enum.getEnum( (1, rangeList(m: Int)) )
-//      	res shouldBe a [WrapArray[_]]
-//      	res.size should be (rangeList(m).size)
-//	    }
+    res = enum.getEnum((1, 1, Set(1), Set(), Nil, defMap + (1 -> Set())))
+    res shouldBe a[Map[_, _]]
+    res.size should be(3)
 
-//	    	for(s <- 1 to 10; m <- 1 to s) {
-//	        addMessage = "m=%d and s=%d".format(m, s)
-//	        res = enum.getEnum( (m, rangeList(m: Int)) )
-//
-//	        elements.forall( heapEqualProperty(_) ) should be (true)
-//    		}
-//	    	
-//      addMessage = ""
-//
-//    	res = enum.getEnum( (3, rangeList(3)) )
-//      elements.size should be (elements.distinct.size)
-//    	res = enum.getEnum( (3, rangeList(3)) )
-//      elements.size should be (elements.distinct.size)
-//    	res.size should be (30)
-//    	res = enum.getEnum( (4, rangeList(4)) )
-//      elements.size should be (elements.distinct.size)
-//    	res.size should be (30)
-//    	res = enum.getEnum( (7, rangeList(7)) )
-//      elements.size should be (elements.distinct.size)
-//    	res.size should be (73644)
+    res = enum.getEnum((1, 1, Set(), Set(1), Nil, defMap + (1 -> Set())))
+    res shouldBe a[Map[_, _]]
+    res.size should be(4)
+
+    res = enum.getEnum((1, 1, Set(), Set(), List(1), defMap))
+    res.size should be(6)
+
+    res = enum.getEnum((1, 1, Set(1), Set(), List(1), defMap + (1 -> Set())))
+    res.size should be(9)
+
+    res = enum.getEnum((1, 1, Set(), Set(1), List(1), defMap + (1 -> Set(), 2 -> Set[Int]())))
+    res.size should be(12)
+
+    res = enum.getEnum((1, 1, Set(1), Set(2), List(1), defMap + (1 -> Set(), 2 -> Set[Int]())))
+    res.size should be(18)
+
+    res = enum.getEnum((2, 1, Set(), Set(), List(1), defMap))
+    res.size should be(57)
+
+    res = enum.getEnum((1, 1, Set(), Set(), List(1, 2), defMap))
+    res.size should be(18)
+
+    res = enum.getEnum((2, 1, Set(), Set(), List(1, 2), defMap))
+    res.size should be(471)
+
+    for (c <- 1 to 3; m <- 0 to 2) {
+      val input = (c, 1, Set[Int](), Set[Int](), 1 to m toList, defMap)
+
+      res = enum.getEnum(input)
+      res.distinct.size should be(res.size)
+      for (el <- res; g = toGraph(input, el))
+        withClue(el + "\nGraph:\n" + g) {
+          g.repOK() should be(true)
+        }
+    }
+
+    {
+		  val input = (3, 1, Set[Int](), Set[Int](), List(1), defMap)
+		  res = enum.getEnum( input )
+		  println(res.map( toGraph(input, _) ).toList.mkString("\n"))
+		  res.size should be(862)
+    }
+
+    for (c <- 1 to 3; m <- 0 to 2) {
+      val input = (c, 1, Set[Int](), Set[Int](), 1 to m toList, defMap)
+      res = enum.getEnum(input)
+
+      val message = "(c = %d, m = %d)".format(c, m)
+      withClue(message) {
+        println(message + res.size)
+      }
+    }
+
   }
   
   test("subListChooser") {
@@ -247,11 +204,11 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
       } else e.Empty: Finite[List[Int]]
     })
       
-  // pick nMethods to override
+  // given a list, pick n methods to override
   def overrid(implicit overridableMethods: List[Int]): DependFinite[Int, List[Int]] =
     Depend.fin( (nMethods: Int) => subListChooser( (nMethods, overridableMethods) ): Finite[List[Int]] )
   
-  // pick nMethods to seal
+  // given n and list, pick n methods to seal
   def seal: DependFinite[(Int, List[Int]), List[Int]] = Depend.fin( ( p: (Int, List[Int]) ) => {
     val (nMethods, overrides) = p
     subListChooser( (nMethods, overrides) ): Finite[List[Int]]
@@ -333,7 +290,7 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
   // pick which to extend
   def extends_(implicit classes: Set[Int]) =
     // -1 interface, 0 class that does not extend anything, 1 to #classes which to extend
-    e.Enum(classes.toArray): Finite[Int]
+    e.Enum((classes + (-1) + (0)).toArray): Finite[Int]
   
   test("extends and implements") {
     for(c <- 0 to 10; i <- 0 to (10 - c)) {
@@ -345,6 +302,10 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
         
       }
     }
+    
+    extends_(Set()).size should be (2)
+    implements_(Set()).size should be (1)
+    e.Product( implements_(Set()), extends_(Set()) ).size should be (2)
   }
     
   def makeAll(size: Int, classes: Set[Int], interfaces: Set[Int],
@@ -352,7 +313,8 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
   Finite[((List[Int], Int), (Int, ((Int, List[Int]), List[Int])))] =
     e.dependent.Chain(
       e.Product( implements_(interfaces), extends_(classes) ): Finite[(List[Int], Int)],
-      allOverrideAndSeal(overridableMethods, map))
+      allOverrideAndSeal(overridableMethods, map)
+    )
       
       
   def makeList( p: ((List[Int], Int), (Int, ((Int, List[Int]), List[Int]))) ) = {
@@ -382,7 +344,13 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
             val newClasses = if (ext >= 0) classes + myId else classes
             val newInterfaces = if (ext < 0) interfaces + myId else interfaces
 //            val newMethods = overridableMethods.diff(sealed_)
-            val newMap = sealedMap + ( myId -> sealed_.toSet )
+            
+            // collect all sealed from parents
+            val allParents =
+              if (ext > 0) ext :: impl else impl
+            val parentsSealed = 
+              ( Set[Int]() /: allParents ) { case (res, parent) => res union sealedMap(parent) }
+            val newMap = sealedMap + ( myId -> (parentsSealed union sealed_.toSet) )
             
             (size - 1, myId + 1, newClasses, newInterfaces, overridableMethods, newMap)
           })
