@@ -1,4 +1,4 @@
-package insynth.enumeration.testcases.really;
+package insynth.enumeration.testcases.classdag;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,7 +53,6 @@ public class DAG {
 
         if (node == null) return false;
         if (node.allBools == null) return false;
-        boolean d = node.isClass;
         for (int j=0; j< size + 2*methodsNum; j++) {
         	boolean dummy = node.allBools[j];
         }
@@ -73,11 +72,7 @@ public class DAG {
             }
         }
       }
-//      if (!visited.contains(getExtendedClass())) {
-//        if (!checkNextNode(path, visited, getExtendedClass())) {
-//            return false;
-//        }
-//      }
+      
       boolean ok = size == visited.size();
       return ok;
   }
@@ -91,17 +86,7 @@ public class DAG {
   if (!checkNoOverrideOfSeal(path, visited, n)) return false;
   // cannot seal without redefining
   if (!checkCannotSealWithoutAnOverride(path, visited, n)) return false;
-//
-//  // check interface to class extension
-//  if (!n.isClass) {
-//    for (int i = 0; i < n.getNumberOfChildren(); i++) {
-//      DAGNode child = getNodes().get(i);
-//      
-//      if (child.isClass) return false;
-//    }
-//  }
-    boolean dummy = n.isClass;
-    
+
     path.add(n);
     for (int i = 0; i < n.getNumberOfChildren(); i++) {
         boolean isChild = n.isChild(i);
@@ -134,29 +119,16 @@ public class DAG {
     return true;
     }
 
-
     public boolean checkExtends(Set<DAGNode> path, Set<DAGNode> visited, DAGNode n, DAGNode child) {
       // this node is a class, check children for correctness
-      if (n.isClass) {
-        int numExtendsForThisChild = numOfExtendsPerNode.get(child) + 1;
+      int numExtendsForThisChild = numOfExtendsPerNode.get(child) + 1;
 
-        if (!child.isClass && numExtendsForThisChild > 0) {
-//          System.out.println("bad: " + (!child.isClass && numExtendsForThisChild > 0));
-//          System.out.println("numExtendsForThisChild" + numExtendsForThisChild);
-//          System.out.println(this.toString());
-          return false;
-        }
-        if (child.isClass && numExtendsForThisChild > 1) {
-//          System.out.println("bad2: " + (!child.isClass && numExtendsForThisChild > 0));
-//          System.out.println("numExtendsForThisChild" + numExtendsForThisChild);
-//          System.out.println(this.toString());
-          return false;
-        }
-
-        numOfExtendsPerNode.put(child, numExtendsForThisChild);
-      } else {
-//        if (child.isClass) return false;
+      if (numExtendsForThisChild > 1) {
+        return false;
       }
+
+      numOfExtendsPerNode.put(child, numExtendsForThisChild);
+
       return true;
     }
 
@@ -168,6 +140,7 @@ public class DAG {
       return true;
     }
 
+    // checks with respect to path - what about multiple interfaces?
     public boolean checkNoOverrideOfSeal(Set<DAGNode> path, Set<DAGNode> visited, DAGNode n) {
       boolean[] finalized = new boolean[methodsNum];
       // not sure if java will initialize to false, so we will do it

@@ -1,4 +1,4 @@
-package insynth.enumeration.testcases.really;
+package insynth.enumeration.testcases.classdag;
 
 
 
@@ -15,9 +15,8 @@ public class DAGNode {
 
     transient int id = autoId++;
 
-//    boolean[] children;
-
-    public boolean isClass;
+    // always a class
+//    boolean isClass;
     
     public int numChildren;
     // children then overriden then sealed
@@ -30,8 +29,7 @@ public class DAGNode {
     public String toString() {
 //        String ans = "DAGNode [children=";
         String ans = "n[";
-        ans += ( isClass ? "c" : "i");
-        ans += ",e=";
+        ans += "e=";
 
             String ans1 = "[";
             for (int i = 0; i < getNumberOfChildren(); i++) {
@@ -61,38 +59,6 @@ public class DAGNode {
     }
 
 
-//    @Override
-//    public String toString() {
-//      String ans = "DAGNode [children=";
-//      ans += a2s(children.clone());
-//      ans += ", isClass=" + isClass + ", allBools=";
-//      ans += a2s(allBools.clone());
-////      ans += ", sealed=";
-////      ans += a2s(sealed.clone());
-//      ans += "]";
-//      return ans;
-//    }
-//
-//    private String a2s(DAGNode[] arr) {
-//        String ans = "[";
-//        for (int i = 0; i < arr.length; i++) {
-//            if (i > 0) ans += ", ";
-//            ans += arr[i];
-//        }
-//        ans += "]";
-//        return ans;
-//    }
-//
-//    private String a2s(boolean[] arr) {
-//        String ans = "[";
-//        for (int i = 0; i < arr.length; i++) {
-//            if (i > 0) ans += ", ";
-//            ans += arr[i];
-//        }
-//        ans += "]";
-//        return ans;
-//    }
-
 		public boolean getOverriden(int i) {
 			return allBools[numChildren + i];
 		}
@@ -103,10 +69,6 @@ public class DAGNode {
 
     public boolean isChild(int i) {
       return allBools[i];
-    }
-
-    public boolean isClass() {
-      return isClass;
     }
 
     public int getNumberOfChildren() {
