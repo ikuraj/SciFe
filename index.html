@@ -39,9 +39,17 @@
 <a name="example-usage" class="anchor" href="#example-usage"><span class="octicon octicon-link"></span></a>Example usage</h3>
 
 SciFe uses enumerators and combinators to define data generation.
-The following example of enumerating all valid date objects starting from 01.01.2014: 
-<pre><code>(1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ≻
+The following example of enumerating all valid date objects starting from the first day of 2014: 
+<pre><code>val dates = (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ≻
   { isValid( ) } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
+</code></pre>
+
+You can easily enumerate the encoded dates:
+<pre><code>for (i ← 0 until 5) yield dates(i) // get first 5 days
+dates(208) // get 208th date
+
+dates.hasDefiniteSize // returns false
+for (d ← dates) yield print(d) // prints all dates (does not stop)
 </code></pre>
 
 SciFe can easily enumerate complex structures such as binary search tree:
@@ -68,10 +76,12 @@ This code enumerates all valid trees of size 15, more than 9.6·10<sup>6</sup>, 
 SciFe introduces concepts of enumerators and enumerator combinators.
 SciFe is a Scala library that implements a domain-specific language.
 SciFe can generate complex structures such as search trees and models of class hierarchies.
-SciFe demonstrates better performance and shorter specifications when compared to existing approaches.</p>
+Specifications in SciFe are short and leaf to very efficient enumeration, even in case of complex data structures with invariants.</p>
 
 <h3>
 <a name="what-makes-it-different" class="anchor" href="#what-makes-it-different"><span class="octicon octicon-link"></span></a>Features</h3>
+
+TODO
 
 <!--<h3>
 <a name="using-scife" class="anchor" href="#using-scife"><span class="octicon octicon-link"></span></a>Using SciFe</h3> -->
@@ -80,8 +90,13 @@ SciFe demonstrates better performance and shorter specifications when compared t
 <h3>
 <a name="benchmarks" class="anchor" href="#benchmarks"><span class="octicon octicon-link"></span></a>Benchmarks</h3>
 
+TODO
+
 <h3>
 <a name="publication" class="anchor" href="#publication"><span class="octicon octicon-link"></span></a>Publication</h3>
+
+TODO
+
       </section>
     </div>
 
