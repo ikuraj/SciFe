@@ -104,6 +104,13 @@ class ClassInterfaceDAGTest extends FunSuite with Matchers with GeneratorDrivenP
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
+    for (c <- 1 to 10) {
+      val input = (c, 1, Set[Int](), Set[Int](), 1 to 2 toList, defMap)
+      res = enum.getEnum(input)
+
+      println("size for (%d,2) id %d".format(c, res.size))
+    }
+
     // (size, id, #class, #interface, #overridableMethods, sealedMap)
     res = enum.getEnum((1, 1, Set(), Set(), Nil, defMap))
     res shouldBe a[Map[_, _]]
