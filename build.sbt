@@ -1,6 +1,6 @@
-name := "InSynth"
+name := "SciFe"
 
-version := "1.3"
+version := "1.0"
 
 organization := "ch.epfl.lara"
 
