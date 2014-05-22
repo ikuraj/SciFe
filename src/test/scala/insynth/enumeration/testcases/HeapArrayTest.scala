@@ -95,15 +95,6 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
 
     	res = enum.getEnum( (3, rangeList(3)) )
     	res.size should be (2)
-
-//    	res = enum.getEnum( (2, rangeList(3)) )
-//    	res.size should be (2)
-//
-//    	res = enum.getEnum( (4, rangeList(4)) )
-//    	res.size should be (1)
-
-    	res = enum.getEnum( (7, rangeList(7)) )
-    	res.size should be (13139)
     }
   }
 

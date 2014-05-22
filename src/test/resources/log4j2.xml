@@ -33,7 +33,7 @@
     <logger name="insynth.testcases" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.benchmarks" level="all" additivity="false">
+    <logger name="insynth.enumeration.benchmarks" level="off" additivity="false">
       <appender-ref ref="BenchmarkConsole" />
     </logger>
 		<root level="error">

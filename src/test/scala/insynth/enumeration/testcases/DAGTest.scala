@@ -42,12 +42,6 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
     withLazyClue("Elements are: " + clue) {
       // (size, available, declared)
       
-      for (i <- 2 to 4) {
-	      res = enum.getEnum((i, 1 to i toSet, Set()))
-	      println(res.size)
-	      println(res.mkString("\n") ) 
-      }
-      
       res = enum.getEnum((1, Set(1), Set()))
       res.size should be (1)
 

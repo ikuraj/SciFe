@@ -124,7 +124,7 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
     {
 		  val input = (3, 1, Set[Int](), List(1), defMap)
 		  res = enum.getEnum( input )
-		  println(res.map( toGraph(input, _) ).toList.mkString("\n"))
+		  info(res.map( toGraph(input, _) ).toList.mkString("\n"))
 		  res.size should be(124)
     }
 
@@ -134,7 +134,7 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
 
       val message = "(c = %d, m = %d)".format(c, m)
       withClue(message) {
-        println(message + res.size)
+        info(message + res.size)
       }
     }
 

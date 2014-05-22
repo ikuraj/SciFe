@@ -41,11 +41,6 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
 
     withLazyClue("Elements are: " + clue) {
         
-      for (i <- 1 to 3) {
-	      res = enum.getEnum((i, 0))
-	      println(res.size)
-        println(res.mkString("\n") ) 
-      }
       // (size, #class, #interface, #overridableMethods)
       res = enum.getEnum((1, 0))
       // class or interface

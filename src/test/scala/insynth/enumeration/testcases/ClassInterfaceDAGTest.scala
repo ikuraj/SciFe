@@ -104,11 +104,12 @@ class ClassInterfaceDAGTest extends FunSuite with Matchers with GeneratorDrivenP
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
-    for (c <- 1 to 10) {
+    // can take a long time for >= 4
+    for (c <- 1 to 3) {
       val input = (c, 1, Set[Int](), Set[Int](), 1 to 2 toList, defMap)
       res = enum.getEnum(input)
 
-      println("size for (%d,2) id %d".format(c, res.size))
+      info("size for (%d,2) id %d".format(c, res.size))
     }
 
     // (size, id, #class, #interface, #overridableMethods, sealedMap)
@@ -159,7 +160,7 @@ class ClassInterfaceDAGTest extends FunSuite with Matchers with GeneratorDrivenP
     {
 		  val input = (3, 1, Set[Int](), Set[Int](), List(1), defMap)
 		  res = enum.getEnum( input )
-		  println(res.map( toGraph(input, _) ).toList.mkString("\n"))
+		  info(res.map( toGraph(input, _) ).toList.mkString("\n"))
 		  res.size should be(862)
     }
 
@@ -169,7 +170,7 @@ class ClassInterfaceDAGTest extends FunSuite with Matchers with GeneratorDrivenP
 
       val message = "(c = %d, m = %d)".format(c, m)
       withClue(message) {
-        println(message + res.size)
+        info(message + res.size)
       }
     }
 
