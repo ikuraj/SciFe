@@ -82,7 +82,7 @@ class BinarySearchTreeBenchmark extends FunSuite with Matchers with GeneratorDri
     }
 
 
-    val profileRange = 1 to 15
+    val profileRange = 1 to 10
 
     for (size <- profileRange) {
       ms.clear

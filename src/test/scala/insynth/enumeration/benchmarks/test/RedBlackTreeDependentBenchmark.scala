@@ -42,7 +42,7 @@ class RedBlackTreeDependentBenchmark
     val helper = new CheckerHelperFun(checker)
     import helper._
 
-    val profileRange = 1 to 15
+    val profileRange = 1 to 10
     
     withLazyClue("Elements are: " + clue) {
       // specific cases
