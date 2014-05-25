@@ -19,7 +19,7 @@ import org.scalameter.api._
 import scala.language.postfixOps
 import scala.language.existentials
 
-class RedBlackTreeDependentBenchmark
+class RedBlackTreeDependentBenchmarkTest
   extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
   HasLogger with ProfileLogger {
   import common._

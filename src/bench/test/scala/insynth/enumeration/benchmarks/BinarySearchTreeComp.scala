@@ -23,30 +23,16 @@ class BinarySearchTreeComp
   {
   import common._
   
-//  def generator: Gen[Int] =
-//    Gen.range("size")(1, this.maxSize, 1)
-    
-  // NOTE: declare name first - otherwise fixture will use uninitialized field
-  override val name = "Binary Search Trees_with components"
-
-  fixture
-
   type EnumType = Depend[Int, Tree]
 
-  override def maxSize = BenchmarkSuite.sizeBinarySearchTree
-
-  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
-    using in { (size: Int) =>
+  def measureCode(tdEnum: EnumType) = {
+    { (size: Int) =>
       val enum = tdEnum.getEnum((size))
       for (i <- 0 until enum.size) enum(i)
-//      val list =
-//      	for (i <- 0 until enum.size) yield enum(i)
-//      println(enum.size == (Catalan.catalan(size)))
-//      println(list.size == (Catalan.catalan(size)))
     }
   }
 
-  def warmUp(inEnum: EnumType) {
+  def warmUp(inEnum: EnumType, maxSize: Int) {
     for (size <- 1 to maxSize) {
       val enum = inEnum.getEnum((size))
       for (i <- 0 until enum.size) enum(i)

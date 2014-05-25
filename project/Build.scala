@@ -20,7 +20,7 @@ object SciFeBuild extends Build {
         scalacOptions in Bench ++= Seq("-Xelide-below", "OFF") 
       )
 
-  val benchRegEx = """(.*\.benchmarks\.[^\.]*Benchmark)"""
+  val benchRegEx = """(.*\.suite\.[^\.]*Suite)"""
       
   def benchFilter(name: String): Boolean = {
     name matches benchRegEx

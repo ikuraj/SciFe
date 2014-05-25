@@ -7,13 +7,49 @@ import reporting._
 import Key._
 
 package suite {
-  class BenchmarkSuite extends PerformanceTest.OfflineRegressionReport { 
+  class BenchmarkSuite extends PerformanceTest.OfflineRegressionReport {    
     override def persistor = new persistence.SerializationPersistor
+    
+    // if set, does not run full-blown micro-benchmark test suite; it runs
+    // a quicker benchmark with less reliable results
+    val minimal = true
+    
+    import BenchmarkSuite._
   
-    include[SortedListDependentBenchmark]
-    include[RedBlackTreeDependentBenchmark]
-    include[BinarySearchTreeBenchmark]
-    include[HeapArrayBenchmark]
+    val benchmarks = List(
+      (new BinarySearchTreeBenchmark, "Binary Search Trees"),
+      (new SortedListDependentBenchmark, "Sorted Lists"),
+      (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
+      (new HeapArrayBenchmark, "Heap Arrays")
+    )
+    
+    if (minimal) {      
+      implicit val configArguments = 
+        org.scalameter.Context(
+          exec.maxWarmupRuns -> 2,
+          exec.benchRuns -> 3, 
+          exec.independentSamples -> 1
+        )
+      
+      for( ((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
+        benchmark.fixture(name, maxSize)
+
+    }
+    else {
+      implicit val configArguments = 
+        org.scalameter.Context(
+          exec.maxWarmupRuns -> warmUps,
+          exec.benchRuns -> numberOfRuns, 
+          exec.independentSamples -> JVMs,
+          exec.jvmcmd -> javaCommand,
+          exec.jvmflags -> JVMFlags.mkString(" ")
+        )
+      
+      for( ((benchmark, name), maxSize) <- benchmarks zip fullBlownSizes)
+        benchmark.fixture(name, maxSize)
+
+    }
+
   }
 }
 
@@ -21,12 +57,33 @@ object BenchmarkSuite {
   
   var maxSize = 15
   
-  val sizeBinarySearchTree = 15//14
-  val sizeHeapArray = 12
-  val sizeRedBlackTree = 15//20
-  val sizeSortedList = 15//16
-  val sizeDAGStructure = 10//16
+  val minimalSizes = List(3, 3, 3, 3)
+  val fullBlownSizes = List(15, 15, 15, 12)
+  
+  val sizeBinarySearchTree = 3//15//14
+  val sizeSortedList = 3//15//16
+  val sizeRedBlackTree = 3//15//20
+  val sizeHeapArray = 3//12
+  val sizeDAGStructure = 3//10//16
+  val sizeHeapArray2 = 3//10
 
-  val sizeHeapArray2 = 10
+  val warmUps = 8
+  val numberOfRuns = 3
+  val JVMs = 3
+
+  lazy val javaCommand = "java -server"
+  lazy val JVMFlags = List(
+    // print important outputs
+//    "-XX:+PrintCompilation", "-verbose:gc",
+    // compilation
+//    "-Xbatch", "--XX:CICompilerCount=1",
+//    // optimizations
+    "-XX:ReservedCodeCacheSize=512M",
+    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
+    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
+    // memory
+    "-Xms28G", "-Xmx28G"
+  )
+//  println("JVM FLags: " + JVMFlags.mkString(" "))
   
 }

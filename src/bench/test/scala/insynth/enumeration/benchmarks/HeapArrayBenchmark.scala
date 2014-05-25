@@ -23,29 +23,18 @@ class HeapArrayBenchmark
   import common._
   import e.Enum
 
-  override def name = "HeapArray"
-
-  val maxSize = BenchmarkSuite.sizeHeapArray
-
-  fixture
-
   type EnumType = Depend[(Int, Range), Tree]
 
-  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
-    using in { (size: Int) =>
+  def measureCode(tdEnum: EnumType) = {
+    { (size: Int) =>
       val enum = tdEnum.getEnum((size, getRange(size)))
-//      val elements =
-//        for ( ind <- 0 until enum.size ) yield enum(ind)
-      for ( ind <- 0 until Int.MaxValue ) enum(ind)
+      for ( ind <- 0 until enum.size ) enum(ind)
     }
   }
 
-//  def generator = Gen.range("size")(1, maxSize, 1)
-
-  def warmUp(inEnum: EnumType) {
+  def warmUp(inEnum: EnumType, maxSize: Int) {
     val tdEnum = inEnum.asInstanceOf[EnumType]
-    for (size <- 1 to 10) {
-//    for (size <- maxSize to maxSize) {
+    for (size <- 1 to maxSize) {
       val enum= tdEnum.getEnum((size, getRange(size)))
       val elements =
         for (

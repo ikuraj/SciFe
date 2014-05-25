@@ -31,21 +31,15 @@ class DAGStructureBenchmark
   import common._
   import e.Enum
 
-  override def name = "ClassDAG"
-
-  def maxSize = BenchmarkSuite.sizeDAGStructure 
-
-  fixture
-
-  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
-    using in { (size: Int) =>
+  def measureCode(tdEnum: EnumType) = {
+    { (size: Int) =>
     	val enum = tdEnum.getEnum((size, 0))
 
       for ( ind <- 0 until enum.size ) enum(ind)      
     }
   }
 
-  def warmUp(tdEnum: EnumType) {
+  def warmUp(tdEnum: EnumType, maxSize: Int) {
     for (size <- 1 to maxSize) {
       val enum = tdEnum.getEnum((size, 0))
 

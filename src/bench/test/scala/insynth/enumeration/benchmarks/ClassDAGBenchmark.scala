@@ -37,7 +37,7 @@
 //
 //  val maxSize = 5
 //
-//  fixture
+//
 //
 //  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
 //    using in { (size: Int) =>

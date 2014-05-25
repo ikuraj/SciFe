@@ -19,7 +19,8 @@ import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeCompBenchmark extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
+class BinarySearchTreeCompBenchmarkTest extends FunSuite
+  with Matchers with GeneratorDrivenPropertyChecks with
 	HasLogger with ProfileLogger {  
   import common._
   import Util.CheckerHelper

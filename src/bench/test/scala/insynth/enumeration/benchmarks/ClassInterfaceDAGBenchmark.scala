@@ -32,10 +32,6 @@ class ClassInterfaceDAGBenchmark
   import common._
   import e.Enum
 
-  override def name = "ClassInterfaceDAG"
-
-  val maxSize = 5
-  
 //  def fromSizeToPair(s: Int) = {
 //    val actual = s - 1
 //    (actual/5+1, actual%5)
@@ -44,22 +40,18 @@ class ClassInterfaceDAGBenchmark
   // measure for 2 methods
   def fromSizeToPair(s: Int) = (s, 2)
 
-  fixture
-
   val defMap = Predef.Map(-1 -> Set[Int](), 0 -> Set[Int]())
 
-  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
-    using in { (size: Int) =>
+  def measureCode(tdEnum: EnumType) = {
+    { (size: Int) =>
       val (cSize, mSize) = fromSizeToPair(size)
-//      for (c <- 1 to size; m <- 0 to size) {
         val enum = tdEnum.getEnum((cSize, 1, Set(), Set(), 1 to mSize toList, defMap))
 
-        for (ind <- 0 until enum.size) yield enum(ind)
-//      }
+        for (ind <- 0 until enum.size) enum(ind)
     }
   }
 
-  def warmUp(tdEnum: EnumType) {
+  def warmUp(tdEnum: EnumType, maxSize: Int) {
 //    for (size <- 1 to maxSize) {
       val (cSize, mSize) = fromSizeToPair(maxSize)
 //        val enum = tdEnum.getEnum((cSize, 1, Set(), Set(), 1 to mSize toList, defMap))

@@ -2,53 +2,26 @@ package insynth
 package enumeration
 package benchmarks
 
-import org.scalatest._
 import org.scalameter.api._
+import org.scalameter.reporting.DsvReporter
+
+import insynth.{ enumeration => e }
 import dependent._
 import memoization._
-import insynth.{ enumeration => e }
+
 import insynth.util._
 import insynth.util.logging._
-import org.scalameter.reporting.DsvReporter
 
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
   import Structures._
+  
+  val benchmarkMainName = "SciFe_Dependent_Enumerators"
 
 //  @transient override lazy val reporter = new DsvReporter(',')
-
-  val warmUps = 8
-	val numberOfRuns = 3
-	val JVMs = 1
-  val benchmarkMainName = "SciFe_Dependent_Enumerators"
     
-  val configArguments = org.scalameter.Context(
-    exec.maxWarmupRuns -> warmUps,
-    exec.benchRuns -> numberOfRuns, 
-    exec.independentSamples -> JVMs,
-    exec.jvmcmd -> javaCommand,
-    exec.jvmflags -> JVMFlags.mkString(" ")
-  )
-
-  lazy val javaCommand = "java -server"
-  lazy val JVMFlags = List(
-    // print important outputs
-//    "-XX:+PrintCompilation", "-verbose:gc",
-    // compilation
-//    "-Xbatch", "--XX:CICompilerCount=1",
-//    // optimizations
-    "-XX:ReservedCodeCacheSize=512M",
-    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
-    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
-    // memory
-    "-Xms28G", "-Xmx28G"
-  )
-//  println("JVM FLags: " + JVMFlags.mkString(" "))
+  val defaultContext = Context.empty
   
-  def maxSize: Int
-
-  def fixture: Unit = fixture()
-
 //  def fixtureRun(
 //    run: String,
 //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
@@ -84,33 +57,40 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 //    }
 
   def fixture(
-    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
-    generator: Gen[I] = this.generator,
-    warmUp: DepEnumType => Any = this.warmUp,
-    measureCode: (super.Using[I], DepEnumType) => Any = this.measureCode,
-    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed) = {
+    name: String,
+    maxSize: Int,
+    maxSizeWarmup: Option[Int] = None
+//    ,
+//    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
+//    generator: Int => Gen[I] = this.generator,
+//    warmUp: (DepEnumType, Int) => Any = this.warmUp,
+//    measureCode: DepEnumType => I => Any = this.measureCode,
+//    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed
+    )(
+      implicit configArguments: org.scalameter.Context = defaultContext
+    ) = {
     require(name != null)
+    val warmupSize = maxSizeWarmup.getOrElse(maxSize)
+    
     performance of benchmarkMainName in {
       performance of name in {
         val memScope = new MemoizationScope
         val enumerator = constructEnumerator(memScope)
         assert(memScope.memoizations.size > 0)
 
-        measureCode(
-          using(generator) config (
+          using( generator(maxSize) ) config (
             configArguments
           ) curve (name) warmUp {
 System.gc()
 System.gc()
-            warmUp(enumerator)
+            warmUp(enumerator, warmupSize)
 System.gc()
 System.gc()
           } setUp {
             setUp(_, enumerator, memScope)
           } tearDown {
             tearDownFixed(_, enumerator, memScope)
-          }, enumerator)
-        //        measureCode(getUsing(generator, enumerator, memScope), enumerator)
+          } in measureCode( enumerator )
       }
     }
   }
@@ -127,13 +107,11 @@ System.gc()
 //      tearDownFixed(_, enumerator, memScope)
 //    }
 
-  def measureCode(using: super.Using[I], tdEnum: DepEnumType): Any
+  def measureCode(tdEnum: DepEnumType): I => _
 
-  def name: String
+  def generator(maxSize: Int): Gen[I]
 
-  def generator: Gen[I]
-
-  def warmUp(tdEnum: DepEnumType): Any
+  def warmUp(tdEnum: DepEnumType, maxSize: Int): Any
 
   def setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {}
 

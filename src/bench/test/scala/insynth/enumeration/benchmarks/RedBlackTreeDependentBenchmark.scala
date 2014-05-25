@@ -20,17 +20,11 @@ class RedBlackTreeDependentBenchmark
   extends StructuresBenchmark[Depend[(Int, Range, Set[Boolean], Int), Tree]]
   //extends DependentMemoizedBenchmark[Int, Depend[(Int, Range, Set[Boolean], Int), Tree]]
   with java.io.Serializable with HasLogger {
-
-  override val name = "Red Black Tree"
-
-  val maxSize = BenchmarkSuite.sizeRedBlackTree
-
-  fixture
-
+  
   type EnumType = Depend[(Int, Range, Set[Boolean], Int), Tree]
 
-  def measureCode(using: super.Using[Int], tdEnum: EnumType) = {
-    using in { (size: Int) =>
+  def measureCode(tdEnum: EnumType) = {
+    { (size: Int) =>
       for (
         blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
         enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
@@ -39,9 +33,7 @@ class RedBlackTreeDependentBenchmark
     }
   }
 
-//  def generator = Gen.range("size")(1, maxSize, 1)
-
-  def warmUp(inEnum: EnumType) {
+  def warmUp(inEnum: EnumType, maxSize: Int) {
     val tdEnum = inEnum.asInstanceOf[Depend[(Int, Range, Set[Boolean], Int), Tree]]
     for (size <- 1 to maxSize) {
       val tdEnumVal = tdEnum
