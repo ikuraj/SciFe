@@ -7,12 +7,11 @@ import reporting._
 import Key._
 
 package suite {
-  class BenchmarkSuite extends PerformanceTest.OfflineRegressionReport {    
+  // if set, does not run full-blown micro-benchmark test suite; it runs
+// a quicker benchmark with less reliable results
+  
+  class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {    
     override def persistor = new persistence.SerializationPersistor
-    
-    // if set, does not run full-blown micro-benchmark test suite; it runs
-    // a quicker benchmark with less reliable results
-    val minimal = true
     
     import BenchmarkSuite._
   
@@ -23,34 +22,44 @@ package suite {
       (new HeapArrayBenchmark, "Heap Arrays")
     )
     
-    if (minimal) {      
-      implicit val configArguments = 
-        org.scalameter.Context(
-          exec.maxWarmupRuns -> 2,
-          exec.benchRuns -> 3, 
-          exec.independentSamples -> 1
-        )
-      
-      for( ((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
-        benchmark.fixture(name, maxSize)
-
-    }
-    else {
-      implicit val configArguments = 
-        org.scalameter.Context(
-          exec.maxWarmupRuns -> warmUps,
-          exec.benchRuns -> numberOfRuns, 
-          exec.independentSamples -> JVMs,
-          exec.jvmcmd -> javaCommand,
-          exec.jvmflags -> JVMFlags.mkString(" ")
-        )
-      
-      for( ((benchmark, name), maxSize) <- benchmarks zip fullBlownSizes)
-        benchmark.fixture(name, maxSize)
-
-    }
+    implicit val configArguments = 
+      org.scalameter.Context(
+        exec.maxWarmupRuns -> 2,
+        exec.benchRuns -> 3, 
+        exec.independentSamples -> 1
+      )
+    
+    for( ((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
+      benchmark.fixture(name, maxSize)
 
   }
+
+  class BenchmarkSuiteFull extends PerformanceTest.OfflineReport {    
+    override def persistor = new persistence.SerializationPersistor
+    
+    import BenchmarkSuite._
+  
+    val benchmarks = List(
+      (new BinarySearchTreeBenchmark, "Binary Search Trees"),
+      (new SortedListDependentBenchmark, "Sorted Lists"),
+      (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
+      (new HeapArrayBenchmark, "Heap Arrays")
+    )
+    
+    implicit val configArguments = 
+      org.scalameter.Context(
+        exec.maxWarmupRuns -> warmUps,
+        exec.benchRuns -> numberOfRuns, 
+        exec.independentSamples -> JVMs,
+        exec.jvmcmd -> javaCommand,
+        exec.jvmflags -> JVMFlags.mkString(" ")
+      )
+    
+    for( ((benchmark, name), maxSize) <- benchmarks zip fullBlownSizes)
+      benchmark.fixture(name, maxSize)
+
+  }
+
 }
 
 object BenchmarkSuite { 
