@@ -37,13 +37,16 @@ package suite {
   class BenchmarkSuiteFull extends PerformanceTest {    
     override def persistor = new persistence.SerializationPersistor
     
-    override def reporter: Reporter = Reporter.Composite(
-      new RegressionReporter(
-        RegressionReporter.Tester.OverlapIntervals(),
-        RegressionReporter.Historian.Complete() ),
-      // do not embed data into js
-      HtmlReporter(false)
-    )
+    override def reporter: Reporter =
+      new SciFeReporter(
+        Reporter.Composite(
+        new RegressionReporter(
+          RegressionReporter.Tester.OverlapIntervals(),
+          RegressionReporter.Historian.Complete() ),
+        // do not embed data into js
+        HtmlReporter(false)
+        )
+      )
 
     def executor = SeparateJvmsExecutor(
       Executor.Warmer.Default(),
@@ -63,7 +66,7 @@ package suite {
       )
     
     for( ((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
-      benchmark.fixture(benchmarkMainName, name, maxSize)
+      benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
       
     val dummyBenchmark = new DummyBenchmark
 
@@ -117,17 +120,21 @@ object BenchmarkSuite {
     "Sorted List",
     "Red-Black Tree",
     "Heap Array",
-    "Directed Acyclic Graph"
+    "Directed Acyclic Graph",
+    "Class-Interface DAG"
   )
   
   var maxSize = 15
   
   val minimalSizes = List(3, 3, 3, 3)
+
   val fullBlownSizes = List(15, 15, 15, 12, 10)
-  
   val warmUps = 8
   val numberOfRuns = 3
   val JVMs = 3
+
+//  val fullBlownSizes = List(3, 3, 3, 3, 3)
+//  val warmUps = 1; val numberOfRuns = 3; val JVMs = 1
 
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
