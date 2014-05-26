@@ -16,47 +16,53 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   with java.io.Serializable with HasLogger {
   import Structures._
   
-  val benchmarkMainName = "SciFe_Dependent_Enumerators"
-
 //  @transient override lazy val reporter = new DsvReporter(',')
     
   val defaultContext = Context.empty
   
-//  def fixtureRun(
-//    run: String,
+  def fixtureRun(
+    benchmarkMainName: String,
+    name: String,
+    maxSize: Int,
+    run: String,
+    maxSizeWarmup: Option[Int] = None
+//    ,
 //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
-//    generator: Gen[I] = this.generator,
-//    warmUp: DepEnumType => Any = this.warmUp,
-//    measureCode: (super.Using[I], DepEnumType) => Any = this.measureCode,
-//    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed) =
-//    performance of benchmarkMainName in {
-//      performance of name in {
-//        measure method run in {
-//          val memScope = new MemoizationScope
-//          val enumerator = constructEnumerator(memScope)
-//          assert(memScope.memoizations.size > 0)
-//
-//          measureCode(
-//            using(generator) config (
-//              exec.maxWarmupRuns -> warmUps,
-//          		exec.benchRuns -> numberOfRuns, 
-//              exec.independentSamples -> JVMs,
-//              exec.jvmcmd -> javaCommand,
-//              exec.jvmflags -> JVMFlags.mkString(" ")
-//            ) curve (name) warmUp {
-//System.gc()
-//System.gc()
-//              warmUp(enumerator)
-//            } setUp {
-//              setUp(_, enumerator, memScope)
-//            } tearDown {
-//              tearDownFixed(_, enumerator, memScope)
-//            }, enumerator)
-//        }
-//      }
-//    }
+//    generator: Int => Gen[I] = this.generator,
+//    warmUp: (DepEnumType, Int) => Any = this.warmUp,
+//    measureCode: DepEnumType => I => Any = this.measureCode,
+//    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed
+    )(
+      implicit configArguments: org.scalameter.Context = defaultContext
+    ) = {
+    require(name != null)
+    val warmupSize = maxSizeWarmup.getOrElse(maxSize)
+    
+    performance of benchmarkMainName in {
+        measure method run in {
+          val memScope = new MemoizationScope
+          val enumerator = constructEnumerator(memScope)
+          assert(memScope.memoizations.size > 0)
+  
+            using( generator(maxSize) ) config (
+              configArguments
+            ) curve (name) warmUp {
+  System.gc()
+  System.gc()
+              warmUp(enumerator, warmupSize)
+  System.gc()
+  System.gc()
+            } setUp {
+              setUp(_, enumerator, memScope)
+            } tearDown {
+              tearDownFixed(_, enumerator, memScope)
+            } in measureCode( enumerator )
+        }
+    }
+  }
 
   def fixture(
+    benchmarkMainName: String,
     name: String,
     maxSize: Int,
     maxSizeWarmup: Option[Int] = None
@@ -73,7 +79,6 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
     
     performance of benchmarkMainName in {
-      performance of name in {
         val memScope = new MemoizationScope
         val enumerator = constructEnumerator(memScope)
         assert(memScope.memoizations.size > 0)
@@ -91,7 +96,6 @@ System.gc()
           } tearDown {
             tearDownFixed(_, enumerator, memScope)
           } in measureCode( enumerator )
-      }
     }
   }
 
