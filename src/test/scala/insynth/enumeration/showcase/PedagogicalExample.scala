@@ -1,7 +1,6 @@
 package insynth
 package enumeration
-package benchmarks
-package spec
+package showcase
 
 import dependent._
 import memoization._
@@ -25,34 +24,14 @@ class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenProp
   import Util.CheckerHelper
   import Checks._
   
-//  test("correctness") {
-//    val ms = new MemoizationScope
-//    val enum = constructEnumerator(ms)
-//    ms.memoizations.size should be (1)
-//    
-//    val helper = new CheckerHelper[Tree]
-//    import helper._
-//    
-//    withLazyClue("Elements are: " + clue) {
-//    
-//    val profileRange = 1 to 15
+  // import DSL
+  import e._
+  import Enum._
+  
+//  test("Dates example") {
+//    val dates = (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) 
+//      { isValid( ) } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
 //
-//	    for (size <- profileRange) {
-//	      ms.clear
-//	      profile("Getting stream for BST of size %d".format(size)) {
-//	        res = enum.getEnum(size, 1 to size)
-//	      }
-//	      profile("Claculating size for BST of size %d".format(size)) {
-//	        res.size should be (Catalan.catalan(size))
-//	      }
-//	      profile("Getting elements for BST of size %d".format(size)) {
-//	        for (ind <- 0 until res.size) res(ind)
-//	      }
-//	      
-//	      assert( (for (ind <- 0 until res.size) yield res(ind)).forall( invariant(_) ) )
-//	    }
-//
-//    }
 //  }
 
   // paper

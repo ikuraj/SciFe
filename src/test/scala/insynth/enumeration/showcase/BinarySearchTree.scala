@@ -1,7 +1,6 @@
 package insynth
 package enumeration
-package benchmarks
-package spec
+package showcase
 
 import dependent._
 import memoization._
@@ -20,7 +19,7 @@ import org.scalameter.api._
 import scala.language.existentials
 import scala.language.implicitConversions
 
-class BinarySearchTreeBenchmark extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
+class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
 	HasLogger with ProfileLogger {  
   import common._
   import Util.CheckerHelper
