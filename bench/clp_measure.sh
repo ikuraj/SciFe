@@ -5,14 +5,14 @@ PROJECT_DIR="./"
 OUTPUTDIR="$PROJECT_DIR/tmp/clp"
 LOG_FILE="$OUTPUTDIR/clp.log"
 
-RUN_PREFIX=timeout 210s
+RUN_PREFIX="timeout 210s"
 
 mkdir -p $OUTPUTDIR
 
 # large stack for GNU Prolog
 GLOBALSZ=131072; export GLOBALSZ
 
-VLIB='./measure.pl'
+VLIB="$CLP_DIR/measure.pl"
 
 ## SIZE BOUNDS for each program ---------------------------
 

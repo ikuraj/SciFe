@@ -15,7 +15,7 @@ class SciFeReporter(inner: Reporter) extends Reporter {
       parser.parse
     case "CLP" =>
       val parser = new CLPParser(bench)
-      parser.parsen
+      parser.parse
   }
   
   def report(result: CurveData, persistor: Persistor) = {

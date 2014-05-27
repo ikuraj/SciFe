@@ -20,7 +20,11 @@ class KoratParser(benchName: String) {
         for (line <- lines) yield {
           val parts = line.split("\t")
           val size = parts(0).toInt
-          val complete = parts.toSeq.tail.map( _.toDouble )
+          val runs = parts.toSeq.tail.map( _.toDouble * 1000 )
+          
+          val complete =
+            if (runs.size < 3) runs ++ Seq.fill(3 - runs.size)(runs.last)
+            else runs
           
           (size -> complete)
         }

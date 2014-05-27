@@ -73,7 +73,7 @@ package suite {
     for( (name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
       dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
       
-    for( (name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+    for( (name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
       dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
 
   }
@@ -122,6 +122,13 @@ object BenchmarkSuite {
     "Heap Array",
     "Directed Acyclic Graph",
     "Class-Interface DAG"
+  )
+    
+  val clpBenchmarksNames = List(
+    "Binary Search Tree",
+    "Sorted List",
+    "Red-Black Tree",
+    "Heap Array"
   )
   
   var maxSize = 15
