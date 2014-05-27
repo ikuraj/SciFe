@@ -18,6 +18,7 @@ import org.scalatest.prop._
 import org.scalameter.api._
 
 import scala.language.existentials
+import scala.language.postfixOps
 
 class BinarySearchTreeCompBenchmarkTest extends FunSuite
   with Matchers with GeneratorDrivenPropertyChecks with
