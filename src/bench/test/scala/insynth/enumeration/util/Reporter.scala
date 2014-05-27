@@ -14,7 +14,8 @@ class SciFeReporter(inner: Reporter) extends Reporter {
       val parser = new KoratParser(bench)
       parser.parse
     case "CLP" =>
-      throw new RuntimeException
+      val parser = new CLPParser(bench)
+      parser.parsen
   }
   
   def report(result: CurveData, persistor: Persistor) = {
@@ -24,7 +25,7 @@ class SciFeReporter(inner: Reporter) extends Reporter {
   def report(results: Tree[CurveData], persistor: Persistor) = {
     val newResults =
       results map { cd =>
-        if (cd.context.curve == "SciFe" || cd.context.curve == "CLP") cd
+        if (cd.context.curve == "SciFe") cd
         else {
           val newMeasurements =
             for (m <- cd.measurements) yield {
