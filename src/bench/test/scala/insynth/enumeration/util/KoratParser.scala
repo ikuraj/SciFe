@@ -23,7 +23,8 @@ class KoratParser(benchName: String) {
           val runs = parts.toSeq.tail.map( _.toDouble * 1000 )
           
           val complete =
-            if (runs.size < 3) runs ++ Seq.fill(3 - runs.size)(runs.last)
+            if (runs.size > 0 && runs.size < 3)
+              runs ++ Seq.fill(3 - runs.size)(runs.last)
             else runs
           
           (size -> complete)
