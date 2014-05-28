@@ -106,6 +106,8 @@ do
   SAVEFILE="$OUTPUTDIR/${EXAMPLE_NAME}"
   echo "Save file is $SAVEFILE"
   #echo -e "Size\tAverage time" >> $SAVEFILE
+  
+  TIMED_OUT=false
     
   for SIZE in $SIZES; do
     ARG="$SIZE$EXTRAARG"
@@ -127,6 +129,7 @@ do
 	RET_CODE=$?
 	if [ $RET_CODE == 1 ]; then
 	  printf "This measurement timed out"
+	  TIMED_OUT=true
 	  #SUM=-1
 	  break
 	else	  
@@ -143,6 +146,12 @@ do
     #echo "Average accross $REPEAT runs for size $SIZE is $AVG"    
     #printf "%d\t%.5f\n" $SIZE $AVG >> $SAVEFILE
     printf "\n" >> $SAVEFILE
+    
+    if [ "$TIMED_OUT" = true ] ; then
+      echo 'Skipping other sizes because of timeout'
+      break
+    fi
+    
   done
   
   #echo "Log files can be found in $OUTPUTDIR/${EXAMPLE##*.}"
