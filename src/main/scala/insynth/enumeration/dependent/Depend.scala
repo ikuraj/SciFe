@@ -3,6 +3,8 @@ package dependent
 
 import scala.collection.immutable.{ Map => ScalaMap }
 import scala.reflect._
+
+import scala.language.implicitConversions
 import scala.language.higherKinds
 
 trait Depend[I, +O] extends Serializable {
