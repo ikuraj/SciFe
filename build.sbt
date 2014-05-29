@@ -39,3 +39,10 @@ libraryDependencies += "com.github.axel22" %% "scalameter" % "0.5-SNAPSHOT" % "t
 
 // Kiama attribute grammars
 libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.5.1"
+
+// Coverage
+instrumentSettings
+
+CoverallsPlugin.coverallsSettings
+
+ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
