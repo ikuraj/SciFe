@@ -5,4 +5,8 @@ SciFe
 [![Benchmark Status](http://lara.epfl.ch/~kuraj/SciFe/status.svg)](http://lara.epfl.ch/~kuraj/SciFe/report/index.html)
 [![Coverage Status](https://img.shields.io/coveralls/kaptoxic/SciFe.svg)](https://coveralls.io/r/kaptoxic/SciFe)
 
-SciFe: Framework for Efficient Generation of Data Structures with Invariants
+<b>Sc</b>ala <b>F</b>ramework for <b>E</b>fficient Generation of Data Structures with <b>I</b>nvariants
+
+===============
+
+More information can be found at [the SciFe webpage](http://kaptoxic.github.io/SciFe/).
