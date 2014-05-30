@@ -135,7 +135,7 @@ object BenchmarkSuite {
   
   val minimalSizes = List(3, 3, 3, 3)
 
-  val fullBlownSizes = List(15, 15, 15, 12, 10)
+  val fullBlownSizes = List(15, 15, 15, 11, 4)
   val warmUps = 8
   val numberOfRuns = 3
   val JVMs = 3

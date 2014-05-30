@@ -11,7 +11,7 @@ object SciFeBuild extends Build {
         javaOptions in Test += "-Xmx2048m",
         unmanagedSourceDirectories in Test <+= sourceDirectory ( _ / "bench" ),
 
-        commands ++= Seq(benchCommand),
+        commands ++= Seq(benchCommand, benchBadgeCommand),
         
         parallelExecution in BenchConfig := false,
         fork in BenchConfig := false,
@@ -49,6 +49,29 @@ object SciFeBuild extends Build {
       case _ =>
         state.fail
     }
+  }
+  
+  import java.util._
+  import java.text._
+  
+  val badgesUrl = "http://img.shields.io/badge/"
+  val pattern = "benchmark-%s-green.svg"
+  val downloadCommand = "wget -O ./tmp/status.svg %s%s"
+  val suffixPattern = "benchmark-%s-green.svg"
+    
+  def benchBadgeCommand = Command.command("bench-badge") { state =>
+    val currentTime = Calendar.getInstance().getTime()
+    val dateFormat = new SimpleDateFormat("""dd%2'F'MM%2'F'yy""")
+    
+    val dateString = dateFormat format currentTime
+    val suffix = suffixPattern format dateString
+    
+    val commandResult =
+      Process(downloadCommand.format(badgesUrl, suffix)).lines
+    
+    println(commandResult)
+    
+    state
   }
   
 }

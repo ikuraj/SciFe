@@ -34,7 +34,7 @@ class SciFeReporter(inner: Reporter) extends Reporter {
               
               val externalData = extractData(cd.context.curve, cd.context.scopeList(1).replaceAll(" ", ""))
               
-              if (externalData contains size && externalData(size).nonEmpty) {
+              if (externalData.contains(size) && !externalData(size).isEmpty) {
                 val value = externalData(size).sum / externalData(size).size
                 val complete = externalData(size)
                 

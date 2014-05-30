@@ -1,5 +1,17 @@
 ---
 language: scala
+#script: "sbt coveralls"
+notifications:
+  email:
+    recipients:
+      - ivan.kuraj@gmail.com
+    on_success: change
+    on_failure: always
 jdk:
 - oraclejdk7
 - openjdk7
+# whitelist
+branches:
+  only:
+    - master
+    - develop
