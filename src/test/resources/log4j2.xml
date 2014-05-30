@@ -7,30 +7,15 @@
     <Console name="BenchmarkConsole" target="SYSTEM_OUT">
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %msg%n}{INFO=green blink}"/>
     </Console>
-		<File name="ProofTreeFile" fileName="logs/proofTree.log">
-			<PatternLayout
-				pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-			<ThresholdFilter level="debug" onMatch="DENY" onMismatch="ACCEPT"/>
-		</File>
 	</appenders>
 	<loggers>
-		<logger name="insynth.reconstruction.Streamer" level="all"
-			additivity="false">
-			<appender-ref ref="Console" />
-		</logger>
-		<logger name="insynth.Solver" level="trace" additivity="false">
-			<appender-ref ref="ProofTreeFile" />
-		</logger>
-    <logger name="insynth.streams.light" level="off" additivity="false">
-      <appender-ref ref="Console" />
-    </logger>
     <logger name="insynth.enumeration.reverse" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.reverse.dependent" level="all" additivity="false">
+    <logger name="insynth.enumeration.reverse.dependent" level="false" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.testcases" level="off" additivity="false">
+    <logger name="insynth.enumeration.showcase" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="insynth.enumeration.benchmarks" level="off" additivity="false">
