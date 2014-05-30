@@ -48,7 +48,7 @@ trait Enum[+A] extends Serializable {
   
 }
 
-object Enum {
+object Enum extends EnumLessPriority {
 
   /* Factory methods */
   
@@ -65,7 +65,7 @@ object Enum {
   def apply[T](stream: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
     fromCollection(stream)
 
-  def apply(range: scala.Range) =
+  def apply(range: Range) =
     if (range.start == 0) new IdentitySize(range.size)
     else new WrapRange(range)
 
@@ -83,7 +83,7 @@ object Enum {
 
   /* Implicit conversion methods */
   
-  implicit def rangeToEnum(range: Range): Enum[Int] =
+  implicit def rangeToEnum(range: Range): Finite[Int] =
     apply(range)
   
   implicit def colToEnum[T](col: Seq[T])(implicit ct: ClassTag[T]) =
@@ -92,11 +92,13 @@ object Enum {
   implicit def elemsToEnum[T](elems: T*)(implicit ct: ClassTag[T]) =
     fromFiniteCollection(elems)
     
-  implicit def elToEnum[T](el: T) =
-    Singleton(el)
+  implicit def traverableToEnum[T <% Traversable[_]](el: T) =
+    fromCollectionNoTag(el): Enum[_]
 
-  implicit def streamToEnum[T](col: Stream[T]): Enum[T] =
-    fromCollectionNoTag(col)
+  // needs to declare more specific type, otherwise singletonToEnum kicks in
+  implicit def streamToEnum[T](stream: Stream[T]): Infinite[T] =
+    new WrapStream(stream)
+//    fromCollectionNoTag(col)
 
   implicit def traversableToEnum[T](col: Traversable[T]): Enum[T] =
     fromCollectionNoTag(col)
@@ -134,5 +136,13 @@ object Enum {
       case _ if col.size == 1 => Singleton(col.head)
       case is: IndexedSeq[T] => new WrapIndexedSeq(is)
     }
+
+}
+
+// this does not help much, still wins over streamToEnum
+trait EnumLessPriority {
+  
+  implicit def elToEnum[T](el: T) =
+    Singleton(el)
 
 }
