@@ -33,18 +33,18 @@
 <h2>
 <a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
 
-        <p>SciFe is a Scala library that implement a domain specific language for automated generation of complex structures, suitable for tasks such as automated testing and synthesis.</p>
+        <p>SciFe is a Scala library that implements a domain specific language for automated generation of complex structures, suitable for tasks such as automated testing and synthesis.</p>
 
 <h3>
 <a name="example-usage" class="anchor" href="#example-usage"><span class="octicon octicon-link"></span></a>Example usage</h3>
 
 SciFe uses enumerators and combinators to define data generation.
-The following example of enumerating all valid date objects starting from the first day of 2014: 
+The following example of enumerating all valid date objects starting from the first day of 2014.: 
 <pre><code>val dates = (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ≻
   { isValid( ) } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
 </code></pre>
 
-You can easily enumerate the encoded dates:
+Encoded dates can easily be enumerated with:
 <pre><code>for (i ← 0 until 5) yield dates(i) // get first 5 days
 dates(208) // get 208th date
 
@@ -52,7 +52,7 @@ dates.hasDefiniteSize // returns false
 for (d ← dates) yield print(d) // prints all dates (does not stop)
 </code></pre>
 
-SciFe can easily enumerate complex structures such as binary search tree:
+SciFe can also enumerate complex structures such as binary search trees:
 <pre><code>rec[(Int, Range), Tree]({ case ((size, range), self) ⇒ {
   if (size == 0) Leaf
   else {
@@ -66,7 +66,7 @@ SciFe can easily enumerate complex structures such as binary search tree:
 }}})
 </code></pre>
 
-This code enumerates all valid trees of size 15, more than 9.6·10<sup>6</sup>, in just a few seconds.
+This code enumerates all valid trees of size 15, more than 9.6·10<sup>6</sup> of those, in just a few seconds.
 <br></br>
 
 <h2>
@@ -76,12 +76,18 @@ This code enumerates all valid trees of size 15, more than 9.6·10<sup>6</sup>, 
 SciFe introduces concepts of enumerators and enumerator combinators.
 SciFe is a Scala library that implements a domain-specific language.
 SciFe can generate complex structures such as search trees and models of class hierarchies.
-Specifications in SciFe are short and leaf to very efficient enumeration, even in case of complex data structures with invariants.</p>
+Specifications in SciFe are short and lead to very efficient enumeration, even in case of complex data structures with invariants.</p>
 
 <h3>
 <a name="what-makes-it-different" class="anchor" href="#what-makes-it-different"><span class="octicon octicon-link"></span></a>Features</h3>
 
-TODO
+<ul>
+<li>SciFe can outperform test generation tools in terms of <b>lenth of specification</b> and <b>performance</b>; up to 10x shorter specification and 3 orders of magnitude speedup in case of <a href=http://sourceforge.net/projects/korat/>Korat</a> and 3x and 2 orders of magnitude in case of <a href=http://www.sci.unich.it/~fioravan/#papers>constraint-logic programming</a> approach.
+<li><b>Modularity</b> allows treating enumerators as self-contained building blocks.
+<li><b>Memoization</b> allows storing and sharing computed intermediate results.
+<li><b>Random access</b> allows random testing, in addition to exhaustive enumeration.
+<li><b>Fine-grain</b> enumeration offers precise choice of which instances to enumerate. 
+</ul>
 
 <!--<h3>
 <a name="using-scife" class="anchor" href="#using-scife"><span class="octicon octicon-link"></span></a>Using SciFe</h3> -->
@@ -90,12 +96,17 @@ TODO
 <h3>
 <a name="benchmarks" class="anchor" href="#benchmarks"><span class="octicon octicon-link"></span></a>Benchmarks</h3>
 
-TODO
+Benchmarks results (accumulated over multiple runs) can be viewed <a href="http://lara.epfl.ch/~kuraj/SciFe/report/index.html">at</a>.
+Tables summarize the comparison of measured performance. Data structures were generated with SciFe (with
+memoization enabled), the constraint logic programming approach (CLP), and Korat (see publication for more details).
 
-<h3>
-<a name="publication" class="anchor" href="#publication"><span class="octicon octicon-link"></span></a>Publication</h3>
+Benchmark data are available <a href=https://github.com/kaptoxic/SciFe/tree/master/bench>at</a>.
+Benchmarks can be run at any time by running <pre><code>sbt bench:test</code></pre>
 
-TODO
+
+<!--<h3>
+<a name="publication" class="anchor" href="#publication"><span class="octicon octicon-link"></span></a>Publication</h3> -->
+
 
       </section>
     </div>
