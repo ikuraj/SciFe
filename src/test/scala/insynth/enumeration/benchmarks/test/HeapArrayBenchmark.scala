@@ -20,8 +20,7 @@
 //  extends StructuresBenchmark[Depend[(Int, Array[Int]), Tree]]
 ////  extends DependentMemoizedBenchmark[Int, Depend[(Int, List[Int]), Tree]]
 //  with java.io.Serializable with HasLogger {
-//  import common._
-//  import e.Enum
+//  //  import e.Enum
 //
 //  override def name = "HeapArray"
 //

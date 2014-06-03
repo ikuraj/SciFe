@@ -30,8 +30,7 @@
 //  type Output = List[(Int, List[Int], List[Int], List[Int])]
 //  type EnumType = Depend[Input, Output]
 //
-//  import common._
-//  import e.Enum
+//  //  import e.Enum
 //
 //  override def name = "ClassDAG"
 //

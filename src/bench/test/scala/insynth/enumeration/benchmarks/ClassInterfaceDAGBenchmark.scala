@@ -29,8 +29,7 @@ class ClassInterfaceDAGBenchmark
   type Output = List[(Int, List[Int], List[Int], List[Int])]
   type EnumType = Depend[Input, Output]
 
-  import common._
-  import e.Enum
+    import e.Enum
 
 //  def fromSizeToPair(s: Int) = {
 //    val actual = s - 1

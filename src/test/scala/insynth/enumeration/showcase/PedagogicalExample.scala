@@ -20,8 +20,7 @@ import org.scalatest.prop._
 import org.scalameter.api._
 
 class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
-  import common._
-  import Util.CheckerHelper
+    import Util.CheckerHelper
   import Checks._
 
   // import DSL

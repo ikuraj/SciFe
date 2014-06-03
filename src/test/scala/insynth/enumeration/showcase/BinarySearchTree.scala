@@ -20,8 +20,7 @@ import scala.language.existentials
 import scala.language.implicitConversions
 
 class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
-  import common._
-  import Util.CheckerHelper
+    import Util.CheckerHelper
   import Checks._
 
   // DSL

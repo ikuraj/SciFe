@@ -28,8 +28,7 @@ class DAGStructureBenchmark
   type Output = List[List[Int]]
   type EnumType = Depend[Input, Output]
 
-  import common._
-  import e.Enum
+    import e.Enum
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>

@@ -22,8 +22,7 @@ import scala.language.existentials
 class RedBlackTreeDependentBenchmarkTest
   extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
   HasLogger with ProfileLogger {
-  import common._
-  import Util._
+    import Util._
   import Checks._
   
   def checker(seq: Seq[Tree]) {
