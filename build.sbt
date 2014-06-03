@@ -46,3 +46,6 @@ instrumentSettings
 CoverallsPlugin.coverallsSettings
 
 ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
+
+// Check style
+org.scalastyle.sbt.ScalastylePlugin.Settings
