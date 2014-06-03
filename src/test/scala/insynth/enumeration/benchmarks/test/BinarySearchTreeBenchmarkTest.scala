@@ -21,8 +21,7 @@ import scala.language.existentials
 
 class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
 	HasLogger with ProfileLogger {  
-  import common._
-  import Util.CheckerHelper
+    import Util.CheckerHelper
   import Checks._
   
   test("correctness") {

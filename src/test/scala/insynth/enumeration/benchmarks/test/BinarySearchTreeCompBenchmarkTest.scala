@@ -23,8 +23,7 @@ import scala.language.postfixOps
 class BinarySearchTreeCompBenchmarkTest extends FunSuite
   with Matchers with GeneratorDrivenPropertyChecks with
 	HasLogger with ProfileLogger {  
-  import common._
-  import Util.CheckerHelper
+    import Util.CheckerHelper
   import Checks._
   
   type Output = Tree//(List[Int], Tree)
