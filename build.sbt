@@ -4,6 +4,10 @@ version := "1.0"
 
 organization := "ch.epfl.lara"
 
+organizationName := "LARA/EPFL"
+
+organizationHomepage := Some(new URL("http://lara.epfl.ch"))
+
 scalaVersion := "2.10.3"
 
 scalaBinaryVersion := "2.10"
