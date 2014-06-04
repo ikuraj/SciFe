@@ -6,11 +6,20 @@ import e.dependent.combinators
 
 import scala.language.higherKinds
 
-class InMap[I, NewIn, O](
+class InMap[I, NewIn, O/*, ReverseType <: ReverseDepend[I, O]*/](
   override val inner: ReverseDepend[I, O], override val f: NewIn => I  
-) extends combinators.InMap[I, NewIn, O] {
+) extends combinators.InMap[I, NewIn, O] with ReverseDepend[NewIn, O] {
   
+  //override type DependType = ReverseType
   override type DependType = ReverseDepend[I, O]
+  
+}
+
+class InMapFin[I, NewIn, O](
+  override val inner: ReverseDependFinite[I, O], override val f: NewIn => I  
+) extends combinators.InMap[I, NewIn, O] with ReverseDependFinite[NewIn, O] {
+  
+  override type DependType = ReverseDependFinite[I, O]
   
 }
 
