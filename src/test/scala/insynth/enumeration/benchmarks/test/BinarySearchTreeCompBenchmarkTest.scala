@@ -60,7 +60,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
     }
 
 
-    val profileRange = 1 to 10
+    val profileRange = 1 to 6
 
     for (size <- profileRange) {
       ms.clear

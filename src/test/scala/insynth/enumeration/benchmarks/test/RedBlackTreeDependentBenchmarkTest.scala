@@ -41,7 +41,7 @@ class RedBlackTreeDependentBenchmarkTest
     val helper = new CheckerHelperFun(checker)
     import helper._
 
-    val profileRange = 1 to 10
+    val profileRange = 1 to 6
     
     withLazyClue("Elements are: " + clue) {
       // specific cases
@@ -86,11 +86,9 @@ class RedBlackTreeDependentBenchmarkTest
     
       // some confirmed counts
       elements =
-        for (blackHeight <- 0 to 6; e = enum.getEnum(12, 1 to 12, Set(true, false), blackHeight);
+        for (blackHeight <- 0 to 6; e = enum.getEnum(9, 1 to 9, Set(true, false), blackHeight);
           ind <- 0 until e.size) yield e(ind)
-
-      // this is for size 12
-      elements.size should be (1296)
+      elements.size should be (122)
     }
 
     for (size <- profileRange) {

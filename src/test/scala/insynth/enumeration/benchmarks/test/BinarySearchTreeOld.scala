@@ -35,7 +35,7 @@ class BinarySearchTreeBenchmarkOld
 //      enumerator shouldBe a [memoization.dependent.Memoized[_, _]]
 
       using(sizes) curve ("Binary Search Trees") warmUp {
-        for (size <- 1 to 10) {
+        for (size <- 1 to 6) {
           val tdEnumVal = enumerator
           val enum = enumerator.getEnum((size, 1 to size))
           for (i <- 0 until enum.size) enum(i)

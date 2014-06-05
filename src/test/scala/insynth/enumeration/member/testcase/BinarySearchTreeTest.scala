@@ -21,31 +21,7 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   
   test("regular enumeration") {
     
-    val trees = constructEnumerator
-    
-    val profileRange = 1 to 5
-    val util = new Util.CheckerHelper[Tree]
-    import util._
-    
-    withLazyClue("Elements are: " + clue) {
-      for (size <- profileRange) {
-        profile("Getting stream for BST of size %d".format(size)) {
-          res = trees.getEnum(size, 1 to size)
-        }
-        profile("Claculating size for BST of size %d".format(size)) {
-          res.size should be (Catalan.catalan(size))
-        }
-        profile("Getting elements for BST of size %d".format(size)) {
-          for (ind <- 0 until res.size) res(ind)
-        }
-        
-        assert( (for (ind <- 0 until res.size) yield res(ind)).forall( invariant(_) ) )
-      }
-    }
-        
-    for (size <- 1 to 5) {
-      trees(size, 1 to size).toList should contain theSameElementsAs ( constructEnumeratorNormal(size, 1 to size).toList )
-    }
+    common.BinarySearchTreeTest.testCorrectness( constructEnumerator )
 
   }
   
