@@ -13,6 +13,7 @@ object SciFeBuild extends Build {
 
         commands ++= Seq(benchCommand, benchBadgeCommand),
         
+        // benchmarking
         parallelExecution in BenchConfig := false,
         fork in BenchConfig := false,
         testFrameworks in BenchConfig += new TestFramework("org.scalameter.ScalaMeterFramework"),
@@ -20,8 +21,41 @@ object SciFeBuild extends Build {
         testOptions in BenchConfig := Seq(Tests.Filter(benchFilter)),
         testOptions in BenchConfig := Seq(),
         scalacOptions in BenchConfig ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions"),
-        scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF") 
-      )
+        scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF"),
+        
+        // publishing artifact
+        publishMavenStyle := true,
+        publishTo <<= version { (v: String) =>
+          val nexus = "https://oss.sonatype.org/"
+          if (v.trim.endsWith("SNAPSHOT"))
+            Some("snapshots" at nexus + "content/repositories/snapshots")
+          else
+            Some("releases" at nexus + "service/local/staging/deploy/maven2")
+        },
+        publishArtifact in Test := false,
+        pomIncludeRepository := { _ => false },
+        pomExtra :=
+          <url>http://kaptoxic.github.io/SciFe/</url>
+          <licenses>
+            <license>
+              <name>BSD-style</name>
+              <url>http://opensource.org/licenses/BSD-3-Clause</url>
+              <distribution>repo</distribution>
+            </license>
+          </licenses>
+          <scm>
+            <url>git@github.com:kaptoxic/SciFe.git</url>
+            <connection>scm:git:git@github.com:kaptoxic/SciFe.git</connection>
+          </scm>
+          <developers>
+            <developer>
+              <id>kaptoxic</id>
+              <name>Ivan Kuraj</name>
+              <url>http://github.com/kaptoxic</url>
+            </developer>
+          </developers>
+        )
+        .settings(publishCreds)
 
   val benchRegEx = """(.*\.suite\.[^\.]*Suite*)"""
       
@@ -72,6 +106,22 @@ object SciFeBuild extends Build {
     println(commandResult)
     
     state
+  }
+
+  val publishUser = "SONATYPE_USER"
+  val publishPass = "SONATYPE_PASS"
+
+  val userPass = for {
+    user <- sys.env.get(publishUser)
+    pass <- sys.env.get(publishPass)
+  } yield (user, pass)
+
+  val publishCreds: Def.Setting[_] = userPass match {
+    case Some((user, pass)) =>
+      credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", user, pass)
+    case None =>
+      // prevent publishing
+      publish <<= streams.map(_.log.info("Publishing to Sonatype is disabled since the \"" + publishUser + "\" and/or \"" + publishPass + "\" environment variables are not set."))
   }
   
 }

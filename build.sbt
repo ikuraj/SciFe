@@ -1,6 +1,6 @@
 name := "SciFe"
 
-version := "1.0"
+version := "1.0-SNAPSHOT"
 
 organization := "ch.epfl.lara"
 
@@ -20,24 +20,24 @@ libraryDependencies += "junit" % "junit" % "4.8" % "test"
 
 libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3" % "test"
 
-// ScalaLogging
+// ScalaCheck
+resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
+
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.3"
+
+// Logging
 libraryDependencies ++= Seq(
   "com.typesafe" %% "scalalogging-log4j" % "1.0.1",
   "org.apache.logging.log4j" % "log4j-api" % "2.0-beta3",
   "org.apache.logging.log4j" % "log4j-core" % "2.0-beta3"
 )
 
-// ScalaCheck
-resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
-
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.3"
-
-// ScalaMeter
+// Benchmarking
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies += "com.github.axel22" %% "scalameter" % "0.5-SNAPSHOT" % "test"
 
-// Kiama attribute grammars
+// Attribute grammars
 libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.5.1"
 
 // Coverage
