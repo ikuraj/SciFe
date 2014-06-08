@@ -18,11 +18,17 @@ import org.scalameter.api._
 import scala.language.postfixOps
 import scala.language.existentials
 
-object RedBlackTreeDependentTest
-  extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-  HasLogger with ProfileLogger {
+object RedBlackTreeTest
+  extends Matchers with HasLogger with ProfileLogger {
     import Util._
   import Checks._
+  
+  def assertIndividualInvariants(tree: Tree) {
+    ( blackInv(tree) ) should be (true) 
+    ( redDescHaveBlackChildren(tree) ) should be (true) 
+    ( valueOrdering(tree) ) should be (true) 
+    ( invariant(tree) ) should be (true) 
+  }
   
   def testCorrectness(enum: Depend[(Int, Range, Set[Boolean], Int), Tree]) {
       

@@ -140,15 +140,9 @@ class SortedListTest extends FunSuite with Matchers with PropertyChecks
           val allLists: ReverseFinite[(Int, List[Int])] =
             new ChainFinite(roots, innerLists)
 
-          val makeList =
-            (p: (Int, List[Int])) => {
-              p._1 :: p._2
-            }
+          val makeList = (p: (Int, List[Int])) => p._1 :: p._2
 
-          val reverseList =
-            (list: List[Int]) => {
-              (list.head, list.tail)
-            }
+          val reverseList = (list: List[Int]) => (list.head, list.tail)
 
           new Map[(Int, List[Int]), List[Int]](allLists, makeList, reverseList)
             with ReverseFinite[List[Int]]
