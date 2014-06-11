@@ -65,7 +65,7 @@ object RedBlackTreeWithOperations {
   }
 
   // A tree node.
-  case class Node(c: Boolean, l: Tree, v: Int, r: Tree) extends Tree {
+  case class Node(val c: Boolean, val l: Tree, val v: Int, val r: Tree) extends Tree {
 
     override def insertWith(v: V) = {
       if (v < this.v) balance(c)(l.insertWith(v))(this.v)(r)
@@ -78,6 +78,16 @@ object RedBlackTreeWithOperations {
       else if (v > this.v) r.contains(v)
       else true
     }
+    
+//    override def toString = "Node(%b, %s, %d, %s)".format(c, l, v, r)
 
   }
+  
+//  object Node {
+//    def apply(c: Boolean, l: Tree, v: Int, r: Tree) =
+//      new Node(c, l, v, r)
+//    
+//    def unapply(n: Node) =
+//      Some( (n.c, n.l, n.v, n.r) )
+//  }
 }

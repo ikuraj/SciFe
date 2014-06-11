@@ -46,6 +46,9 @@ object SciFeBuild extends Build {
           append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Minimal")), state)
         Project.evaluateTask(test in BenchConfig, minState)
         state
+      case "debug" =>
+        Project.evaluateTask(test in BenchConfig, state)
+        state
       case _ =>
         state.fail
     }

@@ -163,6 +163,17 @@ object Structures {
     def invariant(tree: Tree) =
       blackInv(tree) && redDescHaveBlackChildren(tree) && valueOrdering(tree)
         
+    def blackHeight(t : Tree): Int = t match {
+      case Node(l, _, r, c) =>
+        val lHeight = blackHeight(l)
+        val newHeight =
+          if (c) lHeight + 1
+          else lHeight
+        
+        newHeight
+      case Leaf => 1
+    }
+      
     // every path from the root to a leaf has the same number of black nodes
     def blackInv(tree: Tree) = {
       def rec(t : Tree) : (Boolean, Int) = t match {
