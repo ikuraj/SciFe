@@ -43,7 +43,7 @@
 SciFe uses enumerators and combinators to define data generation.
 The following example of enumerating all valid date objects starting from the first day of 2014.: 
 <pre><code>val dates = (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ≻
-  { isValid( ) } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
+  { isValid(_) } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
 </code></pre>
 
 Encoded dates can easily be enumerated with:
