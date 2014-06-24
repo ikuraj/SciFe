@@ -47,9 +47,11 @@ class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenProper
     val helper = new CheckerHelper[Tree]
     import helper._
 
-    for (enum <- List(constructEnumeratorAsInPaper/*,
-      constructEnumeratorSomeAnnotations, 
-      constructEnumerator2*/)) {
+    for (enum <- List(constructEnumeratorAsInPaper,
+//      constructEnumeratorSomeAnnotations, 
+//      constructEnumerator2,
+      constructEnumeratorChainCombinatorRight
+    )) {
       withLazyClue("Elements are: " + clue) {
         res = enum.getEnum(1, 1 to 3)
         res.size should be (3)
@@ -107,6 +109,37 @@ class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenProper
         assert((for (ind <- 0 until res.size) yield res(ind)).forall(invariant(_)))
       }
     }
+  }
+
+  def constructEnumeratorChainCombinatorRight(implicit ms: MemoizationScope) = {
+
+    val res =
+      rec[(Int, Range), Tree]({
+        case (self, (size, r)) => {
+
+          if (size <= 0) Leaf
+          else {
+            val left: DependFinite[(Int, Int), Tree] =
+              self ↓ {
+                case (ls, m) =>
+                  (ls, r.start to (m - 1))
+              }
+
+            val right: DependFinite[(Int, Int), Tree] =
+              self ↓ {
+                case (ls, m) =>
+                  (size - ls - 1, (m + 1) to r.end)
+              }
+
+             ((0 until size) ⊗ r) ⊘ (left ⊗ right) ↑ {
+              case ((lSize, root), (lTree, rTree)) =>
+                Node(lTree, root, rTree)
+            }
+          }
+        }
+      })
+
+    res
   }
 
   def constructEnumeratorAsInPaper(implicit ms: MemoizationScope) = {
