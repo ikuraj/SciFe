@@ -89,6 +89,11 @@ class RedBlackTreeBenchmarkMember
       }
     }
   }
+  
+  def tearDown(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
+    blackHeights.clear    
+    missingElements.clear
+  }
 
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope): EnumType = {
     import RedBlackTreeWithOperations._

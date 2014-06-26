@@ -77,7 +77,7 @@ object BenchmarkSuite {
     "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // memory
-    "-Xms32G", "-Xmx32G"
+    "-Xms44G", "-Xmx44G"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
   

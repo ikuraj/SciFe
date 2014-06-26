@@ -127,8 +127,11 @@ System.gc()
 //    System.gc
     info("[DependentBenchmark:] Begin run")
   }
-
+  
+  def tearDown(i: I, tdEnum: DepEnumType, memScope: MemoizationScope): Unit = {}
+  
   final def tearDownFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
+    tearDown(i, tdEnum, memScope)
     info("[DependentBenchmark:] End run")
   }
 
