@@ -39,7 +39,9 @@ class RedBlackTreeBenchmarkVerify
       for (
         blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
         enum = tdEnum.getEnum(size - 1, 1 to size, Set(true, false), blackHeight);
-        ind <- 0 until enum.size
+//        ind <- 0 until enum.size
+        bound = if (enum.size > 1000) 1000 else enum.size;
+        ind <- 0 until bound
       ) {
         val startingTree = enum(ind)
 
@@ -71,7 +73,8 @@ class RedBlackTreeBenchmarkVerify
     for (
       bH <- 1 to (Math.log2(size + 1).toInt + 1);
       enum = tdEnum.getEnum(size, 1 to size, Set(true, false), bH);
-      ind <- 0 until enum.size
+      bound = if (enum.size > 1000) 1000 else enum.size;
+      ind <- 0 until bound
     ) {
       val el = enum(ind)
       blackHeights += el -> RedBlackTrees.blackHeight(el)
@@ -81,7 +84,8 @@ class RedBlackTreeBenchmarkVerify
       for (
         bH <- 1 to (Math.log2(size + 1).toInt + 1);
         enum = tdEnum.getEnum(size - 1, 1 to size, Set(true, false), bH);
-        ind <- 0 until enum.size
+        bound = if (enum.size > 1000) 1000 else enum.size;
+        ind <- 0 until bound
       ) {
         val el = enum(ind)
         missingElements += el -> (1 to size).find(!el.contains(_)).get
@@ -89,7 +93,7 @@ class RedBlackTreeBenchmarkVerify
     }
   }
   
-  def tearDown(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
+  override def tearDown(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
     blackHeights.clear    
     missingElements.clear
   }

@@ -9,17 +9,17 @@ import scala.collection.mutable._
 
 trait Memoized[T] extends Member[T] {
   
-  this: em.Memoized[T] =>
+  self: em.Memoizable =>
   
   private[enumeration] val members = HashSet[T]()
   
-  override abstract def apply(ind: Int) = {
-    val res = super.apply(ind)
+  override abstract def apply(ind: Int): T = {
+    val res: T = super.apply(ind)
     members += res
     res
   }
   
-  override abstract def member(el: T) = {
+  override abstract def member(el: T): Boolean = {
     if (members contains el) true
     else {
       if (super.member(el)) {
@@ -32,7 +32,7 @@ trait Memoized[T] extends Member[T] {
   }
       
   override def clearMemoization {
-    this.clearMemoization
+    self.clearMemoization
     members.clear
   }
   

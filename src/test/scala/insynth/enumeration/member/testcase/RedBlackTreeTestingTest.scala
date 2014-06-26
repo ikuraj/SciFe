@@ -14,10 +14,16 @@ import insynth.enumeration.common.RedBlackTreeTest
 
 import org.scalatest._
 import org.scalatest.prop._
+import org.scalatest.Matchers._
 import org.scalacheck.Gen
 
 import scala.language.postfixOps
 
+// you want this to run within Eclipse
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
 class RedBlackTreeTestingTest extends FunSuite with Matchers
   with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
   import Checks._
@@ -25,104 +31,109 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
   import RedBlackTrees._
   import RedBlackTreeTest._
 
-  test("correct enumeration") {
-
-    testCorrectness(constructEnumerator)
-
-  }
-
-  test("correct enumeration of other type of redblack trees") {
-
-    val enumeratorType1 = constructEnumerator
-    val enumeratorType2 = constructEnumeratorOtherType
-
-    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
-      (size: Int, blackHeight: Int) =>
-        {
-          whenever(blackHeight < size) {
-            val enum1 = enumeratorType1(size, 1 to size, Set(true, false), blackHeight)
-            val enum2 = enumeratorType2(size, 1 to size, Set(true, false), blackHeight)
-
-            enum1.size shouldBe enum2.size
-
-            for (ind <- 0 until enum1.size) {
-              enum1(ind) should be(enum2(ind): Structures.RedBlackTrees.Tree)
-            }
-
-            for (ind <- 0 until enum1.size) {
-              enum1.member(enum2(ind)) should be(true)
-            }
-          }
-        }
-    }
-
-  }
-
-  test("correct insert operation") {
-
-    val dependEnum = constructEnumeratorOtherType
-
-    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
-      (size: Int, blackHeight: Int) =>
-        {
-          whenever(blackHeight < size) {
-            val enum = dependEnum(size - 1, 1 to size, Set(true, false), blackHeight)
-
-            for (ind <- 0 until enum.size) {
-              val missing = (1 to size).toList.find(!enum(ind).contains(_))
-              assert(!missing.isEmpty)
-
-              val newTree = enum(ind) insert missing.get
-
-              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                RedBlackTrees.size(newTree) shouldBe size
-
-                assertIndividualInvariants(newTree)
-
-                invariant(newTree) shouldBe true
-              }
-            }
-
-          }
-        }
-    }
-
-  }
-
-  test("correct member after insert operation") {
-
-    val dependEnum = constructEnumeratorOtherType
-
-    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
-      (size: Int, blackHeight: Int) =>
-        {
-          whenever(blackHeight < size) {
-            val enum = dependEnum(size - 1, 1 to size, Set(true, false), blackHeight)
-
-            for (ind <- 0 until enum.size) {
-              val missing = (1 to size).toList.find(!enum(ind).contains(_))
-              assert(!missing.isEmpty)
-
-              val newTree = enum(ind) insert missing.get
-
-              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                (0 to size).toList.exists { bH: Int =>
-                  val enumBigger = dependEnum(size, 1 to size, Set(true, false), bH)
-
-                  enumBigger.member(newTree)
-                }
-              }
-            }
-
-          }
-        }
-    }
-
-  }
+//  test("correct enumeration") {
+//
+//    testCorrectness(constructEnumerator)
+//
+//  }
+//
+//  test("correct enumeration of other type of redblack trees") {
+//
+//    // construct HO enumerator of two types of red-black trees
+//    val enumeratorType1 = constructEnumerator
+//    val enumeratorType2 = constructEnumeratorOtherType
+//
+//    // compare enumerators for different parameters
+//    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
+//      (size: Int, blackHeight: Int) =>
+//        {
+//          whenever(blackHeight < size) {
+//            val enum1 = enumeratorType1(size, 1 to size, Set(true, false), blackHeight)
+//            val enum2 = enumeratorType2(size, 1 to size, Set(true, false), blackHeight)
+//
+//            enum1.size shouldBe enum2.size
+//
+//            for (ind <- 0 until enum1.size) {
+//              enum1(ind) should be(enum2(ind): Structures.RedBlackTrees.Tree)
+//            }
+//
+//            for (ind <- 0 until enum1.size) {
+//              enum1.member(enum2(ind)) should be(true)
+//            }
+//          }
+//        }
+//    }
+//
+//  }
+//
+//  test("correct insert operation") {
+//
+//    val dependEnum = constructEnumeratorOtherType
+//
+//    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
+//      (size: Int, blackHeight: Int) =>
+//        {
+//          whenever(blackHeight < size) {
+//            val enum = dependEnum(size - 1, 1 to size, Set(true, false), blackHeight)
+//
+//            for (ind <- 0 until enum.size) {
+//              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+//              assert(!missing.isEmpty)
+//
+//              val newTree = enum(ind) insert missing.get
+//
+//              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+//                RedBlackTrees.size(newTree) shouldBe size
+//
+//                assertIndividualInvariants(newTree)
+//
+//                invariant(newTree) shouldBe true
+//              }
+//            }
+//
+//          }
+//        }
+//    }
+//
+//  }
+//
+//  test("correct member after insert operation") {
+//
+//    val dependEnum = constructEnumeratorOtherType
+//
+//    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
+//      (size: Int, blackHeight: Int) =>
+//        {
+//          whenever(blackHeight < size) {
+//            val enum = dependEnum(size - 1, 1 to size, Set(true, false), blackHeight)
+//
+//            for (ind <- 0 until enum.size) {
+//              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+//              assert(!missing.isEmpty)
+//
+//              val newTree = enum(ind) insert missing.get
+//
+//              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+//                (0 to size).toList.exists { bH: Int =>
+//                  val enumBigger = dependEnum(size, 1 to size, Set(true, false), bH)
+//
+//                  enumBigger.member(newTree)
+//                }
+//              }
+//            }
+//
+//          }
+//        }
+//    }
+//
+//  }
 
   test("Comparison of times for testing after insertion") {
+    
+    val normalStopWatch = new Stopwatch("checking invariant cummulative time") 
+    val memberStopWatch = new Stopwatch("checking membership cummulative time")
 
-    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
+    forAll(Gen.choose(4, 6), Gen.choose(1, 5), minSuccessful(30)) {
       (size: Int, blackHeight: Int) =>
         {
           whenever(blackHeight < size) {
@@ -130,18 +141,20 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
             val dependEnumNormal = constructEnumeratorOtherTypeMemoized
 
             profile("Normal:") {
-              val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
-
-              for (ind <- 0 until enum.size) {
-                val missing = (1 to size).toList.find(!enum(ind).contains(_))
-                assert(!missing.isEmpty)
-
-                val newTree = enum(ind) insert missing.get
-
-                withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                  RedBlackTrees.size(newTree) shouldBe size
-
-                  invariant(newTree) shouldBe true
+              normalStopWatch.profile {
+                val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
+  
+                for (ind <- 0 until enum.size) {
+                  val missing = (1 to size).toList.find(!enum(ind).contains(_))
+                  assert(!missing.isEmpty)
+  
+                  val newTree = enum(ind) insert missing.get
+  
+                  withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+                    RedBlackTrees.size(newTree) shouldBe size
+  
+                    invariant(newTree) shouldBe true
+                  }
                 }
               }
             }
@@ -149,20 +162,22 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
             val dependEnumMember = constructEnumeratorOtherTypeMemoized
 
             profile("Member:") {
-              val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
-
-              for (ind <- 0 until enum.size) {
-                val missing = (1 to size).toList.find(!enum(ind).contains(_))
-                assert(!missing.isEmpty)
-
-                val newTree = enum(ind) insert missing.get
-
-                withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                  (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
-                    val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
-
-                    enumBigger.member(newTree)
-                  } shouldBe true
+              memberStopWatch.profile {
+                val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+  
+                for (ind <- 0 until enum.size) {
+                  val missing = (1 to size).toList.find(!enum(ind).contains(_))
+                  assert(!missing.isEmpty)
+  
+                  val newTree = enum(ind) insert missing.get
+  
+                  withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+                    (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
+                      val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
+  
+                      enumBigger.member(newTree)
+                    } shouldBe true
+                  }
                 }
               }
             }
@@ -170,83 +185,86 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
           }
         }
     }
-
+    
+    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
+    memberStopWatch.acc should be < normalStopWatch.acc
   }
-
-  test("Correct memoization") {
-
-    forAll(Gen.choose(1, 5), minSuccessful(20)) {
-      (size: Int) =>
-        {
-          val dependEnum = constructEnumeratorOtherTypeMemoized
-
-          val enum = dependEnum(size, 1 to size, Set(true, false), Math.log2(size + 1).toInt)
-          enum.toList
-
-          for (innerSize <- 1 until size) {
-            val log2Size = Math.log2(innerSize + 1).toInt;
-
-            val paramsOfMemoized =
-              for (
-                bh <- log2Size - 1 to log2Size + 1; bs <- List(Set(true), Set(true, false));
-                if (dependEnum.memoizedMap.keys.toSet contains
-                  (innerSize, 1 to innerSize, Set(true, false), bh))
-              ) yield (bh, bs)
-            paramsOfMemoized.size should be >= 1
-
-            for ((bh, bs) <- paramsOfMemoized) {
-              val innerEnum = dependEnum(innerSize, 1 to innerSize, bs, bh)
-
-              for (j <- 0 until innerEnum.size)
-                withClue(innerEnum + "did not memoize index " + j) {
-                  innerEnum.asInstanceOf[e.memoization.Memoized[_]].memoizedFlags contains j shouldBe true
-                }
-            }
-
-          }
-        }
-    }
-
-  }
-
-  test("correct member after insert operation, with memoization") {
-
-    val dependEnum = constructEnumeratorOtherTypeMemoized
-
-    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
-      (size: Int, blackHeight: Int) =>
-        {
-          whenever(blackHeight < size) {
-            val enum = dependEnum(size - 1, 1 to size, Set(true, false), blackHeight)
-
-            for (ind <- 0 until enum.size) {
-              val missing = (1 to size).toList.find(!enum(ind).contains(_))
-              assert(!missing.isEmpty)
-
-              val newTree = enum(ind) insert missing.get
-
-              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                (0 to size).toList.exists { bH: Int =>
-                  val enumBigger = dependEnum(size, 1 to size, Set(true, false), bH)
-
-                  //            withClue("Enum: %s, enum of bigger trees: %s".format(enum.mkString("\n"), enumBigger.mkString("\n"))) {
-                  //              enumBigger.size should be > enum.size
-                  //            }
-                  //                withClue("All trees: %s".format(enumBigger.toList.mkString("\n"))) {
-                  //                  enumBigger.toList should contain (newTree)
-                  //                }
-
-                  enumBigger.member(newTree)
-                }
-              }
-            }
-
-          }
-        }
-    }
-
-  }
-
+//
+//  test("Correct memoization") {
+//
+//    forAll(Gen.choose(1, 5), minSuccessful(20)) {
+//      (size: Int) =>
+//        {
+//          val dependEnum = constructEnumeratorOtherTypeMemoized
+//
+//          val enum = dependEnum(size, 1 to size, Set(true, false), Math.log2(size + 1).toInt)
+//          enum.toList
+//
+//          for (innerSize <- 1 until size) {
+//            val log2Size = Math.log2(innerSize + 1).toInt;
+//
+//            val paramsOfMemoized =
+//              for (
+//                bh <- log2Size - 1 to log2Size + 1; bs <- List(Set(true), Set(true, false));
+//                if (dependEnum.memoizedMap.keys.toSet contains
+//                  (innerSize, 1 to innerSize, Set(true, false), bh))
+//              ) yield (bh, bs)
+//            paramsOfMemoized.size should be >= 1
+//
+//            for ((bh, bs) <- paramsOfMemoized) {
+//              val innerEnum = dependEnum(innerSize, 1 to innerSize, bs, bh)
+//
+//              for (j <- 0 until innerEnum.size)
+//                withClue(innerEnum + "did not memoize index " + j) {
+//                  innerEnum.asInstanceOf[e.memoization.Memoized[_]].memoizedFlags contains j shouldBe true
+//                }
+//            }
+//
+//          }
+//        }
+//    }
+//
+//  }
+//
+//  test("correct member after insert operation, with memoization") {
+//
+//    val dependEnum = constructEnumeratorOtherTypeMemoized
+//
+//    forAll(Gen.choose(1, 5), Gen.choose(1, 5), minSuccessful(20)) {
+//      (size: Int, blackHeight: Int) =>
+//        {
+//          whenever(blackHeight < size) {
+//            val enum = dependEnum(size - 1, 1 to size, Set(true, false), blackHeight)
+//
+//            for (ind <- 0 until enum.size) {
+//              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+//              assert(!missing.isEmpty)
+//
+//              val newTree = enum(ind) insert missing.get
+//
+//              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+//                (0 to size).toList.exists { bH: Int =>
+//                  val enumBigger = dependEnum(size, 1 to size, Set(true, false), bH)
+//
+//                  //            withClue("Enum: %s, enum of bigger trees: %s".format(enum.mkString("\n"), enumBigger.mkString("\n"))) {
+//                  //              enumBigger.size should be > enum.size
+//                  //            }
+//                  //                withClue("All trees: %s".format(enumBigger.toList.mkString("\n"))) {
+//                  //                  enumBigger.toList should contain (newTree)
+//                  //                }
+//
+//                  enumBigger.member(newTree)
+//                }
+//              }
+//            }
+//
+//          }
+//        }
+//    }
+//
+//  }
+//
+  // constructs enumerator for "simple" red-black trees
   def constructEnumerator = {
 
     val colorsProducer = new WrapFunctionFin(
@@ -311,6 +329,7 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
     treesOfSize
   }
 
+  // constructs enumerator for red-black trees with operations
   def constructEnumeratorOtherType = {
     import RedBlackTreeWithOperations._
 

@@ -38,7 +38,7 @@ package suite {
     override def persistor = new persistence.SerializationPersistor
     
     override def reporter: Reporter =
-      new SciFeReporter(
+//      new SciFeReporter(
         Reporter.Composite(
         new RegressionReporter(
           RegressionReporter.Tester.OverlapIntervals(),
@@ -46,7 +46,7 @@ package suite {
         // do not embed data into js
         HtmlReporter(false)
         )
-      )
+//      )
 
     def executor = SeparateJvmsExecutor(
       Executor.Warmer.Default(),
@@ -65,16 +65,16 @@ package suite {
         exec.jvmflags -> JVMFlags.mkString(" ")
       )
     
-    for( ((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
+    for( ((benchmark, name), maxSize) <- allTuples)
       benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
       
-    val dummyBenchmark = new DummyBenchmark
-
-    for( (name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
-      dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
-      
-    for( (name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
-      dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+//    val dummyBenchmark = new DummyBenchmark
+//
+//    for( (name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+//      dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
+//      
+//    for( (name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
+//      dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
 
   }
   
@@ -130,6 +130,9 @@ object BenchmarkSuite {
     "Red-Black Tree",
     "Heap Array"
   )
+    
+  val allTuples = allBenchmarks zip allBenchmarksNames filter (_._2 contains "Red-Black") zip List(10)
+//    allBenchmarks zip allBenchmarksNames filter (_._2 contains "Red-Black") zip fullBlownSizes
   
   var maxSize = 15
   

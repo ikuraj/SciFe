@@ -52,13 +52,14 @@ object BenchmarkSuite {
   val benchmarkMainName = "Benchmarks"
 
   val allBenchmarks = List(
-    (new RedBlackTreeBenchmarkMember, "Red-Black Trees, membership"),
-    (new RedBlackTreeBenchmarkVerify, "Red-Black Trees, invariant execution")
+    (new RedBlackTreeBenchmarkMember, "Red-Black Trees, membership")
+//    ,
+//    (new RedBlackTreeBenchmarkVerify, "Red-Black Trees, invariant execution")
   )
     
   val minimalSizes = List(3, 3)
 
-  val fullBlownSizes = List(15, 15)
+  val fullBlownSizes = List(10, 10)
   val warmUps = 8
   val numberOfRuns = 3
   val JVMs = 3
@@ -77,7 +78,7 @@ object BenchmarkSuite {
     "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // memory
-    "-Xms44G", "-Xmx44G"
+    "-Xms32G", "-Xmx32G"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
   

@@ -26,7 +26,7 @@ class RedBlackTreeBenchmarkMember
   extends StructuresBenchmark[MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree]]
   with java.io.Serializable with HasLogger {
 
-  fixtureRun("member", "SciFe", 15, "RBTree")
+//  fixtureRun("member", "SciFe", 15, "RBTree")
   
   type EnumType = MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree]
 
@@ -37,69 +37,56 @@ class RedBlackTreeBenchmarkMember
     { (size: Int) =>
       for (
         blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
-        enum = tdEnum.getEnum(size - 1, 1 to size, Set(true, false), blackHeight);
+        enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
         ind <- 0 until enum.size
-      ) {
-        val startingTree = enum(ind)
-
-        val missing = if (size == 1) 1 else missingElements(startingTree)
-
-        val newTree = enum(ind) insert missing
-        val newBlackHeight = blackHeights(newTree)
-        val enumBigger = tdEnum.getEnum(size, 1 to size, Set(true, false), newBlackHeight)
-        
-        enumBigger.member(newTree)
-      }
+      ) enum(ind)
     }
-
   }
 
   def warmUp(inEnum: EnumType, maxSize: Int) {
     for (size <- 1 to maxSize) {
-      val tdEnumVal = inEnum
+      val tdEnum = inEnum
       for (
         blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
-        enum = inEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
+        enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
         ind <- 0 until enum.size
-      ) {
-        enum.member(enum(ind))
-      }
+      ) enum(ind)
     }
   }
-
-  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
-    val tdEnumVal = tdEnum
-    for (
-      bH <- 1 to (Math.log2(size + 1).toInt + 1);
-      enum = tdEnum.getEnum(size, 1 to size, Set(true, false), bH);
-      ind <- 0 until enum.size
-    ) {
-      val el = enum(ind)
-      blackHeights += el -> RedBlackTrees.blackHeight(el)
-    }
-
-    if (size > 1) {
-      for (
-        bH <- 1 to (Math.log2(size + 1).toInt + 1);
-        enum = tdEnum.getEnum(size - 1, 1 to size, Set(true, false), bH);
-        ind <- 0 until enum.size
-      ) {
-        val el = enum(ind)
-        missingElements += el -> (1 to size).find(!el.contains(_)).get
-      }
-    }
-  }
-  
-  def tearDown(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
-    blackHeights.clear    
-    missingElements.clear
-  }
+//
+//  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
+//    val tdEnumVal = tdEnum
+//    for (
+//      bH <- 1 to (Math.log2(size + 1).toInt + 1);
+//      enum = tdEnum.getEnum(size, 1 to size, Set(true, false), bH);
+//      ind <- 0 until enum.size
+//    ) {
+//      val el = enum(ind)
+//      blackHeights += el -> RedBlackTrees.blackHeight(el)
+//    }
+//
+//    if (size > 1) {
+//      for (
+//        bH <- 1 to (Math.log2(size + 1).toInt + 1);
+//        enum = tdEnum.getEnum(size - 1, 1 to size, Set(true, false), bH);
+//        ind <- 0 until enum.size
+//      ) {
+//        val el = enum(ind)
+//        missingElements += el -> (1 to size).find(!el.contains(_)).get
+//      }
+//    }
+//  }
+//  
+//  override def tearDown(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
+//    blackHeights.clear    
+//    missingElements.clear
+//  }
 
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope): EnumType = {
-    import RedBlackTreeWithOperations._
+//    import RedBlackTreeWithOperations._
 
     val colorsProducer = new WrapFunctionFin(
-      (set: Set[Boolean]) => { new WrapArray(set.toArray) })
+      (set: Set[Boolean]) => { new WrapArray(set.toArray) }) with e.memoization.dependent.Memoized[Set[Boolean], Boolean]
 
     val treesOfSize = new WrapFunctionFin(
       (self: MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree],
@@ -152,7 +139,7 @@ class RedBlackTreeBenchmarkMember
           }
 
           val mapEnum = new Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree,
-            invertTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree] with Memoized[Tree]
+            invertTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree]// with Memoized[Tree]
           
           ms add mapEnum
           
