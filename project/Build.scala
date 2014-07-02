@@ -39,12 +39,15 @@ object SciFeBuild extends Build {
       case "full" =>
         val fullState =
           append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Full")), state)
-        Project.evaluateTask(test in BenchConfig, fullState)
+        Project.runTask(test in BenchConfig, fullState)
         state
       case "minimal" =>
         val minState =          
           append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Minimal")), state)
-        Project.evaluateTask(test in BenchConfig, minState)
+        Project.runTask(test in BenchConfig, minState)
+        state
+      case "debug" =>
+        Project.runTask(test in BenchConfig, state)
         state
       case _ =>
         state.fail
