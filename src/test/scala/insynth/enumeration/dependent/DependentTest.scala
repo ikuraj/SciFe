@@ -19,10 +19,11 @@ class DependentTest extends FunSuite with Matchers {
 	    
 	    val tdenum = Depend( { (self: Depend[Int, Int], i: Int) => f(i) } )
 	    
-	    val gotEnum: Finite[Int] = tdenum(1)
+	    val gotEnum = tdenum(1)
 	    gotEnum shouldBe a [Finite[_]]
 	    
-	    val gotEnum2: Finite[Int] = tdenum(1)
+	    val gotEnum2 = tdenum(1)
+      gotEnum shouldBe a [Finite[_]]
     }
     
   }

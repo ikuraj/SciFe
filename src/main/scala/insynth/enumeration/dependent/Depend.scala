@@ -52,12 +52,33 @@ trait Depend[I, +O] extends Serializable {
 }
 
 object Depend {
+  import memoization.MemoizationScope
+  import memoization.dependent._
   
-  def apply[I, O, E <: Enum[O]](producerFunction: (Depend[I, O], I) => E) =
-    new WrapFunction(producerFunction)
+//  def apply[I, O, E <: Enum[O]](producerFunction: (Depend[I, O], I) => E) =
+//    new WrapFunction(producerFunction)
   
   def rec[I, O, E <: Enum[O]](producerFunction: (Depend[I, O], I) => E) =
     new WrapFunction(producerFunction)
+    
+  def apply[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
+    (implicit ct: ClassTag[F[_]], ms: MemoizationScope = null): Depend[I, O] = {
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite[O]](fun) with DependInfinite[I, O]
+        case _ =>
+          new WrapFunction[I, O, F[O]](producerFunction)
+      }
+        
+    enum
+  }
   
   def apply[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
   	(implicit ct: ClassTag[F[_]]): Depend[I, O] = {
@@ -94,9 +115,6 @@ object Depend {
   
   def map[I, O, E <: Enum[O]](producerMap: ScalaMap[I, E] = ScalaMap.empty) =
     new WrapMap[I, O, E](producerMap)
-  
-  import memoization.MemoizationScope
-  import memoization.dependent._
     
   def memoized[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]], ms: MemoizationScope = null): Depend[I, O] = {
