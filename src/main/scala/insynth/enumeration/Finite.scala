@@ -40,7 +40,12 @@ trait Finite[+A] extends Enum[A] {
     Map(this, modifyFun)
     
   override def ↑[B](modifyFun: A => B) = map(modifyFun)
-  
+ 
+  import dependent._
+    
+  def ⊘[B, A2 >: A](dep: DependFinite[A2, B]): Finite[(A2, B)] = 
+    dep ⊘ this 
+
 }
 
 object Finite {
