@@ -16,7 +16,7 @@ import org.scalacheck.Gen
 class MemoizedMemberTest extends FunSuite with Matchers
   with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {  
   import Checks._
-  import Structures._
+  import structures._
   import BSTrees._
   
   test("memoized enumeration") {

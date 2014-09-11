@@ -20,7 +20,7 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
   import e._
   
   import Checks._
-  import Structures._
+  import structures._
   import BSTrees._
   import Util._
   

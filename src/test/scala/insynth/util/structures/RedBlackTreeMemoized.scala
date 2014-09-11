@@ -2,7 +2,7 @@
 //
 //object RedBlackTreeWithOperationsMemoized {
 //  import RedBlackTreeWithOperations._
-//  import Structures.{ RedBlackTrees => srb }
+//  import structures.{ RedBlackTrees => srb }
 //
 //  import scala.language.implicitConversions
 //    

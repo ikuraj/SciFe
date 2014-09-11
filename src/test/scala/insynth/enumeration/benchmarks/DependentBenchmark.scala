@@ -14,7 +14,7 @@ import insynth.util.logging._
 
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
-  import Structures._
+  import structures._
   
 //  @transient override lazy val reporter = new DsvReporter(',')
     

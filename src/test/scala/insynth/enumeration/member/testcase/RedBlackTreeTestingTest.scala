@@ -27,7 +27,7 @@ import org.scalatest.junit.JUnitRunner
 class RedBlackTreeTestingTest extends FunSuite with Matchers
   with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
   import Checks._
-  import Structures._
+  import structures._
   import RedBlackTrees._
   import RedBlackTreeTest._
 
@@ -54,7 +54,7 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
 //            enum1.size shouldBe enum2.size
 //
 //            for (ind <- 0 until enum1.size) {
-//              enum1(ind) should be(enum2(ind): Structures.RedBlackTrees.Tree)
+//              enum1(ind) should be(enum2(ind): structures.RedBlackTrees.Tree)
 //            }
 //
 //            for (ind <- 0 until enum1.size) {

@@ -9,7 +9,7 @@ import insynth.util._
 
 import insynth.util.logging._
 
-import Structures._
+import structures._
 import BSTrees._
 
 import org.scalatest._

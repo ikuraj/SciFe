@@ -10,7 +10,7 @@ import memoization._
 import insynth.util._
 import insynth.util.logging._
 import RedBlackTreeWithOperations._
-import Structures._
+import structures._
 
 import scala.collection.mutable.{ Map => SMap }
 

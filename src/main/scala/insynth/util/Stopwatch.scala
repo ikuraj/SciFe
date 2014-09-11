@@ -1,4 +1,5 @@
 package insynth
+package util
 
 class StopwatchCollection(name: String) {
   var acc: Long = 0L

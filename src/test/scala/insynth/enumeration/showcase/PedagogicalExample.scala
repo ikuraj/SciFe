@@ -7,7 +7,7 @@ import memoization._
 import insynth.{ enumeration => e }
 
 import insynth.util._
-import Structures._
+import structures._
 import BSTrees._
 
 import insynth.util.logging._

@@ -1,6 +1,6 @@
 package insynth.util
 
-import Structures._
+import structures._
 
 import scala.collection.mutable.ListBuffer
 
@@ -15,7 +15,7 @@ class RedBlackTreeTest extends FunSuite with Matchers with PropertyChecks {
   
   test("generate RB trees by insertion") {
     import RedBlackTreeWithOperations._
-    import Structures.RedBlackTrees.invariant
+    import structures.RedBlackTrees.invariant
     
     val allTrees = ListBuffer[Tree](Leaf)
     

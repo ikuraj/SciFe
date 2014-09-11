@@ -169,7 +169,7 @@ class CombinationsTest extends FunSuite with Matchers {
   }
 
 //  test("binary search trees") {
-//    import Structures._
+//    import structures._
 //    import BSTrees._
 //    
 //    val maxLength = 10
@@ -312,7 +312,7 @@ class CombinationsTest extends FunSuite with Matchers {
 //  }
 //
 //  test("binary search trees, memoized") {
-//    import Structures._
+//    import structures._
 //    import BSTrees._
 //    
 //    val maxLength = 10

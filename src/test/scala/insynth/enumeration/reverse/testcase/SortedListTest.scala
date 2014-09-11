@@ -16,7 +16,7 @@ import org.scalacheck.Gen
 class SortedListTest extends FunSuite with Matchers with PropertyChecks
   with HasLogger with ProfileLogger {
   import Checks._
-  import Structures._
+  import structures._
   import Util._
 
   test("regular enumeration") {

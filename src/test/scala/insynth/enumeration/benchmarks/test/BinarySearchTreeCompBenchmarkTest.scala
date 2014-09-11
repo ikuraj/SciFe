@@ -10,7 +10,7 @@ import insynth.util._
 
 import insynth.util.logging._
 
-import Structures._
+import structures._
 import TreeShapes._
 
 import org.scalatest._

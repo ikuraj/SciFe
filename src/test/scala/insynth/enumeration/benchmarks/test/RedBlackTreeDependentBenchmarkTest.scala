@@ -10,7 +10,7 @@ import insynth.util._
 
 import insynth.util.logging._
 
-import Structures.RedBlackTrees._
+import structures.RedBlackTrees._
 
 import org.scalatest._
 import org.scalatest.prop._

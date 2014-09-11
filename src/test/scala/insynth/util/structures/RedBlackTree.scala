@@ -1,9 +1,10 @@
 package insynth.util
 
+// useful for testing generation of RB trees and then invoking operations on them
 object RedBlackTreeWithOperations {
   import scala.language.implicitConversions
   
-  import Structures.{ RedBlackTrees => srb }
+  import structures.{ RedBlackTrees => srb }
     
   // conversion from helper class rbtrees to these ones
   implicit def thisRBTreeToStandardRBTree(tree: Tree): srb.Tree =
