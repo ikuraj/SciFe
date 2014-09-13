@@ -25,7 +25,7 @@ class RedBlackTreeDependentBenchmark
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
       for (
-        blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
+        blackHeight <- blackHeightRange(size);
         enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
         ind <- 0 until enum.size
       ) enum(ind)

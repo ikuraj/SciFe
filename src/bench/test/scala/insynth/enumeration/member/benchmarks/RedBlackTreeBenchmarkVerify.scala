@@ -155,7 +155,7 @@ class RedBlackTreeBenchmarkVerify
           }
 
           val mapEnum = new Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree,
-            invertTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree] with Memoized[Tree]
+            invertTree) with e.member.memoization.Memoized[Tree] with e.memoization.Memoized[Tree] with MemberFinite[Tree] 
 
           ms add mapEnum
 

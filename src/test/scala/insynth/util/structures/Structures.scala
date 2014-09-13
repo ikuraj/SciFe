@@ -222,6 +222,21 @@ package structures {
 		    if clazz == classOf[Node] =>
 		    Node(a, v, b, c)
 		}
+		
+		def blackHeightRange(size: Int) = Math.log2(size).toInt to (Math.log2(size + 1).toInt + 1)
+		
+		def rangeOfValues(t: Tree): Set[Int] = t match {
+		  case Leaf => Set()
+		  case Node(l, v, r, _) =>
+		    rangeOfValues(l) + v union rangeOfValues(r)
+		}
+		
+		def rootColor(t: Tree) = t match {
+		  // leaves are black
+		  case Leaf => true
+		  case Node(_, _, _, c) => c
+		}
+
   }
 
   object Binomial {

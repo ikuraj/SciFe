@@ -24,4 +24,7 @@ trait Memoized[I, O] extends Depend[I, O] with Memoizable {
   
   override def clearMemoization = memoizedMap.clear
   
+  // helper (debugging) method
+  protected[enumeration] def isMemoized(el: I) = memoizedMap contains el
+  
 }

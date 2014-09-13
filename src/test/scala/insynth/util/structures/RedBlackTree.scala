@@ -53,6 +53,8 @@ object RedBlackTreeWithOperations {
     
     // get: Retrieve a value for a key.
     def contains(k : V): Boolean
+    
+    def hasSubtree(t: Tree): Boolean
 
   }
 
@@ -62,6 +64,8 @@ object RedBlackTreeWithOperations {
     override def insertWith(v: V) = Node(false, Leaf, v, Leaf)
     
     def contains(k : V) = false
+
+    def hasSubtree(t: Tree) = t == Leaf
 
   }
 
@@ -78,6 +82,14 @@ object RedBlackTreeWithOperations {
       if (v < this.v) l.contains(v)
       else if (v > this.v) r.contains(v)
       else true
+    }
+
+    def hasSubtree(t: Tree) = t match {
+      case Leaf => true
+      case n: Node =>
+        if (n.v < this.v) l.hasSubtree(t)
+        else if (n.v > this.v) r.hasSubtree(t)
+        else t == this
     }
     
 //    override def toString = "Node(%b, %s, %d, %s)".format(c, l, v, r)

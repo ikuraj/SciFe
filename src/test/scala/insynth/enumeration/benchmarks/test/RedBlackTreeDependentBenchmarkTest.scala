@@ -15,6 +15,7 @@ import structures.RedBlackTrees._
 import org.scalatest._
 import org.scalatest.prop._
 import org.scalameter.api._
+import org.scalacheck.Gen
 
 import scala.language.postfixOps
 import scala.language.existentials
@@ -111,6 +112,41 @@ class RedBlackTreeDependentBenchmarkTest
       assert( (for (el <- elements) yield el).forall( invariant(_) ) )
     }
     
+  }
+  
+  test("correct black heights") {
+    val ms = new MemoizationScope
+    val hoenum = constructEnumerator(ms)
+    
+    forAll(Gen.choose(1, 10), minSuccessful(30)) {
+      (size: Int) =>
+        {
+          val trees1 =
+            for (
+              blackHeight <- 0 to (size+1);
+              e = hoenum.getEnum(size, 1 to size, Set(true, false), blackHeight)
+            ) yield e.size
+          
+          val trees2 =
+            for (
+              blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
+              e = hoenum.getEnum(size, 1 to size, Set(true, false), blackHeight)
+            ) yield e.size
+            
+          trees1.sum shouldEqual trees2.sum
+          
+          val trees3 =
+            for (
+              blackHeight <- Math.log2(size).toInt to (Math.log2(size + 1).toInt + 1);
+              e = hoenum.getEnum(size, 1 to size, Set(true, false), blackHeight)
+            ) yield e.size
+          
+          withClue("around logarithm") {
+            trees1.sum shouldEqual trees3.sum
+          }
+          
+        }
+    }
   }
 
   def constructEnumerator(implicit ms: MemoizationScope) = {
