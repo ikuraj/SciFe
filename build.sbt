@@ -1,6 +1,6 @@
 name := "SciFe"
 
-version := "1.0"
+version := "1.0.5"
 
 organization := "ch.epfl.lara"
 
@@ -8,7 +8,7 @@ organizationName := "LARA/EPFL"
 
 organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.10.4"
 
 scalaBinaryVersion := "2.10"
 
