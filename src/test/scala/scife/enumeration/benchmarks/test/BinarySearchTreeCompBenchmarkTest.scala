@@ -22,20 +22,20 @@ import scala.language.postfixOps
 
 class BinarySearchTreeCompBenchmarkTest extends FunSuite
   with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger {  
+  HasLogger with ProfileLogger {
     import Util.CheckerHelper
   import Checks._
-  
+
   type Output = Tree//(List[Int], Tree)
-  
+
   test("correctness") {
     val ms = new MemoizationScope
     val enum = constructEnumerator(ms)
 //    ms.memoizations.size should be (2)
-    
+
     val helper = new CheckerHelper[Output]
     import helper._
-    
+
     withLazyClue("Elements are: " + clue) {
       res = enum.getEnum(0)
 //      ms.memoizations.size should be (2)
@@ -56,7 +56,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
       res.size should be (429)
       res = enum.getEnum(12)
       res.size should be (208012)
-      
+
     }
 
 
@@ -73,7 +73,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
       profile("Getting elements for BST of size %d".format(size)) {
         for (ind <- 0 until res.size) res(ind)
       }
-      
+
     }
   }
 

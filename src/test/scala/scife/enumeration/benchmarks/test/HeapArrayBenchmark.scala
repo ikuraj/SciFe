@@ -50,7 +50,7 @@
 //        ) yield enum(ind)
 //    }
 //  }
-//  
+//
 //  def rangeList(m: Int) = m to 0 by -1 toArray
 //
 //  def constructEnumerator(implicit ms: MemoizationScope) = {
@@ -71,7 +71,7 @@
 //        })
 //        val leftRightPairs: Depend[Int, (Tree, Tree)] =
 //          Product(childHeaps, childHeaps)
-//        
+//
 //        val allNodes =
 //          memoization.Chain[Int, (Tree, Tree), Node](rootsInds, leftRightPairs,
 //            (rootInd: Int, p2: (Tree, Tree)) => {

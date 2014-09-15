@@ -20,12 +20,12 @@ import scala.language.postfixOps
 import scala.language.existentials
 
 class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger { 
+  HasLogger with ProfileLogger {
   import Checks._
   import Structures._
   import BSTrees._
   import Util._
-  
+
   // (size, available, declared)
   type Input = (Int, Set[Int], Set[Int])
   // list of extends
@@ -35,13 +35,13 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
   test("enumeration") {
     val checkerHelper = new CheckerHelper[Output]
     import checkerHelper._
-    
+
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
     withLazyClue("Elements are: " + clue) {
       // (size, available, declared)
-      
+
       res = enum.getEnum((1, Set(1), Set()))
       res.size should be (1)
 
@@ -61,10 +61,10 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
       res = enum.getEnum((5, 1 to 5 toSet, Set()))
       // class or interface
       res.size should be (1024)
-      
+
 //      res = enum.getEnum((1, Set(1), Set(2)))
 //      res.size should be (2)
-//      
+//
 //      res = enum.getEnum((1, Set(3), Set(4, 5)))
 //      res.size should be (4)
 
@@ -89,13 +89,13 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
       res = enum.getEnum((1, Set(1), Set()))
       res.size should be (1)
     }
-      
+
   }
-  
+
   test("subListChooser") {
     val checkerHelper = new CheckerHelper[List[Int]]
     import checkerHelper._
-    
+
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
@@ -105,11 +105,11 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
         res = subListChooser.getEnum( (m, 1 to s toList) )
         val listCombinations: List[List[Int]] =
           ((1 to s toList) combinations m) toList
-  
+
         res.size should be (listCombinations.size)
         elements should contain theSameElementsAs (listCombinations)
       }
-      
+
     }
   }
 
@@ -123,7 +123,7 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
         val temp = self.getEnum( (size - 1, range.tail) )
         val kept = Map( temp , { range.head :: (_: List[Int]) })
         val leftOut = self.getEnum( (size, range.tail) )
-        
+
         val allNodes = e.Concat(kept, leftOut)
         allNodes: Finite[List[Int]]
       } else e.Empty: Finite[List[Int]]
@@ -135,44 +135,44 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
 //      (e.Map(e.Enum(1 to classes), { (el: Int) => (el, available.toList ) } )): Finite[(Int, List[Int])],
 //      subListChooser: DependFinite[(Int, List[Int]), List[Int]]
 //    ): Finite[((Int, List[Int]), List[Int])]
-//    
+//
 //    if (classes == 0) e.Singleton(Nil): Finite[List[Int]]
 //    else //e.Concat(
 //      Map(chain, { (r: ((Int, List[Int]), List[Int])) => r._2 })
 //
 //    }
 //  )
-      
+
   def constructEnumerator(implicit ms: MemoizationScope = null) = {
-    
+
     Depend.memoizedFin[Input, Output](
       (self: DependFinite[Input, Output], par: Input) => {
       // list sorted descendingly
       implicit val (size, available, declared) = par
-      
+
       def declaredOK(i: Int) =
         declared.toList.filter( _ > i )
 //        declared.toList
-        
+
       def declareRange(i :Int) = 0 to declaredOK(i).size
 
       val adapted = Depend.fin( (myId: Int) => {
-	        memoization.Chain.fin(
-	          e.WrapArray( declareRange(myId) map { (_, declaredOK( myId )) } ): Finite[(Int, List[Int])],
-	          subListChooser
+          memoization.Chain.fin(
+            e.WrapArray( declareRange(myId) map { (_, declaredOK( myId )) } ): Finite[(Int, List[Int])],
+            subListChooser
           ) map {
-	          (p: ((Int, List[Int]), List[Int])) => p._2
-	        }
+            (p: ((Int, List[Int]), List[Int])) => p._2
+          }
         }
       )
-      
+
         //InMap(sublistForSizesUpTo, { (i: Int) => (i, declared) } )
 
 //      assert(size == available.size)
       if (size > available.size) e.Empty
       else
       if (size == 1) {
-        
+
         adapted(available.head) map {
           (l: (List[Int]) ) =>
           { List( (available.head, l) ) }
@@ -184,18 +184,18 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
             //(size - 1, available - par, declared + par)
             (size - 1, available.filter( _ < par), declared + par)
           })
-          
+
 //        e.Product(
           memoization.Chain.fin[Int, (Output, List[Int])](
             e.WrapArray(available.toArray): Finite[Int],
             e.dependent.Product(rest, adapted)
           ) map { (r: (Int, (Output, List[Int]))) =>
           val (chosen, (rest, extended)) = r
-          
+
           (chosen, extended) :: rest
         } : Finite[Output]
       }
     })
   }
-  
+
 }

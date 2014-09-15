@@ -9,7 +9,7 @@ class ConcatFiniteBuffer[T] protected[enumeration] (streams: Seq[Finite[T]])
   extends ConcatFinite[T] {
 
   private var streamsArray = mutable.ArrayBuffer(streams: _*)
-  
+
   override def length = streamsArray.length
 
   var _size = 0
@@ -30,7 +30,7 @@ class ConcatFiniteBuffer[T] protected[enumeration] (streams: Seq[Finite[T]])
   override def size = _size
 
   override def enum(ind: Int) = streamsArray(ind)
-  
+
   override def limit(ind: Int) = limits(ind)
 
 }

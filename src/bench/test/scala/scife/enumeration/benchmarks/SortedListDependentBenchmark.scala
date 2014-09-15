@@ -21,7 +21,7 @@ import scala.language.existentials
 
 class SortedListDependentBenchmark
   extends StructuresBenchmark[Depend[(Int, Int), List[Int]]]
-	//extends DependentMemoizedBenchmark[Int, Depend[(Int, Int), List[Int]]]
+  //extends DependentMemoizedBenchmark[Int, Depend[(Int, Int), List[Int]]]
   with java.io.Serializable with HasLogger {
 
   //fixtureRun("strictly", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
@@ -48,9 +48,9 @@ class SortedListDependentBenchmark
   }
 
   def constructEnumerator(implicit ms: MemoizationScope) = {
-    
+
     val naturals = Depend.memoized( (range: Int) => { e.Enum( 1 to range ) })
-    
+
     Depend.memoized(
       ( self: EnumType, pair: (Int, Int) ) => {
         val (size, max) = pair
@@ -60,11 +60,11 @@ class SortedListDependentBenchmark
         if (size == 0) e.Singleton( Nil )
         else /*if (size > 0)*/ {
           val roots = naturals.getEnum(max)
-          
+
           val innerLists: Depend[Int, List[Int]] = InMap(self, { (par: Int) =>
             (size - 1, par)
           })
-          
+
           val allLists =
             if (size < 10)
               memoization.Chain[Int, List[Int], List[Int]](roots, innerLists,
@@ -78,7 +78,7 @@ class SortedListDependentBenchmark
                   head :: l
                 }
               )
-          
+
           allLists
         }// else e.Empty
       }
@@ -86,9 +86,9 @@ class SortedListDependentBenchmark
   }
 
   def constructEnumeratorStrict(ms: MemoizationScope) = {
-    
+
     val naturals = Depend((range: Int) => { e.WrapArray( 1 to range ) })
-    
+
     Depend.memoized(
       ( self: EnumType, pair: (Int, Int) ) => {
         val (size, max) = pair
@@ -96,11 +96,11 @@ class SortedListDependentBenchmark
         if (size == 0) e.Singleton( Nil )
         else if (size > 0) {
           val roots = naturals.getEnum(max)
-          
+
           val innerLists: Depend[Int, List[Int]] = InMap(self, { (par: Int) =>
             (size - 1, par - 1)
           })
-          
+
           val allLists =
             if (size < 5)
               memoization.Chain[Int, List[Int], List[Int]](roots, innerLists,
@@ -114,7 +114,7 @@ class SortedListDependentBenchmark
                   head :: l
                 }
               )
-          
+
           allLists
         } else e.Empty
       }

@@ -20,18 +20,18 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger {  
+  HasLogger with ProfileLogger {
     import Util.CheckerHelper
   import Checks._
-  
+
   test("correctness") {
     val ms = new MemoizationScope
     val enum = constructEnumerator(ms)
     ms.memoizations.size should be (1)
-    
+
     val helper = new CheckerHelper[Tree]
     import helper._
-    
+
     withLazyClue("Elements are: " + clue) {
       res = enum.getEnum(1, 1 to 3)
       ms.memoizations.size should be (1)
@@ -68,16 +68,16 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
         res = enum.getEnum((size, Range(size, size - 1)))
         res.size should be (0)
         elements should be ('empty)
-        
+
         res = enum.getEnum((0, 1 to size))
         res(0) should be (Leaf)
         res.size should be (1)
       }
-    
+
       // some confirmed counts
 //      res = enum.getEnum(12, 1 to 12)
 //      res.size should be (208012)
-      
+
     }
 
 
@@ -94,7 +94,7 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
       profile("Getting elements for BST of size %d".format(size)) {
         for (ind <- 0 until res.size) res(ind)
       }
-      
+
       assert( (for (ind <- 0 until res.size) yield res(ind)).forall( invariant(_) ) )
     }
   }

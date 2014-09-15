@@ -11,19 +11,19 @@ import e.dependent._
 import util._
 import scife.util.logging._
 import scife.util._
-  
+
 import scala.language.existentials
 import scala.language.postfixOps
 
 class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger {  
+  HasLogger with ProfileLogger {
   import e._
-  
+
   import Checks._
   import Structures._
   import BSTrees._
   import Util._
-  
+
   test("sublists enumeration") {
     val checkerHelper = new CheckerHelper[List[Int]]
     import checkerHelper._
@@ -31,75 +31,75 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
     val setChooser = sublistsEnum
 
     withLazyClue("Elements are: " + clue) {
-	    for (m <- 1 to 10) {
-      	res = setChooser.getEnum( (0, 1 to m toList) )
-      	res.size should be (0)
-	    }
+      for (m <- 1 to 10) {
+        res = setChooser.getEnum( (0, 1 to m toList) )
+        res.size should be (0)
+      }
 
-	    for (m <- 2 to 10) {
-      	res = setChooser.getEnum( (1, 1 to m toList) )
-//      	res shouldBe a [Map[_,_]]
-//      	res shouldBe a [WrapArray[_]]
-      	res.size should be (m)
-      	elements should contain theSameElementsAs( 1 to m map { List(_) } )
-	    }
+      for (m <- 2 to 10) {
+        res = setChooser.getEnum( (1, 1 to m toList) )
+//        res shouldBe a [Map[_,_]]
+//        res shouldBe a [WrapArray[_]]
+        res.size should be (m)
+        elements should contain theSameElementsAs( 1 to m map { List(_) } )
+      }
 
-//	    forAll ("size", "range max") { (s: Int, m: Int) =>
-//	      whenever (m > 0 && s < 10 && m < s) {
-	    	for(s <- 1 to 10; m <- 1 to s) {
-	        addMessage = "m=%d and s=%d".format(m, s)
-	        res = setChooser.getEnum( (m, 1 to s toList) )
-	        val listCombinations: List[List[Int]] =
-	          ((1 to s toList) combinations m) toList
+//      forAll ("size", "range max") { (s: Int, m: Int) =>
+//        whenever (m > 0 && s < 10 && m < s) {
+        for(s <- 1 to 10; m <- 1 to s) {
+          addMessage = "m=%d and s=%d".format(m, s)
+          res = setChooser.getEnum( (m, 1 to s toList) )
+          val listCombinations: List[List[Int]] =
+            ((1 to s toList) combinations m) toList
 
-	        res.size should be (listCombinations.size)
-	        elements should contain theSameElementsAs (listCombinations)
-    		}
-//	    }
+          res.size should be (listCombinations.size)
+          elements should contain theSameElementsAs (listCombinations)
+        }
+//      }
     }
   }
-  
+
   test("heap enumeration") {
     val checkerHelper = new CheckerHelper[Tree]
     import checkerHelper._
-    
+
     def rangeList(m: Int) = m to 1 by -1 toList
     val enum = heapsEnum
 
     withLazyClue("Elements are: " + clue) {
-	    for (m <- 1 to 10) {
-      	res = enum.getEnum( (0, rangeList(m: Int)) )
-      	res.size should be (1)
-      	elements should contain only (Leaf)
-	    }
+      for (m <- 1 to 10) {
+        res = enum.getEnum( (0, rangeList(m: Int)) )
+        res.size should be (1)
+        elements should contain only (Leaf)
+      }
 
-	    for (m <- 2 to 10) {
-      	res = enum.getEnum( (1, rangeList(m: Int)) )
-//      	res shouldBe a [Map[_, _]]
-//      	res shouldBe a [WrapArray[_]]
-      	res.size should be (m)
-	    }
+      for (m <- 2 to 10) {
+        res = enum.getEnum( (1, rangeList(m: Int)) )
+//        res shouldBe a [Map[_, _]]
+//        res shouldBe a [WrapArray[_]]
+        res.size should be (m)
+      }
 
-//	    forAll ("size", "range max") { (s: Int, m: Int) =>
-//	      whenever (m > 0 && s < 10 && m < s) {
-	    	for(s <- 1 to 10; m <- 1 to s) {
-	        addMessage = "m=%d and s=%d".format(m, s)
-	        res = enum.getEnum( (m, rangeList(m: Int)) )
+//      forAll ("size", "range max") { (s: Int, m: Int) =>
+//        whenever (m > 0 && s < 10 && m < s) {
+        for(s <- 1 to 10; m <- 1 to s) {
+          addMessage = "m=%d and s=%d".format(m, s)
+          res = enum.getEnum( (m, rangeList(m: Int)) )
 
-//	        res.size should be (listCombinations.size)
-	        elements.forall( heapProperty(_) ) should be (true)
-    		}
-//	    }
-	    	
+//          res.size should be (listCombinations.size)
+          elements.forall( heapProperty(_) ) should be (true)
+        }
+//      }
+
       addMessage = ""
 
-    	res = enum.getEnum( (3, rangeList(3)) )
-    	res.size should be (2)
+      res = enum.getEnum( (3, rangeList(3)) )
+      res.size should be (2)
     }
   }
 
   def sublistsEnum = {
-    
+
     val listChooser = Depend.memoized(
       (self: Depend[(Int, List[Int]), List[Int]], pair: (Int, List[Int])) => {
         val (size, list) = pair
@@ -110,15 +110,15 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
         else if (size <= list.size) {
           val kept = self.getEnum( (size - 1, list.tail) ) map { list.head :: _ }
           val leftOut = self.getEnum( (size, list.tail) )
-          
+
           val allNodes = e.Concat(kept, leftOut)
           allNodes
         } else e.Empty
       })
-      
+
     listChooser
   }
-  
+
   def heapsEnum = {
     Depend.memoized(
       (self: Depend[(Int, List[Int]), Tree], pair: (Int, List[Int])) => {
@@ -143,7 +143,7 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
           })
           val leftRightPairs: Depend[List[Int], (Tree, Tree)] =
             e.dependent.Product(leftHeaps, rightHeaps)
-          
+
           val allNodes =
             memoization.Chain[List[Int], (Tree, Tree), Node](sublists, leftRightPairs,
               (leftElements: List[Int], p2: (Tree, Tree)) => {
@@ -156,9 +156,9 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
         } else e.Empty
       })
   }
-  
+
 //  def subsetsEnum = {
-//    
+//
 //    val setChooser = Depend.memoized(
 //      (self: Depend[(Int, Set[Int]), Set[Int]], pair: (Int, Set[Int])) => {
 //        val (size, set) = pair
@@ -175,24 +175,24 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
 //          val leftOutIn: Depend[Int, Set[Int]] = new InMap(self, { (leftOut: Int) =>
 //            (size, set - leftOut)
 //          })
-//          
+//
 //          val kept = memoization.Chain[Int, Set[Int], Set[Int]](roots, keptIn,
 //            (root: Int, setOut: Set[Int]) => {
 //              setOut + root
 //            }
 //          )
-//          
+//
 //          val leftOut = memoization.Chain(roots, leftOutIn,
 //            (root: Int, setOut: Set[Int]) => {
 //              setOut
 //            }
 //          )
-//          
+//
 //          val allNodes = e.Product(kept, leftOut)
 //          allNodes: e.Enum[Set[Int]]
 //        } else e.Empty: e.Enum[Set[Int]]
 //      })
-//      
+//
 //    setChooser
 //  }
 

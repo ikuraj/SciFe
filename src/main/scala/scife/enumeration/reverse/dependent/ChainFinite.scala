@@ -8,13 +8,13 @@ import e.{ dependent => dp }
 class ChainFinite[I, O]
   (override val left: Reverse[I], override val right: DependReverse[I, O])
   extends dp.lzy.ChainFinite(left, right) with Reverse[(I, O)] with HasLogger {
-  
+
   def reverse[T >: (I, O)](a: T) = {
     val (leftIn, rightIn) = a.asInstanceOf[(I, O)]
     info("(leftIn, rightIn)=" + (leftIn, rightIn))
 
     val leftInd = left.reverse(leftIn)
-    
+
     val beginningPart = {
       var size = 0
       for( ind <- 0 until leftInd; innerEnum = right( left(ind) ) )
@@ -36,9 +36,9 @@ class ChainFinite[I, O]
 //class ChainFiniteCombine[I, O, R]
 //  (val left: Finite[I], val right: DependFinite[I, O], combine: (I, O) => R = (_: I, _: O))
 //  extends Finite[R] with HasLogger {
-//  
+//
 //  val rr = ConcatFinite.buffer[R]( Seq.empty )
-//  
+//
 //  override def size: Int = {
 //    var size = 0
 //    for( ind <- 0 until left.size; innerEnum = right( left(ind) ) ) yield
@@ -46,9 +46,9 @@ class ChainFinite[I, O]
 //      else size += innerEnum.size
 //    size
 //  }
-//  
+//
 //  var explored = -1
-//  
+//
 //  override def apply(ind: Int) = {
 //    while(ind >= rr.size) {
 //      explored += 1
@@ -60,5 +60,5 @@ class ChainFinite[I, O]
 //    }
 //    rr(ind)
 //  }
-//  
+//
 //}

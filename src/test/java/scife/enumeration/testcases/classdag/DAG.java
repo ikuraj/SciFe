@@ -11,26 +11,26 @@ public class DAG {
     /**
      * Nodes list contains all nodes of a DAG
      */
-    //transient fields are skipped during visualization 
+    //transient fields are skipped during visualization
     transient public List<DAGNode> nodes = new LinkedList<DAGNode>();
-    
+
     public List<DAGNode> getNodes() {
         return nodes;
     }
-    
+
     public void setNodes(List<DAGNode> nodes) {
         this.nodes = nodes;
     }
 
     /**
-     * Number of nodes in a DAG. 
+     * Number of nodes in a DAG.
      */
     int size;
 
     public int getSize() {
         return size;
     }
-    
+
     public void setSize(int size) {
         this.size = size;
     }
@@ -45,7 +45,7 @@ public class DAG {
   public boolean checkIfDag() {
       Set<DAGNode> visited = new HashSet<DAGNode>();
       Set<DAGNode> path = new HashSet<DAGNode>();
-      
+
 //      System.out.println("numOfExtendsPerNode" + numOfExtendsPerNode);
 
       for (int i=0; i< getNodes().size(); i++) {
@@ -54,7 +54,7 @@ public class DAG {
         if (node == null) return false;
         if (node.allBools == null) return false;
         for (int j=0; j< size + 2*methodsNum; j++) {
-        	boolean dummy = node.allBools[j];
+          boolean dummy = node.allBools[j];
         }
         int d2 = node.numChildren;
       }
@@ -72,7 +72,7 @@ public class DAG {
             }
         }
       }
-      
+
       boolean ok = size == visited.size();
       return ok;
   }
@@ -134,7 +134,7 @@ public class DAG {
 
     public boolean checkCannotSealWithoutAnOverride(Set<DAGNode> path, Set<DAGNode> visited, DAGNode n) {
       for (int i=0; i<methodsNum; i++) {
-      	boolean flag = !n.getOverriden(i); // force me otherwise I will not be enumerated...
+        boolean flag = !n.getOverriden(i); // force me otherwise I will not be enumerated...
         if (n.getSealed(i) && flag) return false;
       }
       return true;

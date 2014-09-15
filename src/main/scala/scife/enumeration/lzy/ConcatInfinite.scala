@@ -18,15 +18,15 @@ object ConcatInfinite {
 class ConcatInfinite[T] (override val enums: Seq[Infinite[T]])
   extends ConcatMul[T, T, T] with Infinite[T] with HasLogger {
   assert(enums.forall(_.size == -1), "RoundRobbinInfinite should be constructed " +
-		"with infinite streams. " +
+    "with infinite streams. " +
     "(sizes are %s)".format(enums.map(_.size).distinct))
-  
+
   val enumArray = enums.toArray
-  
+
   override def apply(ind: Int) = {
     val arrInd = ind % enumArray.size
     val elInd = ind / enumArray.size
     enumArray(arrInd)(elInd)
   }
-    
+
 }

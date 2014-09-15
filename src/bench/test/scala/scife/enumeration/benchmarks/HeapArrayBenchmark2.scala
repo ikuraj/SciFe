@@ -41,7 +41,7 @@ class HeapArrayBenchmark2
         ) yield enum(ind)
     }
   }
-  
+
   def getRange(m: Int) = m to 0 by -1
 
   def constructEnumerator(implicit ms: MemoizationScope) = {
@@ -51,7 +51,7 @@ class HeapArrayBenchmark2
       val (size, range) = pair
 
       if (size > range.size) e.Empty
-      else 
+      else
       if (size <= 0) e.Singleton(Leaf)
       else if (size == 1) {
 //        (e.Enum(list): Enum[Int]) map { v => Node(Leaf, v, Leaf) }
@@ -69,7 +69,7 @@ class HeapArrayBenchmark2
         })
         val leftRightPairs: Depend[Int, (Tree, Tree)] =
           Product(childHeaps, childHeaps)
-        
+
         val allNodes =
           memoization.Chain[Int, (Tree, Tree), Node](rootsInds, leftRightPairs,
             (rootInd: Int, p2: (Tree, Tree)) => {

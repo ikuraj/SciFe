@@ -97,20 +97,20 @@ class PedagogicalExample extends FunSuite with Matchers with GeneratorDrivenProp
   test("lazyRecursiveEnumeration") {
     //    val enum = rec(self, ind) {
     //      Enum(2, 3) concat
-    //        inmap(ind - 2)self 
+    //        inmap(ind - 2)self
     //    }
     //
     //    val res: Enum[(String, ((Int, Int), Int))] =
     //    ((Enum(1 to 31) ** Enum(1 to 12) ** Enum(Stream.from(2014)) ⊘ {
     //      _ => true; // whether its a good year
     //    }): Enum[((Int, Int), Int)]) ↑ { case p@((x, y), z) => if (true) ("leap", p) else ("no", p) }
-    //    
+    //
     //
     //    val res2 =
     //    (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ⊘ {
     //      case ((d, m), y) => true } ↑ { ("leap", _) }
-    //    
-    //    
+    //
+    //
     //    // lazy fibonacci are doable!
     //    val fibs: Enum[Int] = (Enum(0, 1): Enum[Int])
     //    val fibs2: Enum[Int] = (Enum(Stream.from(0)).map{ (i: Int) => fibs(i-1) + fibs(i-2) })

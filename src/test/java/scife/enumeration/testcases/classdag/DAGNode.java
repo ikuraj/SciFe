@@ -17,7 +17,7 @@ public class DAGNode {
 
     // always a class
 //    boolean isClass;
-    
+
     public int numChildren;
     // children then overriden then sealed
     public boolean[] allBools;
@@ -59,13 +59,13 @@ public class DAGNode {
     }
 
 
-		public boolean getOverriden(int i) {
-			return allBools[numChildren + i];
-		}
+    public boolean getOverriden(int i) {
+      return allBools[numChildren + i];
+    }
 
-		public boolean getSealed(int i) {
-			return allBools[numChildren + getNumberOfOverriden() + i];
-		}
+    public boolean getSealed(int i) {
+      return allBools[numChildren + getNumberOfOverriden() + i];
+    }
 
     public boolean isChild(int i) {
       return allBools[i];

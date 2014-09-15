@@ -36,11 +36,11 @@ abstract class ConcatFinite[T] protected[enumeration]
   extends Finite[T] with HasLogger {
 
   def length: Int
-  
+
   def enum(ind: Int): Enum[T]
-  
+
   def limit(ind: Int): Int
-  
+
   override def apply(ind: Int) = {
     entering("apply", ind)
     val arrInd = binarySearch(ind)
@@ -57,7 +57,7 @@ abstract class ConcatFinite[T] protected[enumeration]
     while (left <= right) {
       val mid = left + (right - left) / 2
       info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
-      if (limit(mid) <= target && limit(mid+1) > target)
+      if (limit(mid) <= target && limit(mid + 1) > target)
         return mid
       else if (limit(mid) > target)
         right = mid
@@ -74,7 +74,7 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (enumsArray:
   extends ConcatFinite[T] with ConcatMul[T, T, T] with HasLogger {
 
   override val enums = enumsArray.toSeq
-  
+
   override def length = enumsArray.length
 
   val limits = {
@@ -92,9 +92,9 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (enumsArray:
     fine("limits = " + limits.mkString(","))
     limits.apply(length)
   }
-  
+
   override def enum(ind: Int) = enumsArray(ind)
-  
+
   override def limit(ind: Int) = limits(ind)
 
 }
@@ -106,14 +106,14 @@ class ConcatFiniteEqualSize[T] protected[enumeration] (enumsArray: Array[Finite[
     "(sizes are %s)".format(enumsArray.map(_.size).distinct))
 
   override val enums = enumsArray.toSeq
-  
+
   val streamsArray = enumsArray
   val streamsArraySize = enumsArray.size
-  
+
   override def apply(ind: Int) = {
     val arrInd = ind % streamsArraySize
     val elInd = ind / streamsArraySize
     streamsArray(arrInd)(elInd)
   }
-    
+
 }

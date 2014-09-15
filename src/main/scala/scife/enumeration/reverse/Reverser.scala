@@ -22,7 +22,7 @@ object Reverser {
 //  def apply[T](enum: Enum[T], v: T) = {
 //    enum
 //  }
-//  
+//
 //  def apply[T](enum: Finite[T], v: T) = enum match {
 //    case e@Empty =>
 //      e

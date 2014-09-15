@@ -24,25 +24,25 @@ class RedBlackTreeDependentBenchmarkTest
   HasLogger with ProfileLogger {
     import Util._
   import Checks._
-  
+
   def checker(seq: Seq[Tree]) {
     seq.distinct.size should be (seq.size)
-    seq.forall ( blackInv(_) ) should be (true) 
-    seq.forall ( redDescHaveBlackChildren(_) ) should be (true) 
-    seq.forall ( valueOrdering(_) ) should be (true) 
-    seq.forall ( invariant(_) ) should be (true) 
+    seq.forall ( blackInv(_) ) should be (true)
+    seq.forall ( redDescHaveBlackChildren(_) ) should be (true)
+    seq.forall ( valueOrdering(_) ) should be (true)
+    seq.forall ( invariant(_) ) should be (true)
   }
-  
+
   test("correctness") {
     val ms = new MemoizationScope
     val enum = constructEnumerator(ms)
     ms.memoizations.size should be (2)
-    
+
     val helper = new CheckerHelperFun(checker)
     import helper._
 
     val profileRange = 1 to 10
-    
+
     withLazyClue("Elements are: " + clue) {
       // specific cases
       elements = enum.getEnum( (1, 1 to 1, Set(true), 2) ).toList
@@ -62,7 +62,7 @@ class RedBlackTreeDependentBenchmarkTest
         elements =
           for (blackHeight <- 0 to (size+1); e = enum.getEnum(size, 1 to size, Set(true, false), blackHeight);
             ind <- 0 until e.size) yield e(ind)
-        
+
         elements.forall( invariant(_) ) should be (true)
 
         profile("Claculating size %d".format(size)) {
@@ -76,14 +76,14 @@ class RedBlackTreeDependentBenchmarkTest
         elements =
           for (blackHeight <- 1 to (Math.log2(size + 1).toInt + 1); e = enum.getEnum(size, 1 to size, Set(true, false), blackHeight);
             ind <- 0 until e.size) yield e(ind)
-        
+
         elements.forall( invariant(_) ) should be (true)
 
         profile("Claculating size %d".format(size)) {
           elements.size should be (numberOfTrees(size))
         }
       }
-    
+
       // some confirmed counts
       elements =
         for (blackHeight <- 0 to 6; e = enum.getEnum(12, 1 to 12, Set(true, false), blackHeight);
@@ -109,10 +109,10 @@ class RedBlackTreeDependentBenchmarkTest
           for (blackHeight <- 1 to (Math.log2(size + 1).toInt + 1); e = enum.getEnum(size, 1 to size, Set(true, false), blackHeight);
             ind <- 0 until e.size) yield e(ind)
       }
-      
+
       assert( (for (el <- elements) yield el).forall( invariant(_) ) )
     }
-    
+
   }
 
   def constructEnumerator(implicit ms: MemoizationScope) = {

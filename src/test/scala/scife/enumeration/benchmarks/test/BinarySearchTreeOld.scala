@@ -18,7 +18,7 @@ import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeBenchmarkOld 
+class BinarySearchTreeBenchmarkOld
   extends PerformanceTest.OfflineReport
   //extends PerformanceTest.Quickbenchmark
   with Matchers
@@ -31,7 +31,7 @@ class BinarySearchTreeBenchmarkOld
       val sizes = Gen.range("size")(1, 5, 1)
       implicit val memScope = new MemoizationScope
       val enumerator = constructEnumerator(memScope)
-                
+
 //      enumerator shouldBe a [memoization.dependent.Memoized[_, _]]
 
       using(sizes) curve ("Binary Search Trees") warmUp {
@@ -73,7 +73,7 @@ class BinarySearchTreeBenchmarkOld
 
             val rootLeftSizePairs = e.Product(leftSizes, roots)
 
-            val leftTrees: DependFinite[(Int, Int), Tree] = 
+            val leftTrees: DependFinite[(Int, Int), Tree] =
               InMap(self, { (par: (Int, Int)) =>
                 val (leftSize, median) = par
                 (leftSize, range.start to (median - 1))
@@ -95,7 +95,7 @@ class BinarySearchTreeBenchmarkOld
 
                   Node(leftTree, currRoot, rightTree)
                 })(ms)
-                
+
 //            allNodes shouldBe a [Memoized[_]]
 
             allNodes: Finite[Node]

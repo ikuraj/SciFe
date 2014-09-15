@@ -20,12 +20,12 @@ import scala.language.postfixOps
 import scala.language.existentials
 
 class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger { 
+  HasLogger with ProfileLogger {
   import Checks._
   import Structures._
   import BSTrees._
   import Util._
-  
+
   // (size, #class)
   type Input = (Int, Int)
   // list of extends
@@ -35,12 +35,12 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
   test("enumeration") {
     val checkerHelper = new CheckerHelper[Output]
     import checkerHelper._
-    
+
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
     withLazyClue("Elements are: " + clue) {
-        
+
       // (size, #class, #interface, #overridableMethods)
       res = enum.getEnum((1, 0))
       // class or interface
@@ -61,15 +61,15 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
 //      res = enum.getEnum((4, 0))
 //      // class or interface
 //      res.size should be (95)
-      
+
     }
-      
+
   }
-  
+
   test("subListChooser") {
     val checkerHelper = new CheckerHelper[List[Int]]
     import checkerHelper._
-    
+
     def rangeList(m: Int) = m to 0 by -1 toArray
     val enum = constructEnumerator
 
@@ -79,7 +79,7 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
         res = subListChooser.getEnum( (m, 1 to s toList) )
         val listCombinations: List[List[Int]] =
           ((1 to s toList) combinations m) toList
-  
+
         res.size should be (listCombinations.size)
         elements should contain theSameElementsAs (listCombinations)
       }
@@ -96,7 +96,7 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
         val temp = self.getEnum( (size - 1, range.tail) )
         val kept = Map( temp , { range.head :: (_: List[Int]) })
         val leftOut = self.getEnum( (size, range.tail) )
-        
+
         val allNodes = e.Concat(kept, leftOut)
         allNodes: Finite[List[Int]]
       } else e.Empty: Finite[List[Int]]
@@ -107,15 +107,15 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
       (e.Map(e.Enum(1 to classes), { (el: Int) => (el, (1 to classes).toList ) } )): Finite[(Int, List[Int])],
       subListChooser: DependFinite[(Int, List[Int]), List[Int]]
     ): Finite[((Int, List[Int]), List[Int])]
-    
+
     e.Concat(
       e.Singleton(Nil): Finite[List[Int]],
       Map(chain, { (r: ((Int, List[Int]), List[Int])) => r._2 })
     )}
   )
-      
+
   def constructEnumerator(implicit ms: MemoizationScope = null) = {
-    
+
     Depend.memoized(
       (self: EnumType, par: Input) => {
       // list sorted descendingly
@@ -132,5 +132,5 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
       }
     })
   }
-  
+
 }

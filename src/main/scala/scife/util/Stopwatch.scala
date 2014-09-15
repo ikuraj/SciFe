@@ -2,20 +2,20 @@ package scife
 
 class StopwatchCollection(name: String) {
   var acc: Long = 0L
-  
+
   var stopwatches = List[Stopwatch]()
 
   def +=(sw: Stopwatch) = synchronized { acc += sw.getMillis }
 
   def getMillis = {
     val running =
-	    (0L /: stopwatches) {
-	      (res, sw) => res + sw.getMillis
-	    }
-      
+      (0L /: stopwatches) {
+        (res, sw) => res + sw.getMillis
+      }
+
     acc + running
   }
-  
+
   def newStopwatch = {
     val result = new Stopwatch()
     stopwatches :+= result
@@ -50,14 +50,14 @@ class Stopwatch(name: String = "Stopwatch") {
       acc
     }
   }
-    
+
   def profile[T](block: => T): T = {
     if (isRunning) stop
-    
+
     start
     val result = block    // call-by-name
     stop
-    
+
     result
   }
 

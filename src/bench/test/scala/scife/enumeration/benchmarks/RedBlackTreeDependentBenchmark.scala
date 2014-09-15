@@ -20,7 +20,7 @@ class RedBlackTreeDependentBenchmark
   extends StructuresBenchmark[Depend[(Int, Range, Set[Boolean], Int), Tree]]
   //extends DependentMemoizedBenchmark[Int, Depend[(Int, Range, Set[Boolean], Int), Tree]]
   with java.io.Serializable with HasLogger {
-  
+
   type EnumType = Depend[(Int, Range, Set[Boolean], Int), Tree]
 
   def measureCode(tdEnum: EnumType) = {
@@ -48,7 +48,7 @@ class RedBlackTreeDependentBenchmark
   def constructEnumerator(implicit ms: MemoizationScope) = {
     val colorsProducer = Depend.memoized(
       (set: Set[Boolean]) => { e.WrapArray(set.toArray) })
-    
+
     val treesOfSize: Depend[(Int, Range, Set[Boolean], Int), Tree] = Depend.memoized(
       (self: Depend[(Int, Range, Set[Boolean], Int), Tree], pair: (Int, Range, Set[Boolean], Int)) => {
         val (size, range, colors, blackHeight) = pair
@@ -63,35 +63,35 @@ class RedBlackTreeDependentBenchmark
             val roots = e.Enum(range)
             val leftSizes = e.WrapArray(0 until size)
             val rootColors = colorsProducer(colors)
-    
+
           val rootLeftSizePairs = e.Product(leftSizes, roots)
           val rootLeftSizeColorTuples = e.Product(rootLeftSizePairs, rootColors)
-    
+
           val leftTrees: Depend[((Int, Int), Boolean), Tree] = InMap(self, { (par: ((Int, Int), Boolean)) =>
             val ((leftSize, median), rootColor) = par
             val childColors = if (rootColor) Set(true, false) else Set(true)
             val childBlackHeight = if (rootColor) blackHeight - 1 else blackHeight
             (leftSize, range.start to (median - 1), childColors, childBlackHeight)
           })
-    
+
           val rightTrees: Depend[((Int, Int), Boolean), Tree] = InMap(self, { (par: ((Int, Int), Boolean)) =>
             val ((leftSize, median), rootColor) = par
             val childColors = if (rootColor) Set(true, false) else Set(true)
             val childBlackHeight = if (rootColor) blackHeight - 1 else blackHeight
             (size - leftSize - 1, (median + 1) to range.end, childColors, childBlackHeight)
           })
-    
+
           val leftRightPairs: Depend[((Int, Int), Boolean), (Tree, Tree)] =
             Product(leftTrees, rightTrees)
-    
+
           val allNodes =
             memoization.Chain[((Int, Int), Boolean), (Tree, Tree), Node](rootLeftSizeColorTuples, leftRightPairs,
               (p1: ((Int, Int), Boolean), p2: (Tree, Tree)) => {
                 val (((leftSize, currRoot), rootColor), (leftTree, rightTree)) = (p1, p2)
-    
+
                 Node(leftTree, currRoot, rightTree, rootColor)
               })
-    
+
         allNodes
       } else e.Empty
     })

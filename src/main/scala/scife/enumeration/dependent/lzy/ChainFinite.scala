@@ -8,9 +8,9 @@ import scife.enumeration.lzy._
 class ChainFinite[I, O]
   (override val left: Finite[I], override val right: DependFinite[I, O])
   extends combinators.Chain[I, O] with Finite[(I, O)] with HasLogger {
-  
+
   val rr = ConcatFinite.buffer[(I, O)]( Seq.empty )
-  
+
   override def size: Int = {
     var size = 0
     for( ind <- 0 until left.size; innerEnum = right( left(ind) ) ) yield
@@ -18,9 +18,9 @@ class ChainFinite[I, O]
       else size += innerEnum.size
     size
   }
-  
+
   var explored = -1
-  
+
   override def apply(ind: Int) = {
     while(ind >= rr.size) {
       explored += 1
@@ -30,15 +30,15 @@ class ChainFinite[I, O]
     }
     rr(ind)
   }
-  
+
 }
 
 class ChainFiniteCombine[I, O, R]
   (val left: Finite[I], val right: DependFinite[I, O], combine: (I, O) => R = (_: I, _: O))
   extends Finite[R] with HasLogger {
-  
+
   val rr = ConcatFinite.buffer[R]( Seq.empty )
-  
+
   override def size: Int = {
     var size = 0
     for( ind <- 0 until left.size; innerEnum = right( left(ind) ) ) yield
@@ -46,9 +46,9 @@ class ChainFiniteCombine[I, O, R]
       else size += innerEnum.size
     size
   }
-  
+
   var explored = -1
-  
+
   override def apply(ind: Int) = {
     while(ind >= rr.size) {
       explored += 1
@@ -60,5 +60,5 @@ class ChainFiniteCombine[I, O, R]
     }
     rr(ind)
   }
-  
+
 }

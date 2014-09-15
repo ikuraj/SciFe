@@ -17,19 +17,19 @@ class EnumStream[+A](ind: Int, enum: => Enum[A]) extends Stream[A] {
 
   private[this] var tlVal: Stream[A] = _
   def tailDefined: Boolean = tlVal ne null
-    
+
 }
 
 // EnumStream is by assumption infinite
 object EnumStream {
-  
+
   def apply[A](ind: Int, enum: Enum[A]): Stream[A] = {
     new EnumStream(ind, enum)
   }
-  
+
   def apply[A](enum: Enum[A]): Stream[A] = {
     require(enum.hasDefiniteSize == false)
     this(0, enum)
   }
-  
+
 }

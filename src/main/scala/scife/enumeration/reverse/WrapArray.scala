@@ -8,11 +8,11 @@ import scala.{ collection => col }
 import scala.reflect._
 
 class WrapArray[T](override val coll: Array[T]) extends e.WrapArray[T](coll)
-	with Reverse[T] with HasLogger {
-  
+  with Reverse[T] with HasLogger {
+
   val reverseMap: col.Map[T, Int] = coll.zipWithIndex.toMap
   info("reverseMap is " + reverseMap)
-  
+
   override def reverse[V >: T](el: V) = {
     val revInd = reverseMap(el.asInstanceOf[T])
     revInd
@@ -20,5 +20,5 @@ class WrapArray[T](override val coll: Array[T]) extends e.WrapArray[T](coll)
 //      override val pos = revInd
 //    }
   }
-    
+
 }

@@ -42,11 +42,11 @@ object Checks {
         outcome match {
           case Failed(e: org.scalatest.exceptions.ModifiableMessage[_]) =>
             if (clue.toString != "")
-            	Failed(e.modifyMessage(append)).asInstanceOf[T]
+              Failed(e.modifyMessage(append)).asInstanceOf[T]
             else outcome
           case Canceled(e: org.scalatest.exceptions.ModifiableMessage[_]) =>
             if (clue.toString != "")
-            	Canceled(e.modifyMessage(append)).asInstanceOf[T]
+              Canceled(e.modifyMessage(append)).asInstanceOf[T]
             else outcome
           case _ => outcome
         }
@@ -80,24 +80,24 @@ class ChecksTest extends FunSuite with Matchers {
     noRepeat(1 :: (1 to 100).toList) should be(false)
   }
 
-  //  test("nonDecreasing true") {    
+  //  test("nonDecreasing true") {
   //    nonDecreasing(1 to 100 zip (1 to 100)) should be (true)
   //  }
   //
-  //  test("nonDecreasing false") {    
+  //  test("nonDecreasing false") {
   //    var floatList = List(1f)
-  //    var list: List[Int] = (1 to 100) :+ 99 
+  //    var list: List[Int] = (1 to 100) :+ 99
   //    floatList = list map { _.toFloat }
   //    nonDecreasing(floatList zip floatList) should be (false)
-  //  
+  //
   //    list = (1 to 100) :+ 50
   //    floatList = list map { _.toFloat }
   //    nonDecreasing(floatList zip floatList) should be (false)
-  //      
+  //
   //    list = (1 to 100) :+ 1
   //    floatList = list map { _.toFloat }
   //    nonDecreasing(floatList zip floatList) should be (false)
-  //    
+  //
   //    list = (List(1) :: (2 to 50).toList :: List(52) :: List(51 to 100).toList).flatten
   //    floatList = list map { _.toFloat }
   //    nonDecreasing(floatList zip floatList) should be (false)

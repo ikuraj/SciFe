@@ -47,7 +47,7 @@ class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenProper
     import helper._
 
     for (enum <- List(constructEnumeratorAsInPaper/*,
-      constructEnumeratorSomeAnnotations, 
+      constructEnumeratorSomeAnnotations,
       constructEnumerator2*/)) {
       withLazyClue("Elements are: " + clue) {
         res = enum.getEnum(1, 1 to 3)

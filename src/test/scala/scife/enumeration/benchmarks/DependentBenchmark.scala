@@ -15,11 +15,11 @@ import scife.util.logging._
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
   import Structures._
-  
+
 //  @transient override lazy val reporter = new DsvReporter(',')
-    
+
   val defaultContext = Context.empty
-  
+
   def fixtureRun(
     benchmarkMainName: String,
     name: String,
@@ -37,13 +37,13 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     ) = {
     require(name != null)
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
-    
+
     performance of benchmarkMainName in {
         measure method run in {
           val memScope = new MemoizationScope
           val enumerator = constructEnumerator(memScope)
           assert(memScope.memoizations.size > 0)
-  
+
             using( generator(maxSize) ) config (
               configArguments
             ) curve (name) warmUp {
@@ -77,7 +77,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     ) = {
     require(name != null)
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
-    
+
     performance of benchmarkMainName in {
         val memScope = new MemoizationScope
         val enumerator = constructEnumerator(memScope)
@@ -133,7 +133,7 @@ System.gc()
   }
 
   def constructEnumerator(implicit ms: MemoizationScope): DepEnumType
-  
+
 //  @transient override lazy val reporter = new LoggingReporter
 
 }

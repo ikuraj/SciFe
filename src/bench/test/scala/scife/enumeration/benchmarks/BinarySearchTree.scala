@@ -21,7 +21,7 @@ class BinarySearchTreeBenchmark
   extends StructuresBenchmark[Depend[(Int, Range), Tree]]
 //  extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger
   {
-    
+
   type EnumType = Depend[(Int, Range), Tree]
 
   def measureCode(tdEnum: EnumType) = {

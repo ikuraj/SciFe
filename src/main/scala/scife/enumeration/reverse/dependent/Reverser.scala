@@ -9,7 +9,7 @@ import scala.reflect._
 import scala.language.higherKinds
 
 object Reverser {
-    
+
 //  def apply[I, O, F[O] <: Enum[O]](producerFunction: (d.Depend[I, O], I) => F[O])
 //    (implicit ct: ClassTag[F[_]]): DependReverse[I, O] = {
 //    val reverseTag = implicitly[ClassTag[Reverse[_]]]
@@ -19,18 +19,18 @@ object Reverser {
 //        val fun = producerFunction.asInstanceOf[(d.Depend[I, O], I) => Reverse[O]]
 //        new d.WrapFunction[I, O, Reverse[O]](fun) with DependReverse[I, O] with
 //          d.DependFinite[I, O] with m.dependent.Memoized[I, O]
-//          
+//
 //    }
 //  }
-  
+
 //  def apply[I, O](fun: I => Reverse[O]): DependReverse[I, O] = {
 //    new d.WrapFunction[I, O, Reverse[O]](fun) with DependReverse[I, O] with d.DependFinite[I, O]
 //  }
-  
+
   def apply[I, O, E <: Reverse[O]](fun: (d.Depend[I, O], I) => E): DependReverse[I, O] = {
     new d.WrapFunction(fun) with DependReverse[I, O]
   }
-  
+
   def apply[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]]): DependReverse[I, O] = {
     val reverseTag = implicitly[ClassTag[Reverse[_]]]
@@ -46,7 +46,7 @@ object Reverser {
 //        new d.WrapFunction[I, O, F[O]](producerFunction) with DependReverse[I, O]
     }
   }
-    
+
   def memoized[I, O, F[O] <: Enum[O]](producerFunction: (d.Depend[I, O], I) => F[O])
     (implicit ct: ClassTag[F[_]], ms: m.MemoizationScope = null): DependReverse[I, O] = {
     val reverseTag = implicitly[ClassTag[Reverse[_]]]
@@ -56,9 +56,9 @@ object Reverser {
           val fun = producerFunction.asInstanceOf[(d.Depend[I, O], I) => Reverse[O]]
           new d.WrapFunction[I, O, Reverse[O]](fun) with DependReverse[I, O] with
             d.DependFinite[I, O] with m.dependent.Memoized[I, O]
-            
+
       }
-        
+
     if (ms != null) ms add enum
     enum
   }
@@ -66,7 +66,7 @@ object Reverser {
 //  def apply[T](enum: Enum[T], v: T) = {
 //    enum
 //  }
-//  
+//
 //  def apply[T](enum: Finite[T], v: T) = enum match {
 //    case e@Empty =>
 //      e

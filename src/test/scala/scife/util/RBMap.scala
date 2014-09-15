@@ -9,7 +9,7 @@ import RBTreeItems._
 // http://www.eecs.usma.edu/webs/people/okasaki/jfp99.ps
 
 /*
- 
+
  Red-black trees are binary search trees obeying two key invariants:
 
  (1) Any path from a root node to a leaf node contains the same number
@@ -49,7 +49,7 @@ abstract class RBMap[K, V] (implicit cmp : K => Ordered[K]) {
       case T(_,l,k,v,r) => T(B,l,k,v,r)
     }
   }
-  
+
   // balance: Balance a tree with balanced subtrees.
   protected def balance (c : Color) (l : RBMap[K,V]) (k : K) (v : Option[V]) (r : RBMap[K,V]) : RBMap[K,V] = {
     (c,l,k,v,r) match {
@@ -62,10 +62,10 @@ abstract class RBMap[K, V] (implicit cmp : K => Ordered[K]) {
   }
 
   // modWith: Helper method; top node could be red.
-  private[util] def modWith (k : K, f : (K, Option[V]) => Option[V]) : RBMap[K,V] 
+  private[util] def modWith (k : K, f : (K, Option[V]) => Option[V]) : RBMap[K,V]
 
-  // modifiedWith: Insert, update and delete all in one. 
-  def modifiedWith (k : K, f : (K, Option[V]) => Option[V]) : RBMap[K,V] = 
+  // modifiedWith: Insert, update and delete all in one.
+  def modifiedWith (k : K, f : (K, Option[V]) => Option[V]) : RBMap[K,V] =
     blacken(modWith(k,f))
 
   // get: Retrieve a value for a key.
@@ -94,7 +94,7 @@ private case class T[K, V](c : Color, l : RBMap[K,V], k : K, v : Option[V], r : 
   def get(k : K) : Option[V] = {
     if (k < this.k) l.get(k) else
     if (k > this.k) r.get(k) else
-    v 
+    v
   }
 
   private[util] def modWith (k : K, f : (K, Option[V]) => Option[V]) : RBMap[K,V] = {
@@ -107,7 +107,7 @@ private case class T[K, V](c : Color, l : RBMap[K,V], k : K, v : Option[V], r : 
 
 // A helper object.
 object RBMap {
-  
+
   // empty: Converts an orderable type into an empty RBMap.
   def empty[K <: Ordered[K], V] : RBMap[K,V] = L()((k : K) => k)
 

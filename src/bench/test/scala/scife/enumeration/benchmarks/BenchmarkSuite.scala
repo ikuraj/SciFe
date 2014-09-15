@@ -9,34 +9,34 @@ import Key._
 package suite {
   // if set, does not run full-blown micro-benchmark test suite; it runs
   // a quicker benchmark with less reliable results
-  
-  class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {    
+
+  class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
     override def persistor = new persistence.SerializationPersistor
-        
+
     import BenchmarkSuite._
-  
+
     val benchmarks = List(
       (new BinarySearchTreeBenchmark, "Binary Search Trees"),
       (new SortedListDependentBenchmark, "Sorted Lists"),
       (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
       (new HeapArrayBenchmark, "Heap Arrays")
     )
-    
-    implicit val configArguments = 
+
+    implicit val configArguments =
       org.scalameter.Context(
         exec.maxWarmupRuns -> 2,
-        exec.benchRuns -> 3, 
+        exec.benchRuns -> 3,
         exec.independentSamples -> 1
       )
-    
+
     for( ((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
       benchmark.fixture("Minimal benchmarks", name, maxSize)
-          
+
   }
 
-  class BenchmarkSuiteFull extends PerformanceTest {    
+  class BenchmarkSuiteFull extends PerformanceTest {
     override def persistor = new persistence.SerializationPersistor
-    
+
     override def reporter: Reporter =
       new SciFeReporter(
         Reporter.Composite(
@@ -53,33 +53,33 @@ package suite {
       Aggregator.average,
       new Executor.Measurer.Default
     )
-    
+
     import BenchmarkSuite._
-    
-    implicit val configArguments = 
+
+    implicit val configArguments =
       org.scalameter.Context(
         exec.maxWarmupRuns -> warmUps,
-        exec.benchRuns -> numberOfRuns, 
+        exec.benchRuns -> numberOfRuns,
         exec.independentSamples -> JVMs,
         exec.jvmcmd -> javaCommand,
         exec.jvmflags -> JVMFlags.mkString(" ")
       )
-    
+
     for( ((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
       benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
-      
+
     val dummyBenchmark = new DummyBenchmark
 
     for( (name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
       dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
-      
+
     for( (name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
       dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
 
   }
-  
+
   class DummyBenchmark extends PerformanceTest.OfflineReport {
-    
+
     def fixtureRun(
       benchmarkMainName: String,
       name: String,
@@ -89,7 +89,7 @@ package suite {
         implicit configArguments: org.scalameter.Context
       ) = {
       require(name != null)
-      
+
       performance of benchmarkMainName in {
         measure method run in {
           using( Gen.range("size")(1, maxSize, 1) ) config (
@@ -104,7 +104,7 @@ package suite {
 }
 
 object BenchmarkSuite {
-  
+
   val benchmarkMainName = "Benchmarks"
 
   val allBenchmarks = List(
@@ -114,7 +114,7 @@ object BenchmarkSuite {
     new HeapArrayBenchmark,
     new DAGStructureBenchmark
   )
-    
+
   val allBenchmarksNames = List(
     "Binary Search Tree",
     "Sorted List",
@@ -123,16 +123,16 @@ object BenchmarkSuite {
     "Directed Acyclic Graph",
     "Class-Interface DAG"
   )
-    
+
   val clpBenchmarksNames = List(
     "Binary Search Tree",
     "Sorted List",
     "Red-Black Tree",
     "Heap Array"
   )
-  
+
   var maxSize = 15
-  
+
   val minimalSizes = List(3, 3, 3, 3)
 
   val fullBlownSizes = List(15, 15, 15, 11, 4)
@@ -157,5 +157,5 @@ object BenchmarkSuite {
     "-Xms32G", "-Xmx32G"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
-  
+
 }

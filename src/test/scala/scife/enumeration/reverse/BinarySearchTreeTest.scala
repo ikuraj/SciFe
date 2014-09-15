@@ -14,21 +14,21 @@ import org.scalatest._
 import org.scalatest.prop._
 import org.scalatest.matchers._
 import org.scalacheck.Gen
-  
+
 import scala.language.existentials
 
 class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger {  
+  HasLogger with ProfileLogger {
   import Checks._
   import Structures._
   import BSTrees._
-  
+
   def bstTests(trees: Depend[(Int, Range), Tree]) {
-    
+
     val profileRange = 1 to 5
     val util = new Util.CheckerHelper[Tree]
     import util._
-    
+
     withLazyClue("Elements are: " + clue) {
       for (size <- profileRange) {
         profile("Getting stream for BST of size %d".format(size)) {
@@ -40,7 +40,7 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
         profile("Getting elements for BST of size %d".format(size)) {
           for (ind <- 0 until res.size) res(ind)
         }
-        
+
         assert( (for (ind <- 0 until res.size) yield res(ind)).forall( invariant(_) ) )
       }
     }
@@ -88,8 +88,8 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
 
           val allNodes =
             new rd.ChainFinite(rootLeftSizePairs, leftRightPairs):
-            	Reverse[((Int, Int), (Tree, Tree))]
-        		
+              Reverse[((Int, Int), (Tree, Tree))]
+
           val makeTree =
             (p: ((Int, Int), (Tree, Tree)) ) => {
               val ((leftSize, currRoot), (leftTree, rightTree)) = p
@@ -106,22 +106,22 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
 
               ((leftSize, currRoot), (leftTree, rightTree))
             }
-            
-          
+
+
           new e.reverse.Map[((Int, Int), (Tree, Tree)), Node](
             allNodes, makeTree, reverseTree)
           : Reverse[Tree]
         }
       })
   }
-  
+
   test("enumerator regular enumeration") {
     bstTests( constructEnumerator )
   }
-  
+
   test("enumerator reverse enumeration") {
     val lists = constructEnumerator()
-    
+
     {
       val en = lists.getEnum(1, 1 to 2): Reverse[Tree]
       for ((revEl, ind) <- List(Node(1), Node(2)).zipWithIndex) {

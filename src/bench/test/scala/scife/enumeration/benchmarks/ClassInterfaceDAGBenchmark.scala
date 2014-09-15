@@ -35,7 +35,7 @@ class ClassInterfaceDAGBenchmark
 //    val actual = s - 1
 //    (actual/5+1, actual%5)
 //  }
-  
+
   // measure for 2 methods
   def fromSizeToPair(s: Int) = (s, 2)
 
@@ -99,7 +99,7 @@ class ClassInterfaceDAGBenchmark
 
   // pick a combination of override and seal
   def allOverrideAndSeal(allMethods: List[Int], sealedMap: Predef.Map[Int, Set[Int]]) =
-    // ( #overrides, ((#seals, overrides), seals) ) 
+    // ( #overrides, ((#seals, overrides), seals) )
     Depend.fin((p: (List[Int], Int)) => {
       val (implements, extend) = p
 
@@ -142,7 +142,7 @@ class ClassInterfaceDAGBenchmark
         implicit val (size, myId, classes, interfaces, overridableMethods, sealedMap) = par
 
         //          if (size <= 0) e.Singleton(Nil): Finite[Output]
-        //          else 
+        //          else
         if (size == 1) {
           Map(makeAll(size, classes, interfaces, overridableMethods, sealedMap), makeList): Finite[Output]
         } else {

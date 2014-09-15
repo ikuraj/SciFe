@@ -75,5 +75,5 @@ object FormatHelpers {
 
   implicit def strToDoc(s: String): Document = text(s)
   implicit def intToDoc(i: Int): Document = text(i.toString)
-  
+
 }
