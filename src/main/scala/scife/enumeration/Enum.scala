@@ -45,7 +45,12 @@ trait Enum[+A] extends Serializable {
 
   def ≻[B >: A](predicate: FilterFunction[B]): Enum[B] =
     filter(predicate)
-
+    
+  import dependent._
+    
+  def ⊘[B, A2 >: A](dep: Depend[A2, B]): Enum[(A2, B)] = 
+    dep ⊘ this
+  
 }
 
 object Enum extends EnumLessPriority {

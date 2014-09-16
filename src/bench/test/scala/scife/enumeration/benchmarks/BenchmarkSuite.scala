@@ -50,7 +50,7 @@ package suite {
 
     def executor = SeparateJvmsExecutor(
       Executor.Warmer.Default(),
-      Aggregator.average,
+      Aggregator.min,
       new Executor.Measurer.Default
     )
 
@@ -77,7 +77,38 @@ package suite {
       dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
 
   }
-
+  
+  // benchmarks for which it may take a while to finish (e.g. ones without memoization)
+  class BenchmarkSuiteSlow extends PerformanceTest {    
+    override def persistor = api.Persistor.None
+    
+    def executor = SeparateJvmsExecutor(
+      Executor.Warmer.Default(),
+      Aggregator.min,
+      new Executor.Measurer.Default
+    )
+    
+    def reporter = new LoggingReporter
+    
+    import BenchmarkSuite._
+    
+    implicit val configArguments = 
+      org.scalameter.Context(
+        exec.maxWarmupRuns -> 1,
+        exec.benchRuns -> 3, 
+        exec.independentSamples -> 1,
+        exec.jvmcmd -> javaCommand,
+        exec.jvmflags -> JVMFlags.mkString(" ")
+      )
+    
+    for( (benchmark, name, maxSize) <- List(
+        (new nomemoization.BinarySearchTreeBenchmark, "Binary Search Tree", 12),
+        (new BinarySearchTreeBenchmark, "Binary Search Tree (w/ mem)", 12)
+      ))
+      benchmark.fixtureRun(benchmarkMainName, "SciFe (no memoization)", maxSize, name)
+      
+  }
+  
   class DummyBenchmark extends PerformanceTest.OfflineReport {
 
     def fixtureRun(
@@ -133,9 +164,10 @@ object BenchmarkSuite {
 
   var maxSize = 15
 
+  // max datastructure size
   val minimalSizes = List(3, 3, 3, 3)
-
   val fullBlownSizes = List(15, 15, 15, 11, 4)
+  // normal executor options
   val warmUps = 8
   val numberOfRuns = 3
   val JVMs = 3
@@ -152,7 +184,8 @@ object BenchmarkSuite {
 //    // optimizations
     "-XX:ReservedCodeCacheSize=512M",
     "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
-    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
+    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512"
+    ,
     // memory
     "-Xms32G", "-Xmx32G"
   )

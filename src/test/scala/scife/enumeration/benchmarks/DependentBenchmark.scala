@@ -42,8 +42,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
         measure method run in {
           val memScope = new MemoizationScope
           val enumerator = constructEnumerator(memScope)
-          assert(memScope.memoizations.size > 0)
-
+  
             using( generator(maxSize) ) config (
               configArguments
             ) curve (name) warmUp {
@@ -81,7 +80,6 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     performance of benchmarkMainName in {
         val memScope = new MemoizationScope
         val enumerator = constructEnumerator(memScope)
-        assert(memScope.memoizations.size > 0)
 
           using( generator(maxSize) ) config (
             configArguments
