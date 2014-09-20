@@ -1,7 +1,7 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 
-import _root_.insynth.{ enumeration => e }
+import _root_.scife.{ enumeration => e }
 
 class Empty[T] extends e.Empty with MemberFinite[T] {
   

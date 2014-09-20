@@ -14,7 +14,7 @@ object Reverser {
   private[enumeration] def fromFiniteCollection[I, T](col: Traversable[T])
     (implicit ct: ClassTag[T]): Reverse[T] =
     col match {
-      case _ if col.size == 0 => Empty
+      case _ if col.size == 0 => new Empty
       case _ if col.size == 1 => Singleton(col.head)
       case _ => new WrapArray(col.toArray)
     }

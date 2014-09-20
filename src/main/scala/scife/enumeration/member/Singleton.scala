@@ -1,4 +1,4 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 
 case class Singleton[T](override val el: T) extends SingletonT[T] with MemberFinite[T] {

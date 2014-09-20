@@ -1,8 +1,8 @@
-package insynth
+package scife
 package enumeration
 package member
 
-import insynth.{ enumeration => e }
+import scife.{ enumeration => e }
 
 import scala.{ collection => col }
 import scala.reflect._

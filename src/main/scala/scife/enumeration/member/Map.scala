@@ -1,7 +1,7 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 
-import insynth.{ enumeration => en }
+import scife.{ enumeration => en }
 
 abstract class Map[T, U](enum: Member[T], modify: T=>U, revFun: U=>T)
 	extends en.Map[T, U](enum, modify) with Member[U] with HasLogger {

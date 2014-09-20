@@ -1,9 +1,9 @@
-package insynth.enumeration.member
+package scife.enumeration.member
 package memoization
 
-import insynth.enumeration.{ memoization => em }
+import scife.enumeration.{ memoization => em }
 
-import insynth.util.logging.HasLogger
+import scife.util.logging.HasLogger
 
 import scala.collection.mutable._
 

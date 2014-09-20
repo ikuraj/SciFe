@@ -1,7 +1,7 @@
-package insynth.enumeration.member
+package scife.enumeration.member
 package dependent
 
-import insynth.{ enumeration => e }
+import scife.{ enumeration => e }
 import e.dependent.combinators
 
 import scala.language.higherKinds

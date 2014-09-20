@@ -1,9 +1,9 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 
 import combinators.{ Product => CProduct }
 
-import _root_.insynth.util
+import _root_.scife.util
 import util.Math._
 import util.logging._
 

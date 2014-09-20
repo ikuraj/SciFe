@@ -3,9 +3,9 @@ package reverse
 
 import _root_.scife.{ enumeration => e }
 
-object Empty extends e.Empty with ReverseFinite[Nothing] {
+class Empty[T] extends e.Empty with ReverseFinite[T] {
 
-  override def reverse(a: Nothing) =
+  override def reverse(a: T) =
     throw new NoSuchElementException("Cannot call reverse on an empty enumerator.")
 
 }

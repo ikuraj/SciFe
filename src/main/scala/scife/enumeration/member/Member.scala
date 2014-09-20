@@ -1,4 +1,4 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 
 import scala.reflect._

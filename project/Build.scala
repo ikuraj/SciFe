@@ -54,9 +54,6 @@ object SciFeBuild extends Build {
       case "debug" =>
         Project.runTask(test in BenchConfig, state)
         state
-      case "debug" =>
-        Project.evaluateTask(test in BenchConfig, state)
-        state
       case _ =>
         state.fail
     }

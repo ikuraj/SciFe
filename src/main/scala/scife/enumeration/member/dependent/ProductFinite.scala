@@ -1,8 +1,8 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 package dependent
 
-import insynth.util.logging._
+import scife.util.logging._
 
 case class ProductFinite[I, O1, O2]
   (s1: MemberDependFinite[I, O1], s2: MemberDependFinite[I, O2])

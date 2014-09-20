@@ -1,8 +1,8 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 package dependent
 
-import insynth.{ enumeration => e }
+import scife.{ enumeration => e }
 import e.{ dependent => dp }
 
 class ChainFinite[I, O]

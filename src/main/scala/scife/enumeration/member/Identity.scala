@@ -1,7 +1,7 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 
-import insynth.{ enumeration => e }
+import scife.{ enumeration => e }
 
 trait Identity extends MemberInfinite[Int] {
   

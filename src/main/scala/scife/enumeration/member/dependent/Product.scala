@@ -1,10 +1,10 @@
-package insynth.enumeration
+package scife.enumeration
 package member
 package dependent
 
-import insynth.enumeration.{ combinators => ecomb }
+import scife.enumeration.{ combinators => ecomb }
 
-import insynth.util.logging._
+import scife.util.logging._
 
 object Product {
   

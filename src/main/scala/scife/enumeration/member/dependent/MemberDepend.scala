@@ -1,32 +1,32 @@
-package insynth.enumeration
-package reverse
+package scife.enumeration
+package member
 package dependent
 
-import insynth.enumeration.dependent._
-import insynth.enumeration.{ dependent => d }
+import scife.enumeration.dependent._
+import scife.enumeration.{ dependent => d }
 
 import scala.reflect._
 import scala.language.higherKinds
 
-trait ReverseDepend[I, O] extends Depend[I, O] {
+trait MemberDepend[I, O] extends Depend[I, O] {
   
-  override type EnumType = Reverse[O]
+  override type EnumType = Member[O]
 
 }
 
-trait ReverseDependFinite[I, O] extends DependFinite[I, O] {
+trait MemberDependFinite[I, O] extends DependFinite[I, O] {
   
-  override type EnumType = ReverseFinite[O]
+  override type EnumType = MemberFinite[O]
 
 }
 
-trait ReverseDependInfinite[I, O] extends DependInfinite[I, O] {
+trait MemberDependInfinite[I, O] extends DependInfinite[I, O] {
   
-  override type EnumType = ReverseInfinite[O]
+  override type EnumType = MemberInfinite[O]
 
 }
 
-object ReverseDepend {
+object MemberDepend {
     
 //  def apply[I, O](producerFunction: (ReverseDepend[I, O], I) => Reverse[O]): ReverseDepend[I, O] = {
 //    val reverseTag = implicitly[ClassTag[Reverse[_]]]
@@ -40,8 +40,8 @@ object ReverseDepend {
 //    }
 //  }
   
-  def apply[I, O](fun: I => Reverse[O]): ReverseDepend[I, O] = {
-    new WrapFunction[I, O](fun) with ReverseDepend[I, O] with Depend[I, O]
+  def apply[I, O](fun: I => Member[O]): MemberDepend[I, O] = {
+    new WrapFunction[I, O](fun) with MemberDepend[I, O] with Depend[I, O]
   }
   
 //  def apply[I, O, E <: Reverse[O]](fun: (d.Depend[I, O], I) => E): DependReverse[I, O] = {
