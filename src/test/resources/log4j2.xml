@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="WARN">
-	<appenders>
-		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-		</Console>
+  <appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+    </Console>
     <Console name="BenchmarkConsole" target="SYSTEM_OUT">
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %msg%n}{INFO=green blink}"/>
     </Console>
-	</appenders>
-	<loggers>
+  </appenders>
+  <loggers>
     <logger name="insynth.enumeration.reverse" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
@@ -21,8 +21,8 @@
     <logger name="insynth.enumeration.benchmarks" level="off" additivity="false">
       <appender-ref ref="BenchmarkConsole" />
     </logger>
-		<root level="error">
-			<appender-ref ref="Console" />
-		</root>
-	</loggers>
+    <root level="error">
+      <appender-ref ref="Console" />
+    </root>
+  </loggers>
 </configuration>

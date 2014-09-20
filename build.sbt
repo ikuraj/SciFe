@@ -1,10 +1,14 @@
 name := "SciFe"
 
-version := "1.0"
+version := "1.0.5"
 
 organization := "ch.epfl.lara"
 
-scalaVersion := "2.10.3"
+organizationName := "LARA/EPFL"
+
+organizationHomepage := Some(new URL("http://lara.epfl.ch"))
+
+scalaVersion := "2.10.4"
 
 scalaBinaryVersion := "2.10"
 
@@ -46,3 +50,6 @@ instrumentSettings
 CoverallsPlugin.coverallsSettings
 
 ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
+
+// Check style
+org.scalastyle.sbt.ScalastylePlugin.Settings
