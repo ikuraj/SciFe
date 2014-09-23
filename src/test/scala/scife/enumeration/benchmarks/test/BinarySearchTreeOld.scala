@@ -23,7 +23,7 @@ class BinarySearchTreeBenchmarkOld
   //extends PerformanceTest.Quickbenchmark
   with Matchers
   with HasLogger with ProfileLogger {
-    import Structures._
+    import structures._
   import BSTrees._
 
   performance of "scife enumerators" in {

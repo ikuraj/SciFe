@@ -9,7 +9,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures._
+import structures._
 import BSTrees._
 
 import org.scalatest._

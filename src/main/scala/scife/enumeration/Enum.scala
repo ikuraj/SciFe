@@ -18,11 +18,11 @@ trait Enum[+A] extends Serializable {
   /* operators */
 
   // concatenation
-  def concat[B](e: Enum[B]) =
+  def concat[B >: A](e: Enum[B]): Enum[B] =
     Concat(this, e)
 
-  def ++[B](e: Enum[B]) = concat(e)
-  def ⊕[B](e: Enum[B]) = concat(e)
+  def ++[B >: A](e: Enum[B]): Enum[B] = concat(e)
+  def ⊕[B >: A](e: Enum[B]): Enum[B] = concat(e)
 
   // products
   def product[B](e: Enum[B]): Enum[(A, B)] =

@@ -14,7 +14,7 @@ import scife.util.logging._
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
 
-  import Structures._
+  import structures._
   import memoization.MemoizationScope
   import memoization.scope._
 

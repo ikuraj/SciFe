@@ -10,7 +10,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures.RedBlackTrees._
+import structures.RedBlackTrees._
 
 import org.scalatest._
 import org.scalatest.prop._
@@ -115,7 +115,7 @@ class RedBlackTreeDependentBenchmarkTest
   }
   
   test("correct black heights") {
-    val ms = new MemoizationScope
+    val ms = new scope.AccumulatingScope
     val hoenum = constructEnumerator(ms)
     
     forAll(Gen.choose(1, 10), minSuccessful(30)) {

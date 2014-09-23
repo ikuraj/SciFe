@@ -11,7 +11,7 @@ import memoization._
 
 import scife.util._
 import scife.util.logging._
-import Structures.BSTrees._
+import structures.BSTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -23,7 +23,7 @@ import scala.language.existentials
 class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
   logging.HasLogger with ProfileLogger {
   import Checks._
-  import Structures._
+  import structures._
   import BSTrees._
   import Util._
 
