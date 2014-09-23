@@ -41,7 +41,7 @@ class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenProper
   //}}})
 
   test("Correctness of variants of BST enumerator") {
-    implicit val ms = new MemoizationScope
+    implicit val ms = new scope.AccumulatingScope
 
     val helper = new CheckerHelper[Tree]
     import helper._

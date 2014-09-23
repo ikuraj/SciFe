@@ -12,7 +12,7 @@
     <logger name="insynth.enumeration.reverse" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.reverse.dependent" level="false" additivity="false">
+    <logger name="insynth.enumeration.reverse.dependent" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="insynth.enumeration.showcase" level="off" additivity="false">

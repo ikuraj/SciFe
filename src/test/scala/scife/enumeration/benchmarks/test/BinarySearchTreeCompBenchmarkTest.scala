@@ -29,7 +29,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
   type Output = Tree//(List[Int], Tree)
 
   test("correctness") {
-    val ms = new MemoizationScope
+    val ms = new scope.AccumulatingScope
     val enum = constructEnumerator(ms)
 //    ms.memoizations.size should be (2)
 

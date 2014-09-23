@@ -7,12 +7,15 @@ package scife.util.logging
  */
 trait HasLogger {
 
+  // ScalaLogging levels
+  // Error // Warn // Info // Debug // Trace
+  
   protected[this] def getMyClass = this.getClass
 
   protected[this] lazy val logger =
     LoggerFactory.newLogger(getMyClass.getName)
 
-  def severe(msg: => String) = logger.fatal(msg)
+  def severe(msg: => String) = logger.error(msg)
 
   def error(msg: => String) = logger.error(msg)
 
