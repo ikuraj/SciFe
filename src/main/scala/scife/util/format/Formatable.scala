@@ -3,9 +3,7 @@ package scife.util.format
 // enable implicit conversions
 import scala.language.implicitConversions
 
-import scala.text.Document
 import Document._
-import scala.text.DocNil
 
 trait Formatable {
 

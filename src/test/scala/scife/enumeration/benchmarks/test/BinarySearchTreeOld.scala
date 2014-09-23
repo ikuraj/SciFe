@@ -29,7 +29,7 @@ class BinarySearchTreeBenchmarkOld
   performance of "scife enumerators" in {
     measure method "Binary Search Trees" in {
       val sizes = Gen.range("size")(1, 5, 1)
-      implicit val memScope = new MemoizationScope
+      implicit val memScope = new scope.AccumulatingScope
       val enumerator = constructEnumerator(memScope)
 
 //      enumerator shouldBe a [memoization.dependent.Memoized[_, _]]

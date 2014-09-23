@@ -1,6 +1,10 @@
 import sbt._
 import Keys._
 
+// Scala code coverage
+import scoverage.ScoverageSbtPlugin.instrumentSettings
+import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
+
 object SciFeBuild extends Build {
   lazy val root =
     Project("SciFe", file("."))
@@ -13,9 +17,11 @@ object SciFeBuild extends Build {
 
         commands ++= Seq(benchCommand, benchBadgeCommand),
         
+        // ScalaMeter
         parallelExecution in BenchConfig := false,
-        fork in BenchConfig := false,
         testFrameworks in BenchConfig += new TestFramework("org.scalameter.ScalaMeterFramework"),
+        
+        fork in BenchConfig := false,        
         includeFilter in BenchConfig := AllPassFilter,
         testOptions in BenchConfig := Seq(Tests.Filter(benchFilter)),
         testOptions in BenchConfig := Seq(),
@@ -41,7 +47,7 @@ object SciFeBuild extends Build {
           append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Full")), state)
         Project.runTask(test in BenchConfig, fullState)
         fullState
-      case "minimal" =>
+      case "minimal" | "simple" =>
         val minState =          
           append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Minimal")), state)
         Project.runTask(test in BenchConfig, minState)

@@ -7,14 +7,16 @@ import org.scalameter.reporting.DsvReporter
 
 import scife.{ enumeration => e }
 import dependent._
-import memoization._
 
 import scife.util._
 import scife.util.logging._
 
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
+
   import Structures._
+  import memoization.MemoizationScope
+  import memoization.scope._
 
 //  @transient override lazy val reporter = new DsvReporter(',')
 
@@ -40,7 +42,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
     performance of benchmarkMainName in {
         measure method run in {
-          val memScope = new MemoizationScope
+          val memScope = new AccumulatingScope
           val enumerator = constructEnumerator(memScope)
   
             using( generator(maxSize) ) config (
@@ -78,7 +80,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
 
     performance of benchmarkMainName in {
-        val memScope = new MemoizationScope
+        val memScope = new AccumulatingScope
         val enumerator = constructEnumerator(memScope)
 
           using( generator(maxSize) ) config (

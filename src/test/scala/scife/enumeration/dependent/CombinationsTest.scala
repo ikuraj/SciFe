@@ -29,7 +29,7 @@ class CombinationsTest extends FunSuite with Matchers {
       }
      }
     )
-    listChooser shouldBe a [DependFinite[Int, List[Int]]]
+    listChooser shouldBe a [DependFinite[_, _]]
 
     getList = (v: Int) => listChooser.asInstanceOf[DependFinite[Int, List[Int]]](v)
 

@@ -1,5 +1,7 @@
 ---
 language: scala
+scala:
+        2.11.2
 #script: "sbt coveralls"
 notifications:
   email:

@@ -38,7 +38,7 @@ class SciFeReporter(inner: Reporter) extends Reporter {
                 val value = externalData(size).sum / externalData(size).size
                 val complete = externalData(size)
 
-                Some( Measurement(value, m.params, new Measurement.Data(complete, true), m.units) )
+                Some( Measurement(value, m.params, new MeasurementData(complete, true), m.units) )
               } else None
             }
 

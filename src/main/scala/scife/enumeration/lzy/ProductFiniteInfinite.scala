@@ -6,7 +6,7 @@ import scife.enumeration.{ combinators => comb }
 import _root_.scife.util
 import util.Math._
 
-trait ProductFiniteInfinite[T, V, U <: Pair[_, _]] extends Infinite[U]  {
+trait ProductFiniteInfinite[T, V, U <: Tuple2[_, _]] extends Infinite[U]  {
 
   val finite: Finite[T]
   val infinite: Infinite[V]

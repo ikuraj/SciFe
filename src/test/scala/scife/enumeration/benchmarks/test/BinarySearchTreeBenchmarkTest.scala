@@ -25,7 +25,7 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
   import Checks._
 
   test("correctness") {
-    val ms = new MemoizationScope
+    val ms = new scope.AccumulatingScope
     val enum = constructEnumerator(ms)
     ms.memoizations.size should be (1)
 

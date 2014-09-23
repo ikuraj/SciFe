@@ -124,7 +124,7 @@ class HeapArrayEqualTest extends FunSuite with Matchers with GeneratorDrivenProp
     import checkerHelper._
 
     def rangeList(m: Int) = m to 1 by -1 toArray
-    implicit val memScope = new MemoizationScope
+    implicit val memScope = new scope.AccumulatingScope
     val enum = heapEnum3(memScope)
 
     withLazyClue("Elements are: " + clue) {
@@ -189,7 +189,7 @@ class HeapArrayEqualTest extends FunSuite with Matchers with GeneratorDrivenProp
     import checkerHelper._
 
     def rangeList(m: Int) = m to 1 by -1 toArray
-    implicit val memScope = new MemoizationScope
+    implicit val memScope = new scope.AccumulatingScope
     val enum = heapEnum4(memScope)
 
     withLazyClue("Elements are: " + clue) {

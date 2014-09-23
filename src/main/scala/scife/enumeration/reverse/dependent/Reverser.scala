@@ -63,6 +63,25 @@ object Reverser {
 //    enum
 //  }
 
+  import m.MemoizationScope
+  import m.scope._
+  
+  def memoized[I, O, F[O] <: Enum[O]](producerFunction: (d.Depend[I, O], I) => F[O])
+    (implicit ct: ClassTag[F[_]], ms: MemoizationScope = NoScope): DependReverse[I, O] = {
+    val reverseTag = implicitly[ClassTag[Reverse[_]]]
+    val enum =
+      implicitly[ClassTag[F[_]]] match {
+        case `reverseTag` =>
+          val fun = producerFunction.asInstanceOf[(d.Depend[I, O], I) => Reverse[O]]
+          new d.WrapFunction[I, O, Reverse[O]](fun) with DependReverse[I, O] with
+            d.DependFinite[I, O] with m.dependent.Memoized[I, O]
+
+      }
+
+    ms add enum
+    enum
+  }
+
 //  def apply[T](enum: Enum[T], v: T) = {
 //    enum
 //  }

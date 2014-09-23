@@ -1,14 +1,17 @@
 package scife.enumeration
 package memoization
 
-import scala.collection.mutable.MutableList
+trait MemoizationScope extends Serializable {
 
-class MemoizationScope extends Serializable {
+  def add(m: Memoizable)
 
-  val memoizations = MutableList[Memoizable]()
+  def clear
 
-  def add(m: Memoizable) = m +=: memoizations
+}
 
-  def clear = for (m <- memoizations) m.clearMemoization
-
+object MemoizationScope {
+  
+  // default to no scope if not implicit scope is found
+  implicit val noScopeObject = scope.NoScope
+  
 }

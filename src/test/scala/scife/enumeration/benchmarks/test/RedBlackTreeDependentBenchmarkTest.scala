@@ -35,7 +35,7 @@ class RedBlackTreeDependentBenchmarkTest
   }
 
   test("correctness") {
-    val ms = new MemoizationScope
+    val ms = new scope.AccumulatingScope
     val enum = constructEnumerator(ms)
     ms.memoizations.size should be (2)
 
