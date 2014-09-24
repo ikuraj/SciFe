@@ -1,118 +1,69 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="SciFe : Scala Framework for Efficient Generation of Data Structures with Invariants">
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>SciFe by kaptoxic</title>
+    <title>SciFe</title>
   </head>
 
   <body>
 
-    <header>
-      <div class="container">
-        <h1>SciFe</h1>
-        <h2>Scala Framework for Efficient Generation of Data Structures with Invariants</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kaptoxic/SciFe">View on GitHub</a>
 
-        <section id="downloads">
-          <a href="https://github.com/kaptoxic/SciFe/zipball/master" class="btn">.jar</a>
-          <a href="https://github.com/kaptoxic/SciFe/zipball/master" class="btn">.zip</a>
-          <a href="https://github.com/kaptoxic/SciFe/tarball/master" class="btn">.tar.gz</a>
-          <a href="https://github.com/kaptoxic/SciFe" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
+          <h1 id="project_title">SciFe</h1>
+          <h2 id="project_tagline">Scala Framework for Efficient Generation of Data Structures with Invariants</h2>
 
-    <div class="container">
-      <section id="main_content">
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kaptoxic/SciFe/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kaptoxic/SciFe/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-<center><img src="images/logo.png" alt="SciFe logo" width="40%" height="40%" align="center"></center>
-
-<h2>
-<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
-
-        <p>SciFe is a Scala library that implements a domain specific language for automated generation of complex structures, suitable for tasks such as automated testing and synthesis.</p>
-
-<h3>
-<a name="example-usage" class="anchor" href="#example-usage"><span class="octicon octicon-link"></span></a>Example usage</h3>
-
-SciFe uses enumerators and combinators to define data generation.
-The following example of enumerating all valid date objects starting from the first day of 2014.: 
-<pre><code>val dates = (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2014) ≻
-  { isValid(_) } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
-</code></pre>
-
-Encoded dates can easily be enumerated with:
-<pre><code>for (i ← 0 until 5) yield dates(i) // get first 5 days
-dates(208) // get 208th date
-
-dates.hasDefiniteSize // returns false
-for (d ← dates) yield print(d) // prints all dates (does not stop)
-</code></pre>
-
-SciFe can also enumerate complex structures such as binary search trees:
-<pre><code>rec[(Int, Range), Tree]({ case ((size, range), self) ⇒ {
-  if (size == 0) Leaf
-  else {
-    val left: Depend[(Int, Int), Tree] = self ↓
-      { case (ls, m) ⇒ (ls, range.start to (m−1)) }
-    val right: Depend[(Int, Int), Tree] = self ↓
-      { case (ls, m) ⇒ (size − ls − 1, (m+1) to range.end) }
-
-    left ⊗ right ⊘ ((0 until size) ⊗ range) ↑ {
-      case (( , root), (lt, rt)) ⇒ Node(lt, root, rt) }
-}}})
-</code></pre>
-
-This code enumerates all valid trees of size 15, more than 9.6·10<sup>6</sup> of those, in just a few seconds.
-<br></br>
-
-<h2>
-<a name="more-details" class="anchor" href="#more-details"><span class="octicon octicon-link"></span></a>SciFe in more details</h2>
-
-<p>SciFe is capable of exhaustive, memoized enumeration of values from finite or infinite domains.
-SciFe introduces concepts of enumerators and enumerator combinators.
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>SciFe is a tool for automated generation of complex structures, suitable for tasks such as automated testing and synthesis.
+SciFe is capable of exhaustive, memoized enumeration of values from finite or infinite domains.
+SciFe is introduces concepts of enumerators and enumerator combinators.
 SciFe is a Scala library that implements a domain-specific language.
 SciFe can generate complex structures such as search trees and models of class hierarchies.
-Specifications in SciFe are short and lead to very efficient enumeration, even in case of complex data structures with invariants.</p>
+SciFe demonstrates better performance and shorter specifications when compared to existing approaches.</p>
 
 <h3>
-<a name="what-makes-it-different" class="anchor" href="#what-makes-it-different"><span class="octicon octicon-link"></span></a>Features</h3>
+<a name="what-makes-it-different" class="anchor" href="#what-makes-it-different"><span class="octicon octicon-link"></span></a>What Makes It Different?</h3>
 
-<ul>
-<li>SciFe can outperform test generation tools in terms of <b>lenth of specification</b> and <b>performance</b>; up to 10x shorter specification and 3 orders of magnitude speedup in case of <a href=http://sourceforge.net/projects/korat/>Korat</a> and 3x and 2 orders of magnitude in case of <a href=http://www.sci.unich.it/~fioravan/#papers>constraint-logic programming</a> approach.
-<li><b>Modularity</b> allows treating enumerators as self-contained building blocks.
-<li><b>Memoization</b> allows storing and sharing computed intermediate results.
-<li><b>Random access</b> allows random testing, in addition to exhaustive enumeration.
-<li><b>Fine-grain</b> enumeration offers precise choice of which instances to enumerate. 
-</ul>
+<h3>
+<a name="using-scife" class="anchor" href="#using-scife"><span class="octicon octicon-link"></span></a>Using SciFe</h3>
 
-<!--<h3>
-<a name="using-scife" class="anchor" href="#using-scife"><span class="octicon octicon-link"></span></a>Using SciFe</h3> -->
-
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
 
 <h3>
 <a name="benchmarks" class="anchor" href="#benchmarks"><span class="octicon octicon-link"></span></a>Benchmarks</h3>
 
-Benchmarks results (accumulated over multiple runs) can be viewed <a href="http://lara.epfl.ch/~kuraj/SciFe/report/index.html">at</a>.
-Tables summarize the comparison of measured performance. Data structures were generated with SciFe (with
-memoization enabled), the constraint logic programming approach (CLP), and Korat (see publication for more details).
-
-Benchmark data are available <a href=https://github.com/kaptoxic/SciFe/tree/master/bench>at</a>.
-Benchmarks can be run at any time by running <pre><code>sbt bench:test</code></pre>
-
-
-<!--<h3>
-<a name="publication" class="anchor" href="#publication"><span class="octicon octicon-link"></span></a>Publication</h3> -->
-
-
+<h3>
+<a name="publication" class="anchor" href="#publication"><span class="octicon octicon-link"></span></a>Publication</h3>
       </section>
     </div>
 
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">SciFe maintained by <a href="https://github.com/kaptoxic">kaptoxic</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
