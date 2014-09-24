@@ -1,16 +1,16 @@
 package scife.enumeration
 package testcases
 
-import org.scalatest._
-import org.scalatest.prop._
-import org.scalatest.matchers._
-
 import scife.{ enumeration => e }
 import e.dependent._
 
 import util._
 import scife.util.logging._
 import scife.util._
+
+import org.scalatest._
+import org.scalatest.prop._
+import org.scalatest.matchers._
 
 import scala.language.existentials
 
@@ -19,6 +19,7 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   import Checks._
   import structures._
   import BSTrees._
+  import Common._
 
   def bstTests(trees: Depend[(Int, Range), Tree]) {
     object OMG {
@@ -92,78 +93,16 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   }
 
   test("binary search trees") {
+    
+    import e.common.enumdef.BinarySearchTreeEnum._
 
-    val rootProducer: Depend[Range, Int] = Depend(
-      (range: Range) => {
-        e.WrapArray( range )
-      }
-    )
+    val enumerators = List(
+      constructEnumTestcase
+    ) 
 
-    val sizeProducer = Depend(
-      (size: Int) => {
-        e.WrapArray( 0 until size )
-      }
-    )
+    for (e <- enumerators)
+      bstTests( e )
 
-    var getTreeOfSize: Depend[ (Int, Range), Tree ] = null
-
-    val treesOfSize: Depend[ (Int, Range), Tree ] = Depend.memoized(
-      ( pair: (Int, Range) ) => {
-        val (size, range) = pair
-        assert(size >= 0, "size=%d, range=%s" format (size, range))
-
-        // do not care about the range, size is important (rangeProduced can return Empty)
-        if (size <= 0) e.Singleton( Leaf )
-        else if (size == 1) e.WrapArray( range map { v => Node(Leaf, v, Leaf) } )
-        else {
-          val roots = rootProducer.getEnum(range)
-          val leftSizes = sizeProducer.getEnum(size)
-
-          val rootLeftSizePairs = e.Product(leftSizes, roots)
-
-//          val forBothTreesPairs = e.Mapper(rootLeftSizePairs, { (p: (Int, Int)) =>
-//            val (root, leftSize) = p
-//            (root,
-//              leftSize - 1, range.start to (root - 1),
-//              size - leftSize - 1, (root + 1) to range.end
-//            )
-//          })
-
-          val leftTrees: Depend[(Int, Int), Tree] = InMap(getTreeOfSize, { (par: (Int, Int)) =>
-            val (leftSize, median) = par
-            (leftSize, range.start to (median - 1))
-          })
-
-          val rightTrees: Depend[(Int, Int), Tree] =
-            InMap(getTreeOfSize, { (par: (Int, Int)) =>
-              val (leftSize, median) = par
-              (size - leftSize - 1, (median + 1) to range.end)
-            })
-
-          val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-            Product(leftTrees, rightTrees)
-
-          val allNodes =
-            memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
-//              (leftSize: Int, mid: Int) => (size - 1, range.start to (mid - 1)),
-              (p1: (Int, Int), p2: (Tree, Tree)) => {
-                val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
-
-                assert( ! (size >= 2 && leftSize == 0 && size - leftSize - 1 == 0) )
-                assert( ! (size >= 2 && leftTree == Leaf && rightTree == Leaf ) )
-                assert( !(leftSize > 0 && leftTree == Leaf), "leftSize=%d, leftTree=Leaf".format(leftSize))
-                Node( leftTree, currRoot, rightTree )
-              }
-            )
-
-          allNodes
-        }
-      }
-    )
-
-    getTreeOfSize = treesOfSize
-
-    bstTests( treesOfSize )
   }
 
 }

@@ -25,6 +25,7 @@ class DAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks 
   import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   // (size, available, declared)
   type Input = (Int, Set[Int], Set[Int])

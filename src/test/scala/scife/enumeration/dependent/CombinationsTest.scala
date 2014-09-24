@@ -2,13 +2,14 @@ package scife
 package enumeration
 package dependent
 
-import _root_.scife.{ enumeration => e }
+import scife.{ enumeration => e }
 
 import org.scalatest._
 
 class CombinationsTest extends FunSuite with Matchers {
   import scife.util.Checks._
   import Util._
+  import scife.util.Common._
 
   test("sorted lists") {
 

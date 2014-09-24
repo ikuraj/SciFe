@@ -23,6 +23,7 @@ class HeapArrayTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
   import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   test("sublists enumeration") {
     val checkerHelper = new CheckerHelper[List[Int]]
