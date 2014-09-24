@@ -17,13 +17,10 @@ import org.scalacheck.Gen
 
 import scala.language.postfixOps
 
-// you want this to run within Eclipse
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-
-@RunWith(classOf[JUnitRunner])
+@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class RedBlackTreeTestingTest extends FunSuite with Matchers
-  with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
+  with GeneratorDrivenPropertyChecks
+  with HasLogger with ProfileLogger {
   import Checks._
   import structures._
   import RedBlackTrees._
@@ -205,68 +202,102 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
   //  }
 
 //  ignore("The times in this test are not dominated by invariant checking") {
-    test("Comparison of times for testing after insertion") {
-
-      val normalStopWatch = new Stopwatch("checking invariant cummulative time")
-      val memberStopWatch = new Stopwatch("checking membership cummulative time")
-
-      val dependEnumNormal = constructEnumeratorOtherTypeMemoized
-      val dependEnumMember = constructEnumeratorOtherTypeMemoized
-
-      forAll(Gen.choose(3, 7), minSuccessful(10)) {
-        (size: Int) =>
-          {
-            for (blackHeight <- blackHeightRange(size)) {
-
-              profile("Normal:") {
-                normalStopWatch.profile {
-                  val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
-
-                  for (ind <- 0 until enum.size) {
-                    val missing = (1 to size).toList.find(!enum(ind).contains(_))
-                    assert(!missing.isEmpty)
-
-                    val newTree = enum(ind) insert missing.get
-
-                    withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                      RedBlackTrees.size(newTree) shouldBe size
-
-                      invariant(newTree) shouldBe true
-                    }
-                  }
-                }
-              }
-
-              profile("Member:") {
-                memberStopWatch.profile {
-                  val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
-
-                  for (ind <- 0 until enum.size) {
-                    val missing = (1 to size).toList.find(!enum(ind).contains(_))
-                    assert(!missing.isEmpty)
-
-                    val newTree = enum(ind) insert missing.get
-
-                    withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-                      (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
-                        val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
-
-                        enumBigger.member(newTree)
-                      } shouldBe true
-                    }
-                  }
-                }
-              }
-
-            }
-          }
-      }
-
-    //    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
-    memberStopWatch.acc should be < normalStopWatch.acc
-  }
+//    test("Comparison of times for testing after insertion") {
+//
+//      val normalStopWatch = new Stopwatch("checking invariant cummulative time")
+//      val memberStopWatch = new Stopwatch("checking membership cummulative time")
+//
+//      val dependEnumNormal = constructEnumeratorOtherTypeMemoized
+//      val dependEnumMember = constructEnumeratorOtherTypeMemoized
+//
+//      forAll(Gen.choose(3, 7), minSuccessful(10)) {
+//        (size: Int) =>
+//          {
+//            for (blackHeight <- blackHeightRange(size)) {
+//
+//              profile("Normal:") {
+//                normalStopWatch.profile {
+//                  val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
+//
+//                  for (ind <- 0 until enum.size) {
+//                    val missing = (1 to size).toList.find(!enum(ind).contains(_))
+//                    assert(!missing.isEmpty)
+//
+//                    val newTree = enum(ind) insert missing.get
+//
+//                    withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+//                      RedBlackTrees.size(newTree) shouldBe size
+//
+//                      invariant(newTree) shouldBe true
+//                    }
+//                  }
+//                }
+//              }
+//
+//              profile("Member:") {
+//                memberStopWatch.profile {
+//                  val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+//
+//                  for (ind <- 0 until enum.size) {
+//                    val missing = (1 to size).toList.find(!enum(ind).contains(_))
+//                    assert(!missing.isEmpty)
+//
+//                    val newTree = enum(ind) insert missing.get
+//
+//                    withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+//                      (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
+//                        val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
+//
+//                        enumBigger.member(newTree)
+//                      } shouldBe true
+//                    }
+//                  }
+//                }
+//              }
+//
+//            }
+//          }
+//      }
+//
+//    //    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
+//    memberStopWatch.acc should be < normalStopWatch.acc
+//  }
 //  }
 
+ test("Member after insertion") {
+    
+    scala.io.StdIn.readLine
+
+    val dependEnumMember = constructEnumeratorOtherTypeMemoized
+
+    forAll(Gen.choose(3, 7), minSuccessful(10)) {
+      (size: Int) =>
+        {
+          for (blackHeight <- blackHeightRange(size)) {
+
+            val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+
+            for (ind <- 0 until enum.size) {
+              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+              assert(!missing.isEmpty)
+
+              val newTree = enum(ind) insert missing.get
+
+              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+                (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
+                  val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
+
+                  enumBigger.member(newTree)
+                } shouldBe true
+              }
+            }
+
+          }
+        }
+    }
+
+  }
+  
 //  test("Comparison of times for testing after insertion") {
 //
 //    val normalStopWatch = new Stopwatch("checking invariant cummulative time")
