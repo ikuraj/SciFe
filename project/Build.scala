@@ -21,15 +21,14 @@ object SciFeBuild extends Build {
         testOptions in Test += Tests.Argument("-l", "tags.Slow"),
         
         // benchmark options        
-        unmanagedSourceDirectories in BenchConfig <+= sourceDirectory ( _ / "bench" ),
+        unmanagedSourceDirectories in Test <+= sourceDirectory ( _ / "bench" ),
+        // run only benchmark not dependent tests
+        sourceDirectories in test in BenchConfig := Seq ( sourceDirectory.value / "bench" ),
         fork in BenchConfig := false,        
-        includeFilter in BenchConfig := AllPassFilter,
-//        testOptions in BenchConfig := Seq(Tests.Filter(benchFilter)),
+        testOptions in BenchConfig := Seq(Tests.Filter(benchFilter)),
         scalacOptions in BenchConfig ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions"),
         scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF")
         ,
-        // run only benchmark not dependent tests
-        sourceDirectories in compile in BenchConfig := Seq ( sourceDirectory.value / "bench" ),
 
         // ScalaMeter
         parallelExecution in BenchConfig := false,
@@ -37,7 +36,7 @@ object SciFeBuild extends Build {
         
       )
 
-  val benchRegEx = """(.*\.suite\.[^\.]*Suite*)"""
+  val benchRegEx = """(.*\.enumeration\.benchmarks\..*)"""
       
   def benchFilter(name: String): Boolean = {
     name matches benchRegEx
@@ -52,17 +51,18 @@ object SciFeBuild extends Build {
     arg match {
       case "full" =>
         val fullState =
-          append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Full")), state)
+          append(Seq(testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Full")) ), state)
         Project.runTask(test in BenchConfig, fullState)
+        // return the same state (not the modified one with filters)
         state
       case "minimal" | "simple" =>
         val minState =          
-          append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Minimal")), state)
+          append(Seq(testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Minimal")) ), state)
         Project.runTask(test in BenchConfig, minState)
         state
       case "slow" =>
         val slowState =          
-          append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Slow")), state)
+          append(Seq(testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Slow")) ), state)
         Project.runTask(test in BenchConfig, slowState)
         state
       case "debug" =>

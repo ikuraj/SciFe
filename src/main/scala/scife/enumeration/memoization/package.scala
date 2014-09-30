@@ -1,10 +1,11 @@
-package scife.enumeration.memoization
-
-import scope._
+package scife
+package enumeration
 
 import scala.language.implicitConversions
 
-package object util {
+package object memoization {
+
+  import scope._
   
   // convenient way of adding enumerators to implicit memoization scope
   class ScopeHelper[A <: Memoizable](m: A) {

@@ -1,12 +1,16 @@
-package scife.enumeration.benchmarks
+package scife.enumeration
+package suite
+
+import benchmarks._
 
 import org.scalameter._
 
 import reporting._
 import execution._
 import Key._
-
+  
 package suite {
+  
   // if set, does not run full-blown micro-benchmark test suite; it runs
   // a quicker benchmark with less reliable results
 
@@ -135,7 +139,7 @@ package suite {
 }
 
 object BenchmarkSuite {
-
+  
   val benchmarkMainName = "Benchmarks"
 
   val allBenchmarks = List(

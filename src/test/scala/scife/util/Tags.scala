@@ -1,4 +1,4 @@
-package scife.util.common
+package scife.util
 
 import org.scalatest.Tag
 

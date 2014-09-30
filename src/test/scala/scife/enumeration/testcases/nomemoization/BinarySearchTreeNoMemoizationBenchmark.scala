@@ -62,8 +62,6 @@ object BinarySearchTreeNoMemoizationBenchmark
     new Executor.Measurer.Default
   )
 
-  fixture("NoMemoize", "BinarySearchTree", 8)
-
   type EnumType = Depend[(Int, Range), Tree]
 
   override def measureCode(tdEnum: EnumType) = {
