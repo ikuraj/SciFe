@@ -13,6 +13,17 @@ object BinarySearchTreeEnum {
   import dependent._
   import memoization._
   
+  type EnumType = Depend[(Int, Range), Tree]
+ 
+  val enumDefList =
+    List(
+      constructEnumeratorBenchmark(_: MemoizationScope),
+      constructEnumTestcase(_: MemoizationScope),
+      constructBenchmarkOld(_: MemoizationScope)
+    ) zip List(
+      "constructEnumeratorBenchmark", "constructEnumTestcase", "constructBenchmarkOld"
+    )
+  
   def constructEnumeratorBenchmark(implicit ms: MemoizationScope) = {
     Depend.memoized(
       (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
@@ -55,7 +66,7 @@ object BinarySearchTreeEnum {
   }
   
   // has asserts
-  def constructEnumTestcase = {
+  def constructEnumTestcase(implicit ms: MemoizationScope) = {
     
     val rootProducer: Depend[Range, Int] = Depend(
       (range: Range) => {

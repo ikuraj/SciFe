@@ -60,14 +60,7 @@ package suite {
 
     import BenchmarkSuite._
 
-    implicit val configArguments =
-      org.scalameter.Context(
-        exec.maxWarmupRuns -> warmUps,
-        exec.benchRuns -> numberOfRuns,
-        exec.independentSamples -> JVMs,
-        exec.jvmcmd -> javaCommand,
-        exec.jvmflags -> JVMFlags.mkString(" ")
-      )
+    implicit val configArguments = configArgumentsFull
 
     for( ((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
       benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
@@ -194,5 +187,14 @@ object BenchmarkSuite {
     "-Xms32G", "-Xmx32G"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
+  
+  
+  val configArgumentsFull =
+    org.scalameter.Context(
+      exec.maxWarmupRuns -> 1,
+      exec.benchRuns -> 3,
+      exec.independentSamples -> 1,
+      exec.jvmcmd -> javaCommand,
+      exec.jvmflags -> JVMFlags.mkString(" "))  
 
 }

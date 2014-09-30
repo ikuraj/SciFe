@@ -60,10 +60,13 @@ object SciFeBuild extends Build {
           append(Seq(testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Minimal")) ), state)
         Project.runTask(test in BenchConfig, minState)
         state
-      case "slow" =>
-        val slowState =          
-          append(Seq(testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Slow")) ), state)
-        Project.runTask(test in BenchConfig, slowState)
+      case "measure" =>
+        val measureState =          
+          append(Seq(
+            testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Measure"))
+//            javaOptions in test in BenchConfig += "-DnumOfJVMs=1"
+          ), state)
+        Project.runTask(test in BenchConfig, measureState)
         state
       case "debug" =>
         Project.runTask(test in BenchConfig, state)

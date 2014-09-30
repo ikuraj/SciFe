@@ -24,7 +24,7 @@ object BinarySearchTreeTestHelper extends FunSuite with Matchers with GeneratorD
   import Checks._
   import Common._
 
-  def testCorrectness(enum: Depend[(Int, Range), Tree]) {
+  def testCorrectness(enum: Depend[(Int, Range), Tree], profileSize: Int = 5) {
     val helper = new CheckerHelper[Tree]
     import helper._
 
@@ -64,7 +64,7 @@ object BinarySearchTreeTestHelper extends FunSuite with Matchers with GeneratorD
 
     }
 
-    val profileRange = 1 to 5
+    val profileRange = 1 to profileSize
 
     for (size <- profileRange) {
       profile("Getting stream for BST of size %d".format(size)) {
