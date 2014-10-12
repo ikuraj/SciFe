@@ -13,7 +13,7 @@ html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
+small, strike, strong, sub, /*sup, */tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
@@ -138,14 +138,14 @@ img {
   margin: 0 auto;
   max-width: 739px;
   padding: 5px;
-  margin: 10px 0 10px 0;
+  /*margin: 10px 0 10px 0;
   border: 1px solid #ebebeb;
 
   box-shadow: 0 0 5px #ebebeb;
   -webkit-box-shadow: 0 0 5px #ebebeb;
   -moz-box-shadow: 0 0 5px #ebebeb;
   -o-box-shadow: 0 0 5px #ebebeb;
-  -ms-box-shadow: 0 0 5px #ebebeb;
+  -ms-box-shadow: 0 0 5px #ebebeb; */
 }
 
 p img {
@@ -164,7 +164,8 @@ pre, code {
 
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   font-size: 14px;
-
+  margin-bottom: 10px;
+  
   border-radius: 2px;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
