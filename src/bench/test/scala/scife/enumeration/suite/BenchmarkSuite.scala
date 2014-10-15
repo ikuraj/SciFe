@@ -175,23 +175,34 @@ object BenchmarkSuite {
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
     // print important outputs
-//    "-XX:+PrintCompilation", "-verbose:gc",
+//    "-XX:+PrintCompilation",
+    // verbose GC
+//    "-verbose:gc", "-XX:+PrintGCTimeStamps", "-XX:+PrintGCDetails",
     // compilation
-//    "-Xbatch", "--XX:CICompilerCount=1",
-//    // optimizations
+    "-Xbatch",
+    // explicit GC calls we need
+    "-XX:-DisableExplicitGC",
+//    "--XX:CICompilerCount=1",
+    // optimizations
     "-XX:ReservedCodeCacheSize=512M",
-    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
+    "-XX:CompileThreshold=10", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512"
     ,
     // memory
-    "-Xms32G", "-Xmx32G"
+    "-Xms32G", "-Xmx32G",
+    // new generation size
+    "-XX:NewSize=30G",
+    // disable adaptive policy
+    "-XX:-UseAdaptiveSizePolicy",
+    "-XX:MinHeapFreeRatio=80",
+    "-XX:MaxHeapFreeRatio=100"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
   
   
   val configArgumentsFull =
     org.scalameter.Context(
-      exec.maxWarmupRuns -> 1,
+      exec.maxWarmupRuns -> 3,
       exec.benchRuns -> 3,
       exec.independentSamples -> 1,
       exec.jvmcmd -> javaCommand,

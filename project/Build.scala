@@ -6,6 +6,9 @@ import scoverage.ScoverageSbtPlugin.instrumentSettings
 import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 
 object SciFeBuild extends Build {
+  
+  val preferredJVM = Some("jvm-1.7")
+  
   lazy val root =
     Project("SciFe", file("."))
       .configs( BenchConfig )
@@ -13,9 +16,11 @@ object SciFeBuild extends Build {
       .settings(
         // add commands
         commands ++= Seq(benchCommand, benchBadgeCommand),
+        // do not fork by default,
+        fork := false,
         
         // test options        
-        fork in Test := true,
+//        fork in Test := true,
         javaOptions in Test += "-Xmx2048m",
         // exclude slow tests
         testOptions in Test += Tests.Argument("-l", "tags.Slow"),
@@ -26,9 +31,8 @@ object SciFeBuild extends Build {
         sourceDirectories in test in BenchConfig := Seq ( sourceDirectory.value / "bench" ),
         fork in BenchConfig := false,        
         testOptions in BenchConfig := Seq(Tests.Filter(benchFilter)),
-        scalacOptions in BenchConfig ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions"),
-        scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF")
-        ,
+        scalacOptions in BenchConfig ++= generalScalacFlagList,
+        scalacOptions in BenchConfig ++= optimizedCompileScalacFlagsList,
 
         // ScalaMeter
         parallelExecution in BenchConfig := false,
@@ -64,9 +68,18 @@ object SciFeBuild extends Build {
         val measureState =          
           append(Seq(
             testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Measure"))
-//            javaOptions in test in BenchConfig += "-DnumOfJVMs=1"
           ), state)
         Project.runTask(test in BenchConfig, measureState)
+        state
+      case "profile" =>
+        val profileState =          
+          append(Seq(
+            testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Profile")),
+            // for one JVM
+            fork in test in BenchConfig  := true,
+            javaOptions in test in BenchConfig := profileJVMFlagList ++ remoteConnectionJVMFlagList
+          ), state)
+        Project.runTask(test in BenchConfig, profileState)
         state
       case "debug" =>
         Project.runTask(test in BenchConfig, state)
@@ -75,6 +88,52 @@ object SciFeBuild extends Build {
         state.fail
     }
   }
+  
+  val profileJVMFlagList = List(
+    // print important outputs
+//    "-XX:+PrintCompilation",
+    // verbose GC
+    "-verbose:gc", "-XX:+PrintGCTimeStamps", "-XX:+PrintGCDetails",
+    // compilation
+    "-Xbatch",
+//    "--XX:CICompilerCount=1",
+    // optimizations
+    "-XX:ReservedCodeCacheSize=512M",
+    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
+    "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512"
+    ,
+    // memory
+    "-Xms32G", "-Xmx32G",
+    // new generation size
+    "-XX:NewSize=20G",
+    // disable adaptive policy
+    "-XX:-UseAdaptiveSizePolicy",
+    "-XX:MinHeapFreeRatio=100",
+    "-XX:MaxHeapFreeRatio=100"
+  )
+  
+  val remoteConnectionJVMFlagList = List(
+    "-Dcom.sun.management.jmxremote",
+    "-Dcom.sun.management.jmxremote.port=4567",
+    "-Dcom.sun.management.jmxremote.ssl=false",
+    "-Dcom.sun.management.jmxremote.authenticate=false",
+    "-Djava.rmi.server.hostname=128.52.186.35"
+  )
+    
+  val generalScalacFlagList = List(
+    "-deprecation", "-unchecked", "-feature",
+    // no debugging info
+    "-g", "none"
+  ) ::: preferredJVM.toList.flatMap( "-target " :: _ :: Nil )
+  
+  val optimizedCompileScalacFlagsList = List(
+    "-Xdisable-assertions",
+    // elide logging facilities
+    "-Xelide-below", "OFF",
+    // group of flags for optimization
+    "-optimise",
+    "-Yinline"
+  )
   
   import java.util._
   import java.text._

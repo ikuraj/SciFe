@@ -18,7 +18,7 @@
     <logger name="insynth.enumeration.member.testcase" level="all" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.benchmarks" level="off" additivity="false">
+    <logger name="scife.enumeration.benchmarks" level="all" additivity="false">
       <appender-ref ref="BenchmarkConsole" />
     </logger>
     <root level="error">
