@@ -59,3 +59,6 @@ ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
 
 // Check style
 org.scalastyle.sbt.ScalastylePlugin.Settings
+
+// Scalaz
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"

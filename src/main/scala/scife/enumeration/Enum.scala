@@ -13,7 +13,7 @@ trait Enum[+A] extends Serializable {
 
   def apply(ind: Int): A
 
-  def toList = ( for (i <- 0 until size) yield this(i) ).toList
+//  def toList = ( for (i <- 0 until size) yield this(i) ).toList
 
   /* operators */
 
