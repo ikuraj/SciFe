@@ -16,9 +16,9 @@ package suite {
     import BenchmarkSuite._
 
     val benchmarks = List(
-//      (new BinarySearchTreeBenchmark, "Binary Search Trees"),
-//      (new SortedListDependentBenchmark, "Sorted Lists"),
-//      (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
+      (new BinarySearchTreeBenchmark, "Binary Search Trees"),
+      (new SortedListDependentBenchmark, "Sorted Lists"),
+      (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
       (new HeapArrayBenchmark, "Heap Arrays")
     )
 
