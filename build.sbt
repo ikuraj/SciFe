@@ -8,7 +8,7 @@ organizationName := "LARA/EPFL"
 
 organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.3"
 
 scalaBinaryVersion := "2.11"
 
