@@ -12,21 +12,21 @@ object Concat {
       case (left: Finite[T], right: Finite[T]) =>
         ConcatFinite(left, right)
       case (left: Infinite[T], right: Infinite[T]) =>
-        ConcatInfinite( Seq(left, right) )
+        ConcatInfinite( Array(left, right) )
     }
 
   def apply[T](left: Finite[T], right: Finite[T]) =
     ConcatFinite(left, right)
 
-  def apply[T, U <: Enum[T]](streams: Seq[U])(implicit ct: ClassTag[U]) = {
+  def apply[T, U <: Enum[T]](streams: Array[U])(implicit ct: ClassTag[U]) = {
     val finiteTag = implicitly[ClassTag[Finite[_]]]
     val infiniteTag = implicitly[ClassTag[Infinite[_]]]
     implicitly[ClassTag[U]] match {
       case _: Finite[_] =>
-        val seq = streams.asInstanceOf[Seq[Finite[T]]]
+        val seq = streams.asInstanceOf[Array[Finite[T]]]
         ConcatFinite(seq.toArray)
       case `infiniteTag` =>
-        val seq = streams.asInstanceOf[Seq[Infinite[T]]]
+        val seq = streams.asInstanceOf[Array[Infinite[T]]]
         ConcatInfinite(seq)
     }
   }
@@ -35,7 +35,7 @@ object Concat {
     ConcatFinite( finites )
   }
 
-  def apply[T](infinites: Seq[Infinite[T]]) = {
+  def apply[T](infinites: Array[Infinite[T]]) = {
     ConcatInfinite( infinites )
   }
 

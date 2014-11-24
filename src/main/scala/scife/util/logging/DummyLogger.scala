@@ -28,8 +28,10 @@ trait DummyLogger {
   @elidable(FINEST)
   def entering(method: => String, arguments: Any*) = {}
 
+  @elidable(FINEST)
   def exiting(method: => String, result: => String) = {}
 
+  @elidable(FINEST)
   def exiting[T](method: => String, result: T): T = result
 
 }

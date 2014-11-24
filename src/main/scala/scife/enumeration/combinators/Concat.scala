@@ -10,9 +10,9 @@ trait Concat[T, U, V] extends Enum[V] {
 
 }
 
-trait ConcatMul[T, U, V] extends Enum[V] {
-
-  val enums: Seq[Enum[T]]
+trait ConcatMul[T] extends Enum[T] {
+    
+  def enums: Traversable[Enum[T]]
 
   override def size = enums.map(_.size).sum
 

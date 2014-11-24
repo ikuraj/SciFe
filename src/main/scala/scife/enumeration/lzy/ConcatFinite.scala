@@ -31,89 +31,108 @@ object ConcatFinite {
 
 }
 
-// concatenation of finite enumerators
+//concatenation of finite enumerators
 abstract class ConcatFinite[T] protected[enumeration]
   extends Finite[T] with HasLogger {
-
+  
   def length: Int
-
+  
   def enum(ind: Int): Enum[T]
-
+  
   def limit(ind: Int): Int
-
+  
   override def apply(ind: Int) = {
-    entering("apply", ind)
-    val arrInd = binarySearch(ind)
-    val elInd = ind - limit(arrInd)
-    exiting("apply", enum(arrInd)(elInd))
+   entering("apply", ind)
+   val arrInd = binarySearch(ind)
+   val elInd = ind - limit(arrInd)
+   exiting("apply", enum(arrInd)(elInd))
   }
-
-  // writing our own binary search since we need 2.10
-  // (binary search available from 2.11)
-  def binarySearch(target: Int): Int = {
-    var left = 0
-    // limits are indexed 0..length
-    var right = length
-    while (left <= right) {
-      val mid = left + (right - left) / 2
-      info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
-      if (limit(mid) <= target && limit(mid + 1) > target)
-        return mid
-      else if (limit(mid) > target)
-        right = mid
-      else
-        left = mid
-    }
-    // should not happen
-    throw new RuntimeException
+  
+  protected[enumeration] def binarySearch(target: Int): Int = {
+   var left = 0
+   // limits are indexed 0..length
+   var right = length
+   while (left <= right) {
+     val mid = (left + right) / 2
+     info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
+     if (limit(mid) <= target && limit(mid + 1) > target)
+       return mid
+     else if (limit(mid) > target)
+       right = mid
+     else
+       left = mid
+   }
+   // should not happen
+   throw new RuntimeException
   }
 
 }
 
-class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (enumsArray: Array[Finite[T]])
-  extends ConcatFinite[T] with ConcatMul[T, T, T] with HasLogger {
+// deliberately not extending ConcatFinite
+class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArray: Array[Finite[T]])
+  extends Finite[T] with ConcatMul[T] with HasLogger {
 
-  override val enums = enumsArray.toSeq
+  override def enums = enumArray.toSeq
 
-  override def length = enumsArray.length
+  override def apply(ind: Int) = {
+   entering("apply", ind)
+   val arrInd = binarySearch(ind)
+   val elInd = ind - limits(arrInd)
+   exiting("apply", enumArray(arrInd)(elInd))
+  }
 
-  val limits = {
+  private[this] val limits = {
     var _size = 0
     val ab = mutable.ArrayBuffer(0)
-    val tail =
-      for (stream <- enumsArray) yield {
-        _size += stream.size
-        _size
-      }
-    (ab ++ tail).toArray
+    for (stream <- enumArray) {
+      _size += stream.size
+      ab += _size
+    }
+    ab.toArray
   }
 
   override def size = {
     fine("limits = " + limits.mkString(","))
-    limits.apply(length)
+    limits.apply(enumArray.length)
   }
 
-  override def enum(ind: Int) = enumsArray(ind)
-
-  override def limit(ind: Int) = limits(ind)
-
+  private[enumeration] def binarySearch(target: Int): Int = {
+   var left = 0
+   // limits are indexed 0..length
+   var right = enumArray.length
+   while (left <= right) {
+     val mid = (left + right) / 2
+     info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
+     if (limits(mid) <= target && limits(mid + 1) > target)
+       return mid
+     else if (limits(mid) > target)
+       right = mid
+     else
+       left = mid
+   }
+   // should not happen
+   throw new RuntimeException
+  }
+  
 }
 
 // Union of finite enumerators of equal length
-class ConcatFiniteEqualSize[T] protected[enumeration] (enumsArray: Array[Finite[T]])
-  extends Finite[T] with ConcatMul[T, T, T] with HasLogger {
-  assert(enumsArray.map(_.size).distinct.size == 1, "RoundRobbinFiniteEqual should be constructed with streams of equal sizes." +
-    "(sizes are %s)".format(enumsArray.map(_.size).distinct))
+class ConcatFiniteEqualSize[T] protected[enumeration] (val enumArray: Array[Finite[T]])
+  extends Finite[T] with ConcatMul[T] with HasLogger {
+  assert(enumArray.map(_.size).distinct.size == 1, "RoundRobbinFiniteEqual should be constructed with streams of equal sizes." +
+    "(sizes are %s)".format(enumArray.map(_.size).distinct))
 
-  override val enums = enumsArray.toSeq
-
-  val streamsArray = enumsArray
-  val streamsArraySize = enumsArray.size
+  override def enums = enumArray.toSeq
+    
+  override def size = {
+    assert( enumArray.length * enumArray(0).size == super.size )
+    enumArray.length * enumArray(0).size
+  }
 
   override def apply(ind: Int) = {
-    val arrInd = ind % streamsArraySize
-    val elInd = ind / streamsArraySize
-    streamsArray(arrInd)(elInd)
+    val arrInd = ind % enumArray.length
+    val elInd = ind / enumArray.length
+    enumArray(arrInd)(elInd)
   }
 
 }

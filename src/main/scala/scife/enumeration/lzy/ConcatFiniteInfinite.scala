@@ -8,9 +8,9 @@ import scala.reflect._
 
 object ConcatFiniteInfinite {
 
-  def apply[T](finites: Array[Finite[T]], infinites: Seq[Infinite[T]]) =
+  def apply[T](finites: Array[Finite[T]], infinites: Array[Infinite[T]]) =
     (finites, infinites) match {
-      case (Array(fin), Seq(inf)) =>
+      case (Array(fin), Array(inf)) =>
         new ConcatFiniteInfiniteSingle(fin, inf)
       case _ =>
         new ConcatFiniteInfiniteMul(finites, infinites)
@@ -44,7 +44,7 @@ class ConcatFiniteInfiniteSingle[T] (
 }
 
 class ConcatFiniteInfiniteMul[T] protected[enumeration]
-  (finiteStreams: Array[Finite[T]], infiniteStreams: Seq[Infinite[T]])
+  (finiteStreams: Array[Finite[T]], infiniteStreams: Array[Infinite[T]])
   extends ConcatFiniteInfinite[T] with HasLogger {
   assert(finiteStreams.size > 0 && infiniteStreams.size > 0)
 
