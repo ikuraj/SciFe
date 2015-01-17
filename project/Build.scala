@@ -13,6 +13,8 @@ object SciFeBuild extends Build {
       .settings(
         fork in Test := true,
         javaOptions in Test += "-Xmx2048m",
+        // verbose QuickCheck error ouput
+        testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "3"),
         unmanagedSourceDirectories in Test <+= sourceDirectory ( _ / "bench" ),
 
         commands ++= Seq(benchCommand, benchBadgeCommand),

@@ -8,17 +8,25 @@ organizationName := "LARA/EPFL"
 
 organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.4"
 
 scalaBinaryVersion := "2.11"
 
 // Compiler options
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"/*, "-Ylog-classpath" */) 
 
 javacOptions += "-Xlint:unchecked"
 
 // Testing libraries
+
+// ScalaCheck
+resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
+
+//libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.1" % "test"
+libraryDependencies += "org.scalacheck" % "scalacheck_2.11" % "1.12.1" % "test"
+
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
+//libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
@@ -36,11 +44,6 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-core" % "2.0.2",
   "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.0.2"
 )
-
-// ScalaCheck
-resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
-
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
 
 // ScalaMeter
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
