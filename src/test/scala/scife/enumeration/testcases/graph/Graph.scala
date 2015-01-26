@@ -43,6 +43,11 @@ object Graph {
         case ((_, v, _), acc) => v :: acc
       }
 
+    def contexts: List[Context] =
+      ufold(List.empty[Context]) {
+        case (ctx, acc) => ctx :: acc
+      }
+
     def undir: Graph =
       gmap {
         case (p, v, s) =>

@@ -50,6 +50,9 @@ trait Enum[+A] extends Serializable {
     
   def ⊘[B, A2 >: A](dep: Depend[A2, B]): Enum[(A2, B)] = 
     dep ⊘ this
+    
+  def schain[B, A2 >: A](dep: Depend[A2, B]): Enum[B] = 
+    dep chainSingle this
   
 }
 

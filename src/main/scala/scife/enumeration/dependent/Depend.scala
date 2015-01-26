@@ -32,6 +32,9 @@ trait Depend[I, +O] extends Serializable {
   // chain
   def chain(e: Enum[I]): Enum[(I, O)] =
     Chain(e, this)
+    
+  def chainSingle(e: Enum[I]): Enum[O] =
+    Chain.single(e, this)
 
   def ⊘(e: Enum[I]) = chain(e)
 

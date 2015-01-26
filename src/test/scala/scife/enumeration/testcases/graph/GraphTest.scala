@@ -28,6 +28,9 @@ class GraphTest extends DefaultTest {
       
     graph.size should be (3)
     Empty.size should be (0)
+    
+    graph.nodes(0) should be (3)
+    graph.contexts(0) should be ((List(1, 2), 3, List(2)))
 
     // not implemented
 //    println(graph.undir)

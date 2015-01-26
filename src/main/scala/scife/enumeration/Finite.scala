@@ -45,6 +45,9 @@ trait Finite[+A] extends Enum[A] {
     
   def ⊘[B, A2 >: A](dep: DependFinite[A2, B]): Finite[(A2, B)] = 
     dep ⊘ this 
+    
+  def schain[B, A2 >: A](dep: DependFinite[A2, B]): Finite[B] = 
+    dep chainSingle this
 
 }
 
