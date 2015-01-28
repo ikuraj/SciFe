@@ -30,6 +30,7 @@ object SciFeBuild extends Build {
         scalacOptions in BenchConfig ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions"),
         scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF") 
       )
+//      .dependsOn(RootProject(uri("git://github.com/jgrapht/jgrapht.git")))
 
   val benchRegEx = """(.*\.suite\.[^\.]*Suite*)"""
       

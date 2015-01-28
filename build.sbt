@@ -68,3 +68,13 @@ libraryDependencies += "com.googlecode.combinatoricslib" % "combinatoricslib" % 
 
 // Math
 libraryDependencies += "org.apache.commons" % "commons-math3" % "3.4.1"
+
+// Graphs
+//projectDependencies += RootProject(uri("git://github.com/colder/bonsai.git"))
+libraryDependencies += "org.jgrapht" % "jgrapht" % "0.9.0"
+
+libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
+
+//libraryDependencies += "org.jgrapht" % "jgrapht-ext" % "0.9.0"
+//
+//libraryDependencies += "org.jgrapht" % "jgrapht-dist" % "0.9.0"
