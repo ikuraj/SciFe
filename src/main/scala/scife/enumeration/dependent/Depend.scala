@@ -192,7 +192,7 @@ object Depend {
 //  }
 
   def memoizedFin[I, O](fun: (DependFinite[I, O], I) => Finite[O])
-    (implicit ms: MemoizationScope): DependFinite[I, O] = {
+    (implicit ms: MemoizationScope): WrapFunctionFin[I, O] = {
     val enum =
       new WrapFunctionFin[I, O](fun) with DependFinite[I, O] with Memoized[I, O]
 

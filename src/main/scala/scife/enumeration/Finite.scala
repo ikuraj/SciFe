@@ -9,7 +9,7 @@ trait Finite[+A] extends Enum[A] {
   /* operators */
 
   // concatenation
-  def concat[B](e: Finite[B]) =
+  def concat[B >: A](e: Finite[B]) =
     Concat(this, e)
 
   def ++[B](e: Finite[B]) = concat(e)
