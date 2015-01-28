@@ -23,6 +23,7 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
   HasLogger with ProfileLogger {
     import Util.CheckerHelper
   import Checks._
+  import Math._
 
   test("correctness") {
     val ms = new scope.AccumulatingScope

@@ -62,3 +62,9 @@ ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
 
 // Check style
 org.scalastyle.sbt.ScalastylePlugin.Settings
+
+// Combinatorics with collections
+libraryDependencies += "com.googlecode.combinatoricslib" % "combinatoricslib" % "2.1"
+
+// Math
+libraryDependencies += "org.apache.commons" % "commons-math3" % "3.4.1"
