@@ -31,5 +31,8 @@ trait DependFinite[I, +O] extends Depend[I, O] {
     Chain(e, this)
 
   def ⊘(e: Finite[I]) = chain(e)
+    
+  def chainSingle(e: Finite[I]): Finite[O] =
+    Chain.single(e, this)
 
 }

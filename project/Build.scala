@@ -13,6 +13,8 @@ object SciFeBuild extends Build {
       .settings(
         fork in Test := true,
         javaOptions in Test += "-Xmx2048m",
+        // verbose QuickCheck error ouput
+        testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "3"),
         unmanagedSourceDirectories in Test <+= sourceDirectory ( _ / "bench" ),
 
         commands ++= Seq(benchCommand, benchBadgeCommand),
@@ -28,6 +30,7 @@ object SciFeBuild extends Build {
         scalacOptions in BenchConfig ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions"),
         scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF") 
       )
+//      .dependsOn(RootProject(uri("git://github.com/jgrapht/jgrapht.git")))
 
   val benchRegEx = """(.*\.suite\.[^\.]*Suite*)"""
       

@@ -8,17 +8,25 @@ organizationName := "LARA/EPFL"
 
 organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
-scalaVersion := "2.11.3"
+scalaVersion := "2.11.4"
 
 scalaBinaryVersion := "2.11"
 
 // Compiler options
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"/*, "-Ylog-classpath" */) 
 
 javacOptions += "-Xlint:unchecked"
 
 // Testing libraries
+
+// ScalaCheck
+resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
+
+//libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.1" % "test"
+libraryDependencies += "org.scalacheck" % "scalacheck_2.11" % "1.12.1" % "test"
+
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
+//libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
@@ -37,11 +45,6 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.0.2"
 )
 
-// ScalaCheck
-resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
-
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
-
 // ScalaMeter
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
@@ -59,3 +62,19 @@ ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
 
 // Check style
 org.scalastyle.sbt.ScalastylePlugin.Settings
+
+// Combinatorics with collections
+libraryDependencies += "com.googlecode.combinatoricslib" % "combinatoricslib" % "2.1"
+
+// Math
+libraryDependencies += "org.apache.commons" % "commons-math3" % "3.4.1"
+
+// Graphs
+//projectDependencies += RootProject(uri("git://github.com/colder/bonsai.git"))
+libraryDependencies += "org.jgrapht" % "jgrapht" % "0.9.0"
+
+libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
+
+//libraryDependencies += "org.jgrapht" % "jgrapht-ext" % "0.9.0"
+//
+//libraryDependencies += "org.jgrapht" % "jgrapht-dist" % "0.9.0"

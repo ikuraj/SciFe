@@ -17,6 +17,24 @@ object Chain {
     }
   }
 
+  def single[I, O](s1: Enum[I], s2: Depend[I, O]): Enum[O] = {
+    (s1, s2) match {
+      case (Empty, _) => Empty
+      case (s: Singleton[I], df: DependFinite[I, O]) => df.apply(s.el)
+      case (f: Finite[I], df: DependFinite[I, O]) =>
+        new ChainFiniteSingle(f, df)
+    }
+  }
+  
+  def single[I, O](s1: Finite[I], s2: DependFinite[I, O]): Finite[O] = {
+    (s1, s2) match {
+      case (Empty, _) => Empty
+      case (s: Singleton[I], df: DependFinite[I, O]) => df.apply(s.el)
+      case (f: Finite[I], df: DependFinite[I, O]) =>
+        new ChainFiniteSingle(f, df)
+    }
+  }
+
   def apply[I, O, R](s1: Enum[I], s2: Depend[I, O], combine: (I, O) => R) = {
     (s1, s2) match {
       case (Empty, _) => Empty

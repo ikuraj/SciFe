@@ -1,5 +1,7 @@
 package scife.util
 
+import Math._
+
 import org.scalatest._
 import org.scalatest.prop._
 import org.scalacheck.Gen
@@ -8,7 +10,7 @@ import scala.language.implicitConversions
 import scala.language.postfixOps
 
 object Structures {
-
+  
   implicit def flatten1[A, B, C](t: ((A, B), C)): (A, B, C) = (t._1._1, t._1._2, t._2)
   implicit def flatten2[A, B, C](t: (A, (B, C))): (A, B, C) = (t._1, t._2._1, t._2._2)
   implicit def flatten3[A, B, C, D](t: ((A, B), (C, D))): (A, B, C, D) = (t._1._1, t._1._2, t._2._1, t._2._2)
@@ -235,25 +237,6 @@ object Structures {
         if clazz == classOf[Node] =>
         Node(a, v, b, c)
     }
-  }
-
-  object Binomial {
-    def main(args: Array[String]): Unit = {
-      val n = 5
-      val k = 3
-      val result = binomialCoefficient(n, k)
-      println("The Binomial Coefficient of %d and %d equals %d.".format(n, k, result))
-    }
-
-    def binomialCoefficient(n: Int, k: Int): Int =
-      ( (BigInt(n - k + 1) to n).product /
-      (BigInt(1) to k).product).intValue
-  }
-
-  object Catalan {
-    def factorial(n: BigInt) = BigInt(1).to(n).foldLeft(BigInt(1))(_ * _)
-
-    def catalan(n: BigInt) = factorial(2 * n) / (factorial(n + 1) * factorial(n))
   }
 
   object Program {
