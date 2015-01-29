@@ -14,6 +14,8 @@ trait HasLogger {
 
   protected[this] lazy val logger =
     LoggerFactory.newLogger(getMyClass.getName)
+    
+  protected[this] def loggerFactory = LoggerFactory
 
   def severe(msg: => String) = logger.error(msg)
 

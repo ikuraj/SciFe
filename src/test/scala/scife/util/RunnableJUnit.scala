@@ -1,6 +1,8 @@
 package scife.util
 
+// you want this to run within Eclipse
 import org.scalatest.junit.JUnitRunner
+import org.junit.runner.RunWith
 
-@org.junit.runner.RunWith(classOf[JUnitRunner])
+@RunWith(classOf[JUnitRunner])
 trait RunnableJUnit

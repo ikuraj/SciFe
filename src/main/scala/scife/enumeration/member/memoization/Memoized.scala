@@ -7,9 +7,12 @@ import scife.util.logging.HasLogger
 
 import scala.collection.mutable._
 
-trait Memoized[T] extends Member[T] {
-
+trait Memoized[T] extends Member[T] with HasLogger {
+  
   self: em.Memoizable =>
+    
+  override lazy val logger =
+    loggerFactory.newLogger("scife.enumeration.member.memoization.Memoized")
 
   private[enumeration] val members = HashSet[T]()
 
@@ -20,8 +23,18 @@ trait Memoized[T] extends Member[T] {
   }
 
   abstract override def member(el: T): Boolean = {
-    if (members contains el) true
+//    entering("member", el)
+    if (members contains el) {
+//      info(s"member $el answered from memoization")
+      true
+    }
     else {
+      if (members.size == this.size) {
+//        info(s"member $el answered from memoization")
+        return false
+      }
+
+      info(s"[!] member $el not memoized")
       if (super.member(el)) {
         // NOTE: cannot memoize this according to its index because we do not know the index
         members += el
