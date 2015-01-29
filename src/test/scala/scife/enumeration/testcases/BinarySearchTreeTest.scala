@@ -19,6 +19,7 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   import Checks._
   import structures._
   import BSTrees._
+  import Math._
 
   def bstTests(trees: Depend[(Int, Range), Tree]) {
     object OMG {

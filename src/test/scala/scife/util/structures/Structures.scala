@@ -1,5 +1,7 @@
 package scife.util
 
+import Math._
+
 import org.scalatest._
 import org.scalatest.prop._
 import org.scalacheck.Gen
@@ -16,30 +18,30 @@ package structures {
 
   object CusList {
     def isSorted(list: CusList) = {
-        def rec(l: CusList): Boolean = l match {
-          case Cons(JustInt(a), innerList @ Cons(JustInt(b), _)) =>
-            a <= b && rec(innerList)
-          case _ => true
-        }
+      def rec(l: CusList): Boolean = l match {
+        case Cons(JustInt(a), innerList@Cons(JustInt(b), _)) =>
+          a <= b && rec(innerList)
+        case _ => true
+      }
 
       rec(list)
     }
 
     def size(list: CusList) = {
-        def rec(l: CusList): Int = l match {
-          case CusNil => 0
-          case Cons(el, inList) => 1 + rec(inList)
-        }
+      def rec(l: CusList): Int = l match {
+        case CusNil => 0
+        case Cons(el, inList) => 1 + rec(inList)
+      }
 
       rec(list)
     }
 
     implicit def toCusList(list: List[Int]) = {
-        def rec(l: List[Int]): CusList = l match {
-          case Nil => CusNil
-          case el :: inList =>
-            Cons(JustInt(el), rec(inList))
-        }
+      def rec(l: List[Int]): CusList = l match {
+        case Nil => CusNil
+        case el :: inList =>
+          Cons(JustInt(el), rec(inList))
+      }
 
       rec(list)
     }
@@ -51,19 +53,19 @@ package structures {
     case class Node(l: Tree, r: Tree) extends Tree
 
     def size(tree: Tree) = {
-        def rec(t: Tree): Int = t match {
-          case Leaf => 1
-          case Node(l, r) => 1 + rec(l) + rec(r)
-        }
+      def rec(t: Tree): Int = t match {
+        case Leaf => 1
+        case Node(l, r) => 1 + rec(l) + rec(r)
+      }
 
       rec(tree)
     }
 
     def sizeJustNodes(tree: Tree) = {
-        def rec(t: Tree): Int = t match {
-          case Leaf => 0
-          case Node(l, r) => 1 + rec(l) + rec(r)
-        }
+      def rec(t: Tree): Int = t match {
+        case Leaf => 0
+        case Node(l, r) => 1 + rec(l) + rec(r)
+      }
 
       rec(tree)
     }
@@ -87,12 +89,12 @@ package structures {
     // for every node n, all the nodes in the left (respectively, right) subtree of
     // n, if any, have keys which are smaller (respectively, bigger) than the key
     // labeling n.
-    def valueOrdering(t: Tree): Boolean = {
-        def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
-          case Leaf => true
-          case Node(l, v, r) => min <= v && max > v &&
-            valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
-        }
+    def valueOrdering(t: Tree) : Boolean = {
+      def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
+        case Leaf => true
+        case Node(l, v, r) => min <= v && max > v &&
+          valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
+      }
 
       valuesInRange(t, Int.MinValue, Int.MaxValue)
     }
@@ -104,25 +106,25 @@ package structures {
 
     def numberOfTress(n: Int) = Catalan.catalan(n)
 
-    def heapProperty(t: Tree): Boolean = {
+    def heapProperty(t: Tree) : Boolean = {
       t match {
-        case Node(ln @ Node(_, lv, _), v, rn @ Node(_, rv, _)) => v > lv && v > rv &&
+        case Node(ln@Node(_, lv, _), v, rn@Node(_, rv, _)) => v > lv && v > rv &&
           heapEqualProperty(ln) && heapEqualProperty(rn)
-        case Node(_, v, rn @ Node(_, rv, _)) => v > rv &&
+        case Node(_, v, rn@Node(_, rv, _)) => v > rv &&
           heapEqualProperty(rn)
-        case Node(ln @ Node(_, lv, _), v, _) => v > lv &&
+        case Node(ln@Node(_, lv, _), v, _) => v > lv &&
           heapEqualProperty(ln)
         case _ => true
       }
     }
 
-    def heapEqualProperty(t: Tree): Boolean = {
+    def heapEqualProperty(t: Tree) : Boolean = {
       t match {
-        case Node(ln @ Node(_, lv, _), v, rn @ Node(_, rv, _)) => v >= lv && v >= rv &&
+        case Node(ln@Node(_, lv, _), v, rn@Node(_, rv, _)) => v >= lv && v >= rv &&
           heapEqualProperty(ln) && heapEqualProperty(rn)
-        case Node(_, v, rn @ Node(_, rv, _)) => v >= rv &&
+        case Node(_, v, rn@Node(_, rv, _)) => v >= rv &&
           heapEqualProperty(rn)
-        case Node(ln @ Node(_, lv, _), v, _) => v >= lv &&
+        case Node(ln@Node(_, lv, _), v, _) => v >= lv &&
           heapEqualProperty(ln)
         case _ => true
       }
@@ -152,7 +154,7 @@ package structures {
 
     // every path from the root to a leaf has the same number of black nodes
     def blackInv(tree: Tree) = {
-      def rec(t: Tree): (Boolean, Int) = t match {
+      def rec(t : Tree) : (Boolean, Int) = t match {
         case Node(l, _, r, c) =>
           val (lRes, lHeight) = rec(l)
           val (rRes, rHeight) = rec(r)
@@ -168,29 +170,29 @@ package structures {
     }
 
     // no red node has a red child
-    def redDescHaveBlackChildren(t: Tree): Boolean = {
-        def isBlack(t: Tree): Boolean = t match {
-          case Leaf => true
-          case Node(_, _, _, color) => color
-        }
-        def redNodesHaveBlackChildren(t: Tree): Boolean = t match {
-          case Leaf => true
-          case Node(l, _, r, true) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
-          case Node(l, _, r, false) => isBlack(l) && isBlack(r) &&
-            redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
-        }
+    def redDescHaveBlackChildren(t: Tree) : Boolean = {
+      def isBlack(t: Tree) : Boolean = t match {
+        case Leaf => true
+        case Node(_,_,_, color) => color
+      }
+      def redNodesHaveBlackChildren(t: Tree) : Boolean = t match {
+        case Leaf => true
+        case Node(l, _, r, true) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
+        case Node(l, _, r, false) => isBlack(l) && isBlack(r) &&
+          redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
+      }
       redNodesHaveBlackChildren(t)
     }
 
     // for every node n, all the nodes in the left (respectively, right) subtree of
     // n, if any, have keys which are smaller (respectively, bigger) than the key
     // labeling n.
-    def valueOrdering(t: Tree): Boolean = {
-        def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
-          case Leaf => true
-          case Node(l, v, r, c) => min <= v && max > v &&
-            valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
-        }
+    def valueOrdering(t: Tree) : Boolean = {
+      def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
+        case Leaf => true
+        case Node(l, v, r, c) => min <= v && max > v &&
+          valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
+      }
 
       valuesInRange(t, Int.MinValue, Int.MaxValue)
     }
@@ -213,11 +215,13 @@ package structures {
         1, 2, 2, 3, 8, 14, 20, 35, 64, 122, 260, 586, 1296, 2708, 5400,
         10468, 19888, 37580, 71960, 140612, 279264, 560544, 1133760, 2310316,
         4750368, 9876264, 20788880, 44282696, 95241664, 206150208, 447470464,
-        970862029, 2100029344) toMap
+        970862029, 2100029344
+      ) toMap
 
     // helper method when constructing streams
     val constructRBTree: PartialFunction[Any, Tree] = (a: Any) => a match {
-      case (clazz, (a: Tree) :: (v: Int) :: (b: Tree) :: (c: Boolean) :: Nil) if clazz == classOf[Node] =>
+      case (clazz, (a: Tree) :: (v: Int) :: (b: Tree) :: (c: Boolean) :: Nil)
+        if clazz == classOf[Node] =>
         Node(a, v, b, c)
     }
 
@@ -237,25 +241,6 @@ package structures {
 
   }
 
-  object Binomial {
-    def main(args: Array[String]): Unit = {
-      val n = 5
-      val k = 3
-      val result = binomialCoefficient(n, k)
-      println("The Binomial Coefficient of %d and %d equals %d.".format(n, k, result))
-    }
-
-    def binomialCoefficient(n: Int, k: Int): Int =
-      ((BigInt(n - k + 1) to n).product /
-        (BigInt(1) to k).product).intValue
-  }
-
-  object Catalan {
-    def factorial(n: BigInt) = BigInt(1).to(n).foldLeft(BigInt(1))(_ * _)
-
-    def catalan(n: BigInt) = factorial(2 * n) / (factorial(n + 1) * factorial(n))
-  }
-
   object Program {
     implicit def intToId(i: Int) = Id(i)
     case class Id(id: Int)
@@ -267,8 +252,9 @@ package structures {
     case class Method(id: Id, statements: Seq[Statement]) extends Identifiable {
       require(
         (for (ind <- 0 until statements.size)
-          yield usedVars(statements(ind)) subsetOf definedVars(statements.take(ind))).reduce(_ && _))
-
+          yield usedVars(statements(ind)) subsetOf definedVars(statements.take(ind))
+        ).reduce( _ && _ )
+      )
       def usedVars(s: Statement) = Set[Id]()
       def definedVars(s: Seq[Statement]) = Set[Id]()
     }
@@ -298,19 +284,19 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
     {
       val lists = generateLists(3, 1 to 3)
 
-      lists.size should be(3 * 3 * 3)
+      lists.size should be (3 * 3 * 3)
     }
 
     {
       val lists = generateLists(1, 1 to 1)
 
-      lists.size should be(1)
+      lists.size should be (1)
     }
 
     {
       val lists = generateLists(2, 1 to 1)
 
-      lists.size should be(1)
+      lists.size should be (1)
     }
   }
 
@@ -318,23 +304,23 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
 
   test("isSorted") {
 
-    for (
-      ex <- List(
-        List(1, 2, 2),
-        List(1, 2),
-        List(1, 1),
-        List(1, 1, 2, 2, 3),
-        List(1, 1, 1, 1, 1, 2, 3)): List[CusList]
-    ) isSorted(ex) should be(true)
+    for(ex <- List(
+      List(1, 2, 2),
+      List(1, 2),
+      List(1, 1),
+      List(1, 1, 2, 2, 3),
+      List(1, 1, 1, 1, 1, 2, 3)
+    ): List[CusList])
+      isSorted(ex) should be (true)
 
-    for (
-      ex <- List(
-        List(1, 3, 2),
-        List(3, 2),
-        List(3, 1),
-        List(1, 1, 2, 2, 1),
-        List(1, 1, 1, 1, 1, 2, 1)): List[CusList]
-    ) isSorted(ex) should be(false)
+    for(ex <- List(
+      List(1, 3, 2),
+      List(3, 2),
+      List(3, 1),
+      List(1, 1, 2, 2, 1),
+      List(1, 1, 1, 1, 1, 2, 1)
+    ): List[CusList])
+      isSorted(ex) should be (false)
   }
 
   test("generate RB trees") {
@@ -351,7 +337,7 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
       }
 
     forAll(rbTreeGen, minSuccessful(50)) {
-      invariant(_) should be(true)
+      invariant(_) should be (true)
     }
   }
 
@@ -375,7 +361,7 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
       742900,
       2674440)
 
-    for (ind <- 0 until resultList.size)
-      catalan(ind) should be(resultList(ind))
+    for(ind <- 0 until resultList.size)
+      catalan(ind) should be ( resultList(ind) )
   }
 }

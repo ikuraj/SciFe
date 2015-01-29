@@ -20,8 +20,10 @@ import scala.language.existentials
 
 object BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
 	HasLogger with ProfileLogger {  
-    import Util.CheckerHelper
+
+  import Util.CheckerHelper
   import Checks._
+  import Math._
   
   def testCorrectness(enum: Depend[(Int, Range), Tree]) {
     val helper = new CheckerHelper[Tree]
