@@ -85,18 +85,24 @@ package structures {
 
     def invariant(tree: Tree) =
       valueOrdering(tree)
+      
+    def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
+      case Leaf => true
+      case Node(l, v, r) => min <= v && max >= v &&
+        valuesInRange(l, min, max) && valuesInRange(r, min, max)
+    }
 
     // for every node n, all the nodes in the left (respectively, right) subtree of
     // n, if any, have keys which are smaller (respectively, bigger) than the key
     // labeling n.
     def valueOrdering(t: Tree) : Boolean = {
-      def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
+      def correctOrdering(t: Tree, min: Int, max: Int): Boolean = t match {
         case Leaf => true
         case Node(l, v, r) => min <= v && max > v &&
-          valuesInRange(l, min, v) && valuesInRange(r, v + 1, max)
+          correctOrdering(l, min, v) && correctOrdering(r, v + 1, max)
       }
 
-      valuesInRange(t, Int.MinValue, Int.MaxValue)
+      correctOrdering(t, Int.MinValue, Int.MaxValue)
     }
 
     def size(t: Tree): Int = t match {

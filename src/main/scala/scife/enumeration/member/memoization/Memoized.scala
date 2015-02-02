@@ -21,6 +21,8 @@ trait Memoized[T] extends Member[T] with HasLogger {
     members += res
     res
   }
+  
+  private var fullyInitialized = false
 
   abstract override def member(el: T): Boolean = {
 //    entering("member", el)
@@ -29,8 +31,10 @@ trait Memoized[T] extends Member[T] with HasLogger {
       true
     }
     else {
+      if (fullyInitialized) return false
       if (members.size == this.size) {
-//        info(s"member $el answered from memoization")
+//        info(s"member $el not present answered from memoization")
+        fullyInitialized = true
         return false
       }
 
