@@ -17,13 +17,10 @@ import org.scalacheck.Gen
 
 import scala.language.postfixOps
 
-// you want this to run within Eclipse
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-
-@RunWith(classOf[JUnitRunner])
+@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class RedBlackTreeTestingTest extends FunSuite with Matchers
-  with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
+  with GeneratorDrivenPropertyChecks
+  with HasLogger with ProfileLogger {
   import Checks._
   import structures._
   import RedBlackTrees._
@@ -127,84 +124,84 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
   //  }
   //
   //
-  //  // when enumerating enumerator of larger trees, enumerators of smaller trees,
-  //  // coming from the same HO enumerator, should be memoized, for membership
-  //  test("Testing memoization and member explicitly") {
-  //
-  //    forAll(Gen.choose(3, 5), minSuccessful(5)) {
-  //      (size: Int) =>
-  //        {
-  //          val hoenumBigTrees = constructEnumeratorOtherTypeMemoized
-  //          val hoenumSmallTrees = constructEnumeratorOtherTypeMemoized
-  //
-  //          // go through all trees of size size
-  //          for (blackHeight <- blackHeightRange(size) ) {
-  //            val enum = hoenumBigTrees(size, 1 to size, Set(true, false), blackHeight)
-  //
-  //            for (ind <- 0 until enum.size) {
-  //              enum(ind)
-  //            }
-  //
-  //            enum shouldBe a [memoization.Memoized[_]]
-  //            val mEnum = enum.asInstanceOf[memoization.Memoized[Tree]]
-  //            withClue ("The memoized map does have only " +
-  //              ( (0 until enum.size).toList forall { (i: Int) => mEnum.isMemoized(enum(i)) } ) +
-  //              " memoized, out of " + enum.size) {
-  //            }
-  //          }
-  //
-  //          // membership of all trees up to size size
-  //          for (smallerSize <- 1 to size;
-  //            blackHeight <- blackHeightRange(smallerSize) ) {
-  //              val smallerTreeInput = (smallerSize, 1 to smallerSize, Set(true, false), blackHeight)
-  //
-  //              withClue ("For size " + size) {
-  //                withClue ("The memoized map does not have " + smallerTreeInput +
-  //                  ".\n The map: " + hoenumBigTrees.memoizedMap.mkString("\n")) {
-  //                  ( hoenumBigTrees.isMemoized(smallerTreeInput) ||
-  //                    blackHeight == blackHeightRange(smallerSize).end ) shouldBe true
-  //                }
-  //                val correspondingEnum = hoenumBigTrees(smallerTreeInput)
-  //                val enum = hoenumSmallTrees(smallerTreeInput)
-  //                correspondingEnum.size shouldBe enum.size
-  //
-  //                correspondingEnum match {
-  //                  case m: memoization.Memoized[_] =>
-  //                    enum.size shouldBe m.size
-  //
-  //                    m shouldBe a [Map[_, _]]
-  //                    withClue ("Total memoized in inner = " +
-  //                      ((0 until enum.size) count { (i: Int) => m.isMemoized(enum(i)) })
-  //                    ) {
-  //                        for (ind <- 0 until enum.size) {
-  //                          val currentTreeThatShouldBeMemoized = enum(ind)
-  //                          withClue ("Tree " + currentTreeThatShouldBeMemoized + " not memoized.") {
-  //                            ( m.isMemoized(currentTreeThatShouldBeMemoized) || {
-  //                              val bools =
-  //                                for (innerBlackHeight <- blackHeightRange(size);
-  //                                  innerEnum = hoenumBigTrees(size, 1 to size, Set(true, false), innerBlackHeight);
-  //                                  i <- 0 until innerEnum.size) yield
-  //                                    innerEnum(i).hasSubtree(currentTreeThatShouldBeMemoized)
-  //
-  //                              ! bools.exists( identity )
-  //                              }
-  //                            ) shouldBe true
-  //                          }
-  //                      }
-  //                    }
-  //                    info("%d/%d".format( ((0 until enum.size) count { (i: Int) => m.isMemoized(enum(i)) }),
-  //                      enum.size))
-  //                  case _: Empty[_] =>
-  //                }
+  //    // when enumerating enumerator of larger trees, enumerators of smaller trees,
+  //    // coming from the same HO enumerator, should be memoized, for membership
+  //    test("Testing memoization and member explicitly") {
+  //  
+  //      forAll(Gen.choose(3, 5), minSuccessful(5)) {
+  //        (size: Int) =>
+  //          {
+  //            val hoenumBigTrees = constructEnumeratorOtherTypeMemoized
+  //            val hoenumSmallTrees = constructEnumeratorOtherTypeMemoized
+  //  
+  //            // go through all trees of size size
+  //            for (blackHeight <- blackHeightRange(size) ) {
+  //              val enum = hoenumBigTrees(size, 1 to size, Set(true, false), blackHeight)
+  //  
+  //              for (ind <- 0 until enum.size) {
+  //                enum(ind)
   //              }
-  //
+  //  
+  //              enum shouldBe a [memoization.Memoized[_]]
+  //              val mEnum = enum.asInstanceOf[memoization.Memoized[Tree]]
+  //              withClue ("The memoized map does have only " +
+  //                ( (0 until enum.size).toList forall { (i: Int) => mEnum.isMemoized(enum(i)) } ) +
+  //                " memoized, out of " + enum.size) {
+  //              }
+  //            }
+  //  
+  //            // membership of all trees up to size size
+  //            for (smallerSize <- 1 to size;
+  //              blackHeight <- blackHeightRange(smallerSize) ) {
+  //                val smallerTreeInput = (smallerSize, 1 to smallerSize, Set(true, false), blackHeight)
+  //  
+  //                withClue ("For size " + size) {
+  //                  withClue ("The memoized map does not have " + smallerTreeInput +
+  //                    ".\n The map: " + hoenumBigTrees.memoizedMap.mkString("\n")) {
+  //                    ( hoenumBigTrees.isMemoized(smallerTreeInput) ||
+  //                      blackHeight == blackHeightRange(smallerSize).end ) shouldBe true
+  //                  }
+  //                  val correspondingEnum = hoenumBigTrees(smallerTreeInput)
+  //                  val enum = hoenumSmallTrees(smallerTreeInput)
+  //                  correspondingEnum.size shouldBe enum.size
+  //  
+  //                  correspondingEnum match {
+  //                    case m: memoization.Memoized[_] =>
+  //                      enum.size shouldBe m.size
+  //  
+  //                      m shouldBe a [Map[_, _]]
+  //                      withClue ("Total memoized in inner = " +
+  //                        ((0 until enum.size) count { (i: Int) => m.isMemoized(enum(i)) })
+  //                      ) {
+  //                          for (ind <- 0 until enum.size) {
+  //                            val currentTreeThatShouldBeMemoized = enum(ind)
+  //                            withClue ("Tree " + currentTreeThatShouldBeMemoized + " not memoized.") {
+  //                              ( m.isMemoized(currentTreeThatShouldBeMemoized) || {
+  //                                val bools =
+  //                                  for (innerBlackHeight <- blackHeightRange(size);
+  //                                    innerEnum = hoenumBigTrees(size, 1 to size, Set(true, false), innerBlackHeight);
+  //                                    i <- 0 until innerEnum.size) yield
+  //                                      innerEnum(i).hasSubtree(currentTreeThatShouldBeMemoized)
+  //  
+  //                                ! bools.exists( identity )
+  //                                }
+  //                              ) shouldBe true
+  //                            }
+  //                        }
+  //                      }
+  //                      info("%d/%d".format( ((0 until enum.size) count { (i: Int) => m.isMemoized(enum(i)) }),
+  //                        enum.size))
+  //                    case _: Empty[_] =>
+  //                  }
+  //                }
+  //  
+  //            }
   //          }
-  //        }
+  //      }
+  //  
   //    }
-  //
-  //  }
 
-//  ignore("The times in this test are not dominated by invariant checking") {
+  ignore("The times in this test are not dominated by invariant checking") {
     test("Comparison of times for testing after insertion") {
 
       val normalStopWatch = new Stopwatch("checking invariant cummulative time")
@@ -262,69 +259,210 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
           }
       }
 
-    //    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
+      //    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
+      memberStopWatch.acc should be < normalStopWatch.acc
+    }
+  }
+
+  test("Comparison of times for testing after insertion, all enumerate first") {
+
+    val normalStopWatch = new Stopwatch("checking invariant cummulative time")
+    val memberStopWatch = new Stopwatch("checking membership cummulative time")
+
+    val dependEnumNormal = constructEnumeratorOtherTypeMemoized
+    val dependEnumMember = constructEnumeratorOtherTypeMemoized
+
+    for (size <- 7 to 7) {
+      // compute whole enum for member
+      
+      for (blackHeight <- blackHeightRange(size)) {
+        val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+
+        for (ind <- 0 until enum.size) enum(ind)
+      }
+      
+      for (blackHeight <- blackHeightRange(size)) {
+
+        {
+            val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+
+            for (ind <- 0 until enum.size) {
+              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+
+                val newTree = enum(ind) insert missing.get
+
+          memberStopWatch.profile {
+//              profile("Member:") {
+              var invariant = false
+              for (bH <- blackHeight to (blackHeight + 1); if !invariant) {
+                val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
+
+                invariant = (enumBigger.member(newTree))
+              }
+              assert(invariant)
+              }
+//            }
+          }
+        }
+        {
+          
+          val enum = 
+          {
+            val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
+            for (ind <- 0 until enum.size) enum(ind)
+            enum
+          }
+
+            for (ind <- 0 until enum.size) {
+              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+
+              val newTree = enum(ind) insert missing.get
+
+          normalStopWatch.profile {
+//            profile("Normal:") {
+              assert(RedBlackTrees.size(newTree) == size)
+              assert(invariant(newTree))
+            }
+            }
+//          }
+        }
+
+      }
+    }
+
+    info("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
     memberStopWatch.acc should be < normalStopWatch.acc
   }
-//  }
-
-//  test("Comparison of times for testing after insertion") {
-//
-//    val normalStopWatch = new Stopwatch("checking invariant cummulative time")
-//    val memberStopWatch = new Stopwatch("checking membership cummulative time")
+  
+//  test("figure out what is going on") {
 //
 //    val dependEnumNormal = constructEnumeratorOtherTypeMemoized
 //    val dependEnumMember = constructEnumeratorOtherTypeMemoized
 //
-//    forAll(Gen.choose(3, 8), minSuccessful(30)) {
-//      (size: Int) =>
+//    for (size <- 7 to 7) {
+//      // compute whole enum for member
+//      
+//      for (blackHeight <- blackHeightRange(size)) {
+//        val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+//
+//        for (ind <- 0 until enum.size) enum(ind)
+//      }
+//      
+//      for (blackHeight <- blackHeightRange(size)) {
 //        {
-//          for (blackHeight <- blackHeightRange(size)) {
+//            val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
 //
-//            profile("Normal:") {
-//              normalStopWatch.profile {
-//                val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
+//            for (ind <- 0 to 0) {
+//              val missing = (1 to size).toList.find(!enum(ind).contains(_))
 //
-//                for (ind <- 0 until enum.size;
-//                  missing <- 1 to size) {
+//                val newTree = enum(ind) insert missing.get
 //
-//                  val newTree = enum(ind) insert missing
+//              var invariant = false
+//              for (bH <- blackHeight to (blackHeight + 1); if !invariant) {
+//                val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
 //
-//                  withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-//                    RedBlackTrees.size(newTree) shouldBe size
-//
-//                    invariant(newTree) shouldBe true
-//                  }
-//                }
+//                invariant = (enumBigger.member(newTree))
 //              }
-//            }
-//
-//            profile("Member:") {
-//              memberStopWatch.profile {
-//                val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
-//
-//                for (ind <- 0 until enum.size;
-//                  missing <- 1 to size) {
-//
-//                  val newTree = enum(ind) insert missing
-//
-//                  withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
-//                    (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
-//                      val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
-//
-//                      enumBigger.member(newTree)
-//                    } shouldBe true
-//                  }
-//                }
+//              assert(invariant)
 //              }
-//            }
-//
-//          }
 //        }
-//    }
 //
-//    //    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
-//    memberStopWatch.acc should be < normalStopWatch.acc
+//      }
+//    }
 //  }
+  //
+  // test("Member after insertion") {
+  //    
+  //    scala.io.StdIn.readLine
+  //
+  //    val dependEnumMember = constructEnumeratorOtherTypeMemoized
+  //
+  //    forAll(Gen.choose(3, 7), minSuccessful(10)) {
+  //      (size: Int) =>
+  //        {
+  //          for (blackHeight <- blackHeightRange(size)) {
+  //
+  //            val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+  //
+  //            for (ind <- 0 until enum.size) {
+  //              val missing = (1 to size).toList.find(!enum(ind).contains(_))
+  //              assert(!missing.isEmpty)
+  //
+  //              val newTree = enum(ind) insert missing.get
+  //
+  //              withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+  //                (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
+  //                  val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
+  //
+  //                  enumBigger.member(newTree)
+  //                } shouldBe true
+  //              }
+  //            }
+  //
+  //          }
+  //        }
+  //    }
+  //
+  //  }
+
+  //  test("Comparison of times for testing after insertion") {
+  //
+  //    val normalStopWatch = new Stopwatch("checking invariant cummulative time")
+  //    val memberStopWatch = new Stopwatch("checking membership cummulative time")
+  //
+  //    val dependEnumNormal = constructEnumeratorOtherTypeMemoized
+  //    val dependEnumMember = constructEnumeratorOtherTypeMemoized
+  //
+  //    forAll(Gen.choose(3, 8), minSuccessful(30)) {
+  //      (size: Int) =>
+  //        {
+  //          for (blackHeight <- blackHeightRange(size)) {
+  //
+  //            profile("Normal:") {
+  //              normalStopWatch.profile {
+  //                val enum = dependEnumNormal(size - 1, 1 to size, Set(true, false), blackHeight)
+  //
+  //                for (ind <- 0 until enum.size;
+  //                  missing <- 1 to size) {
+  //
+  //                  val newTree = enum(ind) insert missing
+  //
+  //                  withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+  //                    RedBlackTrees.size(newTree) shouldBe size
+  //
+  //                    invariant(newTree) shouldBe true
+  //                  }
+  //                }
+  //              }
+  //            }
+  //
+  //            profile("Member:") {
+  //              memberStopWatch.profile {
+  //                val enum = dependEnumMember(size - 1, 1 to size, Set(true, false), blackHeight)
+  //
+  //                for (ind <- 0 until enum.size;
+  //                  missing <- 1 to size) {
+  //
+  //                  val newTree = enum(ind) insert missing
+  //
+  //                  withClue("Old tree: %s; New tree: %s".format(enum(ind), newTree)) {
+  //                    (blackHeight to (blackHeight + 1)).toList.exists { bH: Int =>
+  //                      val enumBigger = dependEnumMember(size, 1 to size, Set(true, false), bH)
+  //
+  //                      enumBigger.member(newTree)
+  //                    } shouldBe true
+  //                  }
+  //                }
+  //              }
+  //            }
+  //
+  //          }
+  //        }
+  //    }
+  //
+  //    //    println("m: " + memberStopWatch.acc + "n: " + normalStopWatch.acc)
+  //    memberStopWatch.acc should be < normalStopWatch.acc
+  //  }
   //
   //  test("Correct memoization") {
   //
