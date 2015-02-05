@@ -7,10 +7,18 @@ import scala.language.implicitConversions
 trait Member[A] extends Enum[A] {
   
   def member(a: A): Boolean
- 
+
+//  def map[B >: A](modifyFun: A => B, recognize: B => A): Member[B] =
+//    new Map(this, modifyFun, recognize) with Member[B] 
+
 }
 
-trait MemberFinite[A] extends Finite[A] with Member[A]
+trait MemberFinite[A] extends Finite[A] with Member[A] {
+ 
+  def map[B](modifyFun: A => B, recognize: B => A): MemberFinite[B] =
+    new Map(this, modifyFun, recognize) with MemberFinite[B]
+
+}
 
 trait MemberInfinite[A] extends Infinite[A] with Member[A]
 

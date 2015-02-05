@@ -373,8 +373,6 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
 
   test("Member after insertion") {
 
-    scala.io.StdIn.readLine
-
     val dependEnumMember = constructEnumeratorOtherTypeMemoized
 
     forAll(Gen.choose(3, 7), minSuccessful(10)) {
