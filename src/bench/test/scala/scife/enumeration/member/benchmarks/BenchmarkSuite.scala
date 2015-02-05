@@ -52,9 +52,12 @@ object BenchmarkSuite {
   val benchmarkMainName = "Benchmarks"
 
   val allBenchmarks = List(
-    (new RedBlackTreeBenchmarkMember, "Red-Black Trees, membership")
+//    (new RedBlackTreeBenchmarkMember, "Red-Black Trees, membership")
 //    ,
 //    (new RedBlackTreeBenchmarkVerify, "Red-Black Trees, invariant execution")
+    (new BinarySearchTreeMember, "Binary Srach Trees, membership")
+    ,
+    (new BinarySearchTreeVerify, "Binary Srach Trees, invariant execution")
   )
     
   val minimalSizes = List(3, 3)

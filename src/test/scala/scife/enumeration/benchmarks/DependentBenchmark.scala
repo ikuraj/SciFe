@@ -54,7 +54,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   System.gc()
   System.gc()
             } setUp {
-              setUp(_, enumerator, memScope)
+              setUpFixed(_, enumerator, memScope)
             } tearDown {
               tearDownFixed(_, enumerator, memScope)
             } in measureCode( enumerator )
@@ -92,7 +92,7 @@ System.gc()
 System.gc()
 System.gc()
           } setUp {
-            setUp(_, enumerator, memScope)
+            setUpFixed(_, enumerator, memScope)
           } tearDown {
             tearDownFixed(_, enumerator, memScope)
           } in measureCode( enumerator )
@@ -119,10 +119,9 @@ System.gc()
 
   def setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {}
 
-  final def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
+  def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope)
 //    System.gc
-    memScope.clear
 //    System.gc
 //    System.gc
     info("[DependentBenchmark:] Begin run")

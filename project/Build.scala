@@ -12,7 +12,7 @@ object SciFeBuild extends Build {
       .settings( inConfig(BenchConfig)(Defaults.testTasks): _*)
       .settings(
         fork in Test := true,
-        javaOptions in Test += "-Xmx2048m",
+        javaOptions in Test += "-Xmx4096m",
         // verbose QuickCheck error ouput
         testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "3"),
         unmanagedSourceDirectories in Test <+= sourceDirectory ( _ / "bench" ),
@@ -25,18 +25,21 @@ object SciFeBuild extends Build {
         
         fork in BenchConfig := false,        
         includeFilter in BenchConfig := AllPassFilter,
-        testOptions in BenchConfig := Seq(Tests.Filter(benchFilter)),
-        testOptions in BenchConfig := Seq(),
+        testOptions in BenchConfig := Seq( benchmarksFilter ),
         scalacOptions in BenchConfig ++= Seq("-deprecation", "-unchecked", "-feature", "-Xdisable-assertions"),
         scalacOptions in BenchConfig ++= Seq("-Xelide-below", "OFF") 
       )
-//      .dependsOn(RootProject(uri("git://github.com/jgrapht/jgrapht.git")))
 
-  val benchRegEx = """(.*\.suite\.[^\.]*Suite*)"""
+  val benchRegEx = //"""(.*\.suite\.[^\.]*Suite*)"""
+    """(.*\.benchmarks\..*)"""
       
-  def benchFilter(name: String): Boolean = {
-    name matches benchRegEx
-  }
+  val benchmarksFilter = Tests.Filter(
+    _ matches """(.*\.benchmarks\..*)"""
+  )
+ 
+  val noSuiteFilter = Tests.Filter(
+    (s: String) => !(s matches """.*Suite.*""")
+  )
   
   lazy val BenchConfig = config("benchmark") extend(Test)
     

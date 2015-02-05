@@ -35,14 +35,14 @@ class BinarySearchTreeFromSetTryTest extends FunSuite with Matchers with Generat
     val dependEnumNormal = constructEnumerator
     val dependEnumMember = constructEnumerator
 
-    for (size <- 1 to 10; depend <- dependEnumMember :: dependEnumNormal :: Nil) {
+    for (size <- 1 to 7; depend <- dependEnumMember :: dependEnumNormal :: Nil) {
       val enum = depend( (size, Array.range(1, size+1)) )
       for (ind <- 0 until enum.size) yield enum(ind)
     }
 
     var flag = 0
 
-    for (size <- 1 to 9) {
+    for (size <- 1 to 6) {
 
       {
         val enum = dependEnumNormal(size - 1, Array.range(1, size+1))
@@ -83,7 +83,7 @@ class BinarySearchTreeFromSetTryTest extends FunSuite with Matchers with Generat
     memberStopWatch.acc should be < normalStopWatch.acc
   }
 
-  test("debugging test") {
+  ignore("debugging test") {
 
     val normalStopWatch = new Stopwatch
     val memberStopWatch = new Stopwatch
@@ -93,7 +93,7 @@ class BinarySearchTreeFromSetTryTest extends FunSuite with Matchers with Generat
 
     val allElements =
       for (
-        size <- 1 to 10;
+        size <- 1 to 7;
         ind <- 0 until dependMember(size, Array.range(1, size+1)).size
       ) yield (size, dependMember(size, Array.range(1, size+1))(ind))
 
@@ -120,7 +120,7 @@ class BinarySearchTreeFromSetTryTest extends FunSuite with Matchers with Generat
     info(s"Member enumerator: ${memberStopWatch.acc}ms, normal enumerator: ${normalStopWatch.acc}ms")
   }
 
-  ignore("test membership of newly created trees") {
+  test("test membership of newly created trees") {
 
     val depend = constructEnumerator
 
@@ -138,14 +138,14 @@ class BinarySearchTreeFromSetTryTest extends FunSuite with Matchers with Generat
         val newTree = enum(ind) + missing.get
 
         wholeCollection should contain(newTree)
-        println(s"checking membership for $newTree")
+        info(s"checking membership for $newTree")
         assert(depend(size, Array.range(1, size+1)).member(newTree))
       }
 
     }
   }
 
-  ignore("correctness of enumeration") {
+  test("correctness of enumeration") {
 
     common.BinarySearchTreeTest.testCorrectness(Depend.fin {
       in: (Int, Range) =>
@@ -154,7 +154,7 @@ class BinarySearchTreeFromSetTryTest extends FunSuite with Matchers with Generat
 
   }
 
-  ignore("member recognition") {
+  test("member recognition") {
     val trees = constructEnumerator
 
     {
