@@ -8,7 +8,7 @@ import memoization._
 
 import scife.util._
 import scife.util.logging._
-import Structures.RedBlackTrees._
+import structures.RedBlackTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -18,7 +18,6 @@ import scala.language.existentials
 
 class RedBlackTreeDependentBenchmark
   extends StructuresBenchmark[Depend[(Int, Range, Set[Boolean], Int), Tree]]
-  //extends DependentMemoizedBenchmark[Int, Depend[(Int, Range, Set[Boolean], Int), Tree]]
   with java.io.Serializable with HasLogger {
 
   type EnumType = Depend[(Int, Range, Set[Boolean], Int), Tree]
@@ -26,7 +25,7 @@ class RedBlackTreeDependentBenchmark
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
       for (
-        blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
+        blackHeight <- blackHeightRange(size);
         enum = tdEnum.getEnum(size, 1 to size, Set(true, false), blackHeight);
         ind <- 0 until enum.size
       ) enum(ind)

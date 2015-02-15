@@ -10,7 +10,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures._
+import structures._
 import TreeShapes._
 
 import org.scalatest._
@@ -25,6 +25,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
   HasLogger with ProfileLogger {
     import Util.CheckerHelper
   import Checks._
+  import Math._
 
   type Output = Tree//(List[Int], Tree)
 
@@ -60,7 +61,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
     }
 
 
-    val profileRange = 1 to 10
+    val profileRange = 1 to 6
 
     for (size <- profileRange) {
       ms.clear

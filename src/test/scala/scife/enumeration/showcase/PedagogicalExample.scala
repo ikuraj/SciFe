@@ -7,7 +7,7 @@ import memoization._
 import scife.{ enumeration => e }
 
 import scife.util._
-import Structures._
+import structures._
 import BSTrees._
 
 import scife.util.logging._

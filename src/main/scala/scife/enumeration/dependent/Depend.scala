@@ -32,6 +32,9 @@ trait Depend[I, +O] extends Serializable {
   // chain
   def chain(e: Enum[I]): Enum[(I, O)] =
     Chain(e, this)
+    
+  def chainSingle(e: Enum[I]): Enum[O] =
+    Chain.single(e, this)
 
   def ⊘(e: Enum[I]) = chain(e)
 
@@ -192,7 +195,7 @@ object Depend {
 //  }
 
   def memoizedFin[I, O](fun: (DependFinite[I, O], I) => Finite[O])
-    (implicit ms: MemoizationScope): DependFinite[I, O] = {
+    (implicit ms: MemoizationScope): WrapFunctionFin[I, O] = {
     val enum =
       new WrapFunctionFin[I, O](fun) with DependFinite[I, O] with Memoized[I, O]
 

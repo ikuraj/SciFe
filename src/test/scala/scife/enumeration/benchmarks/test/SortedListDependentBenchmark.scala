@@ -8,7 +8,7 @@
 //
 //import scife.util._
 //import scife.util.logging._
-//import Structures.RedBlackTrees._
+//import structures.RedBlackTrees._
 //
 //import org.scalatest._
 //import org.scalameter.api._

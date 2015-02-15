@@ -8,7 +8,7 @@
 //
 //import scife.util._
 //import scife.util.logging._
-//import Structures.BSTrees._
+//import structures.BSTrees._
 //
 //import org.scalatest._
 //import org.scalameter.api._
@@ -17,7 +17,7 @@
 //import scala.language.existentials
 //
 //class HeapArrayBenchmark
-//  extends StructuresBenchmark[Depend[(Int, Array[Int]), Tree]]
+//  extends structuresBenchmark[Depend[(Int, Array[Int]), Tree]]
 ////  extends DependentMemoizedBenchmark[Int, Depend[(Int, List[Int]), Tree]]
 //  with java.io.Serializable with HasLogger {
 //  //  import e.Enum

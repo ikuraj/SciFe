@@ -17,8 +17,9 @@ import scala.language.existentials
 class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
   HasLogger with ProfileLogger {
   import Checks._
-  import Structures._
+  import structures._
   import BSTrees._
+  import Math._
 
   def bstTests(trees: Depend[(Int, Range), Tree]) {
     object OMG {

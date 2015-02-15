@@ -14,7 +14,7 @@ import scife.util.logging._
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
   with java.io.Serializable with HasLogger {
 
-  import Structures._
+  import structures._
   import memoization.MemoizationScope
   import memoization.scope._
 
@@ -54,7 +54,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   System.gc()
   System.gc()
             } setUp {
-              setUp(_, enumerator, memScope)
+              setUpFixed(_, enumerator, memScope)
             } tearDown {
               tearDownFixed(_, enumerator, memScope)
             } in measureCode( enumerator )
@@ -92,7 +92,7 @@ System.gc()
 System.gc()
 System.gc()
           } setUp {
-            setUp(_, enumerator, memScope)
+            setUpFixed(_, enumerator, memScope)
           } tearDown {
             tearDownFixed(_, enumerator, memScope)
           } in measureCode( enumerator )
@@ -119,16 +119,18 @@ System.gc()
 
   def setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {}
 
-  final def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
+  def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope)
 //    System.gc
-    memScope.clear
 //    System.gc
 //    System.gc
     info("[DependentBenchmark:] Begin run")
   }
-
+  
+  def tearDown(i: I, tdEnum: DepEnumType, memScope: MemoizationScope): Unit = {}
+  
   final def tearDownFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
+    tearDown(i, tdEnum, memScope)
     info("[DependentBenchmark:] End run")
   }
 

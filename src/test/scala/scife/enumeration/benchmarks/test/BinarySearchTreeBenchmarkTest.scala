@@ -10,7 +10,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures._
+import structures._
 import BSTrees._
 
 import org.scalatest._
@@ -23,6 +23,7 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
   HasLogger with ProfileLogger {
     import Util.CheckerHelper
   import Checks._
+  import Math._
 
   test("correctness") {
     val ms = new scope.AccumulatingScope
@@ -81,7 +82,7 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
     }
 
 
-    val profileRange = 1 to 10
+    val profileRange = 1 to 6
 
     for (size <- profileRange) {
       ms.clear

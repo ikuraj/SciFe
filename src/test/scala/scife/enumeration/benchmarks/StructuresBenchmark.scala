@@ -18,4 +18,6 @@ trait StructuresBenchmark[DepEnumType] extends DependentMemoizedBenchmark[Int, D
     Gen.range("size")(1, maxSize, 1)
 //    Gen.range("size")(maxSize, maxSize, 1)
 
+  override def setUp(i: Int, tdEnum: DepEnumType, memScope: MemoizationScope) =
+    memScope.clear
 }

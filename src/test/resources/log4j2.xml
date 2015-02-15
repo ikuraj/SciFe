@@ -9,16 +9,16 @@
     </Console>
   </appenders>
   <loggers>
-    <logger name="insynth.enumeration.reverse" level="off" additivity="false">
+    <logger name="scife.enumeration.memoization" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.reverse.dependent" level="off" additivity="false">
+    <logger name="scife.enumeration.member.memoization" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.showcase" level="off" additivity="false">
+    <logger name="scife.enumeration.member.testcase" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.benchmarks" level="off" additivity="false">
+    <logger name="scife.enumeration.benchmarks" level="off" additivity="false">
       <appender-ref ref="BenchmarkConsole" />
     </logger>
     <root level="error">

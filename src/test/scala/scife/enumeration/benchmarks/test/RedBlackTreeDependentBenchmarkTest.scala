@@ -10,11 +10,12 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures.RedBlackTrees._
+import structures.RedBlackTrees._
 
 import org.scalatest._
 import org.scalatest.prop._
 import org.scalameter.api._
+import org.scalacheck.Gen
 
 import scala.language.postfixOps
 import scala.language.existentials
@@ -41,8 +42,8 @@ class RedBlackTreeDependentBenchmarkTest
     val helper = new CheckerHelperFun(checker)
     import helper._
 
-    val profileRange = 1 to 10
-
+    val profileRange = 1 to 6
+    
     withLazyClue("Elements are: " + clue) {
       // specific cases
       elements = enum.getEnum( (1, 1 to 1, Set(true), 2) ).toList
@@ -86,11 +87,9 @@ class RedBlackTreeDependentBenchmarkTest
 
       // some confirmed counts
       elements =
-        for (blackHeight <- 0 to 6; e = enum.getEnum(12, 1 to 12, Set(true, false), blackHeight);
+        for (blackHeight <- 0 to 6; e = enum.getEnum(9, 1 to 9, Set(true, false), blackHeight);
           ind <- 0 until e.size) yield e(ind)
-
-      // this is for size 12
-      elements.size should be (1296)
+      elements.size should be (122)
     }
 
     for (size <- profileRange) {
@@ -113,6 +112,41 @@ class RedBlackTreeDependentBenchmarkTest
       assert( (for (el <- elements) yield el).forall( invariant(_) ) )
     }
 
+  }
+  
+  test("correct black heights") {
+    val ms = new scope.AccumulatingScope
+    val hoenum = constructEnumerator(ms)
+    
+    forAll(Gen.choose(1, 10), minSuccessful(30)) {
+      (size: Int) =>
+        {
+          val trees1 =
+            for (
+              blackHeight <- 0 to (size+1);
+              e = hoenum.getEnum(size, 1 to size, Set(true, false), blackHeight)
+            ) yield e.size
+          
+          val trees2 =
+            for (
+              blackHeight <- 1 to (Math.log2(size + 1).toInt + 1);
+              e = hoenum.getEnum(size, 1 to size, Set(true, false), blackHeight)
+            ) yield e.size
+            
+          trees1.sum shouldEqual trees2.sum
+          
+          val trees3 =
+            for (
+              blackHeight <- Math.log2(size).toInt to (Math.log2(size + 1).toInt + 1);
+              e = hoenum.getEnum(size, 1 to size, Set(true, false), blackHeight)
+            ) yield e.size
+          
+          withClue("around logarithm") {
+            trees1.sum shouldEqual trees3.sum
+          }
+          
+        }
+    }
   }
 
   def constructEnumerator(implicit ms: MemoizationScope) = {

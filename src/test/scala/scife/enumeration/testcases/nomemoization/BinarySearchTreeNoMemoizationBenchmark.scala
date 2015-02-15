@@ -9,7 +9,7 @@ import scife.{ enumeration => e }
 import scife.enumeration.benchmarks._
 
 import scife.util._
-import Structures._
+import structures._
 import BSTrees._
 import logging._
 

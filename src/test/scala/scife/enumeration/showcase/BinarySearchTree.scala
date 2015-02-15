@@ -9,7 +9,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures._
+import structures._
 import BSTrees._
 
 import org.scalatest._
@@ -22,6 +22,7 @@ import scala.language.implicitConversions
 class BinarySearchTree extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
   import Util.CheckerHelper
   import Checks._
+  import Math._
 
   // DSL
   import e._
