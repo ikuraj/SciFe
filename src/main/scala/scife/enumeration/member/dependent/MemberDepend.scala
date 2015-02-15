@@ -10,19 +10,19 @@ import scala.language.higherKinds
 
 trait MemberDepend[I, O] extends Depend[I, O] {
   
-  override type EnumType = Member[O]
+  override type EnumSort[A] = Member[A]
 
 }
 
 trait MemberDependFinite[I, O] extends DependFinite[I, O] {
   
-  override type EnumType = MemberFinite[O]
+  override type EnumSort[A] = MemberFinite[A]
 
 }
 
 trait MemberDependInfinite[I, O] extends DependInfinite[I, O] {
   
-  override type EnumType = MemberInfinite[O]
+  override type EnumSort[A] = MemberInfinite[A]
 
 }
 

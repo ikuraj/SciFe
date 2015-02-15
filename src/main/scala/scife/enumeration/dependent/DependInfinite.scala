@@ -1,8 +1,10 @@
 package scife.enumeration
 package dependent
 
-trait DependInfinite[I, +O] extends Depend[I, O] {
+import scala.language.higherKinds
 
-  override type EnumType <: Infinite[O]
+trait DependInfinite[I, O] extends Depend[I, O] {
+
+  override type EnumSort[A] <: Infinite[A]
 
 }

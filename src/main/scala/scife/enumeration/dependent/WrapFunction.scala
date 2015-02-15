@@ -5,14 +5,16 @@ import scala.collection.mutable
 
 import scife.util._
 
-class WrapFunction[I, O, E <: Enum[O]](val producerFunction: (Depend[I, O], I) => E)
+import scala.language.higherKinds
+
+class WrapFunction[I, O, E[A] <: Enum[A]](val producerFunction: (Depend[I, O], I) => E[O])
   extends Depend[I, O] with HasLogger with Serializable {
 
-  override type EnumType = E
+  override type EnumSort[A] = E[A]
 
   val partiallyApplied = producerFunction(this, _: I)
 
-  def this(producerFunction: I => E) =
+  def this(producerFunction: I => E[O]) =
     this( (td: Depend[I, O], i: I) => producerFunction(i) )
 
   override def getEnum(parameter: I) =
@@ -23,7 +25,7 @@ class WrapFunction[I, O, E <: Enum[O]](val producerFunction: (Depend[I, O], I) =
 class WrapFunctionFin[I, O](val producerFunction: (DependFinite[I, O], I) => Finite[O])
   extends DependFinite[I, O] with HasLogger with Serializable {
 
-  override type EnumType = Finite[O]
+  override type EnumSort[A] = Finite[A]
 
   val partiallyApplied = producerFunction(this, _: I)
 
@@ -35,10 +37,10 @@ class WrapFunctionFin[I, O](val producerFunction: (DependFinite[I, O], I) => Fin
 
 }
 
-class WrapFunctionP[I, O, E <: Enum[O]](val producerFunction: PartialFunction[(Depend[I, O], I), E])
+class WrapFunctionP[I, O, E[A] <: Enum[A]](val producerFunction: PartialFunction[(Depend[I, O], I), E[O]])
   extends Depend[I, O] with HasLogger with Serializable {
 
-  override type EnumType = E
+  override type EnumSort[A] = E[A]
 
   val partiallyApplied = producerFunction(this, _: I)
 
@@ -49,11 +51,11 @@ class WrapFunctionP[I, O, E <: Enum[O]](val producerFunction: PartialFunction[(D
     producerFunction(this, parameter)
 }
 
-class WrapFunctionFinP[I, O, E <: Finite[O]]
-  (val producerFunction: PartialFunction[(DependFinite[I, O], I), E])
+class WrapFunctionFinP[I, O, E[A] <: Finite[A]]
+  (val producerFunction: PartialFunction[(DependFinite[I, O], I), E[O]])
   extends DependFinite[I, O] with HasLogger with Serializable {
 
-  override type EnumType = Finite[O]
+  override type EnumSort[A] = E[A]
 
   val partiallyApplied = producerFunction(this, _: I)
 

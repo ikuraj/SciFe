@@ -6,8 +6,9 @@ import scala.language.higherKinds
 
 trait InMap[I, NewIn, O] extends Depend[NewIn, O] {
 
-  type DependType <: Depend[I, O]
-  override type EnumType = inner.EnumType
+  type DependSort[A, B] <: Depend[A, B]
+  type DependType = DependSort[I, O]
+  override type EnumSort[C] = inner.EnumSort[C]
 
   val inner: DependType
   val f: NewIn => I

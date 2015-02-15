@@ -3,8 +3,13 @@ package scife.enumeration
 import util.EnumStream
 
 import scala.reflect._
-import scala.language.implicitConversions
 
+import scala.language.implicitConversions
+//import scala.language.higherKinds
+//
+//trait Enum[+A, E[X] <: Enum[X, E]] extends Serializable {
+//  
+//  self: E[A] =>
 trait Enum[+A] extends Serializable {
 
   def size: Int

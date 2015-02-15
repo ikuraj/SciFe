@@ -7,7 +7,7 @@ import scife.util._
 class WrapFunction[I, O](val producerFunction: (MemberDepend[I, O], I) => Member[O])
 	extends MemberDepend[I, O] with HasLogger with Serializable {
   
-  override type EnumType = Member[O]
+  override type EnumSort[A] = Member[A]
   
   val partiallyApplied = producerFunction(this, _: I)
   
@@ -23,7 +23,7 @@ class WrapFunctionFin[I, O](val producerFunction:
   (MemberDependFinite[I, O], I) => MemberFinite[O])
   extends MemberDependFinite[I, O] with HasLogger with Serializable {
   
-  override type EnumType = MemberFinite[O]
+  override type EnumSort[A] = MemberFinite[A]
   
   val partiallyApplied = producerFunction(this, _: I)
   
