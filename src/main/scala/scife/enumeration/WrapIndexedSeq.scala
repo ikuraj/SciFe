@@ -1,6 +1,8 @@
 package scife
 package enumeration
 
+import scife.util._
+
 import scala.reflect._
 
 class WrapIndexedSeq[@specialized T](val coll: IndexedSeq[T])

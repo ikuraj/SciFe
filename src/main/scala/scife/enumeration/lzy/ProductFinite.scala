@@ -6,6 +6,8 @@ import combinators.{ Product => CProduct }
 import _root_.scife.util
 import util.Math._
 
+import scife.util._
+
 protected[enumeration] class ProductFinite[T, V]
   (override val left: Finite[T], override val right: Finite[V])
   extends CProduct[T, V] with Finite[(T, V)] with HasLogger {

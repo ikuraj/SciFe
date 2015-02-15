@@ -6,6 +6,8 @@ import combinators._
 import scala.collection.mutable
 import scala.reflect._
 
+import scife.util._
+
 object ConcatFiniteInfinite {
 
   def apply[T](finites: Array[Finite[T]], infinites: Array[Infinite[T]]) =

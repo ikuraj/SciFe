@@ -5,6 +5,9 @@ package member
 import scife.{ enumeration => e }
 
 import scala.{ collection => col }
+
+import scife.util._
+
 import scala.reflect._
 
 class WrapArray[T](override val coll: Array[T]) extends e.WrapArray[T](coll)

@@ -5,6 +5,8 @@ import combinators._
 
 import scala.collection.mutable
 
+import scife.util._
+
 object ConcatInfinite {
 
   def apply[T](s1: Infinite[T], s2: Infinite[T]) =

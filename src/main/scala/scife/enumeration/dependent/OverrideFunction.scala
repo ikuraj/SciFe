@@ -3,6 +3,8 @@ package dependent
 
 import scala.collection.mutable
 
+import scife.util._
+
 class OverrideFunction[I, O, E <: Enum[O]](
   val producerFunction: (Depend[I, O], I) => E, val orgDepend: Depend[I, O])
   extends Depend[I, O] with HasLogger with Serializable {

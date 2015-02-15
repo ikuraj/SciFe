@@ -3,8 +3,8 @@ package lzy
 
 import scife.enumeration.{ combinators => comb }
 
-import _root_.scife.util
-import util.Math._
+import scife.util._
+import Math._
 
 trait ProductFiniteInfinite[T, V, U <: Tuple2[_, _]] extends Infinite[U]  {
 

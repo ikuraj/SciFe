@@ -4,6 +4,8 @@ package dependent
 import scala.collection.immutable.{ Map => ScalaMap }
 import scala.collection.mutable
 
+import scife.util._
+
 class WrapMap[I, O, E <: Enum[O]](initMap: ScalaMap[I, E] = ScalaMap.empty)
   extends Depend[I, O] with HasLogger {
 

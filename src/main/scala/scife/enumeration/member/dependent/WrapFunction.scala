@@ -2,6 +2,8 @@ package scife.enumeration
 package member
 package dependent
 
+import scife.util._
+
 class WrapFunction[I, O](val producerFunction: (MemberDepend[I, O], I) => Member[O])
 	extends MemberDepend[I, O] with HasLogger with Serializable {
   

@@ -3,6 +3,8 @@ package memoization
 
 import scala.collection.mutable._
 
+import scife.util._
+
 trait Memoized[T] extends Enum[T] with Memoizable with HasLogger {
 
   protected[enumeration] val memoizedFlags = new BitSet()

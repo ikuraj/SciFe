@@ -6,6 +6,8 @@ import combinators._
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
+import scife.util._
+
 object ConcatFinite {
 
   def apply[T](left: Finite[T], right: Finite[T])/*(implicit ct: ClassTag[T])*/ =

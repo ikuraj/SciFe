@@ -5,7 +5,7 @@ package scife.util.logging
  *
  * Clients can inject different loggers if needed.
  */
-trait HasLogger {
+private[util] trait HasLogger {
 
   // ScalaLogging levels
   // Error // Warn // Info // Debug // Trace

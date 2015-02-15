@@ -5,6 +5,8 @@ package lzy
 import scife.{ enumeration => e }
 import scife.enumeration.lzy._
 
+import scife.util._
+
 class ChainFinite[I, O]
   (override val left: Finite[I], override val right: DependFinite[I, O])
   extends combinators.Chain[I, O] with Finite[(I, O)] with HasLogger {

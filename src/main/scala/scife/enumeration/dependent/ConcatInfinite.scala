@@ -3,6 +3,8 @@ package dependent
 
 import scife.enumeration.lzy._
 
+import scife.util._
+
 class ConcatInfinite[I, O]
   (s1: DependInfinite[I, O], s2: DependInfinite[I, O])
   extends DependInfinite[I, O] with HasLogger {

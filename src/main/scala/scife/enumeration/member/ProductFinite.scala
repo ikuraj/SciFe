@@ -3,9 +3,8 @@ package member
 
 import combinators.{ Product => CProduct }
 
-import _root_.scife.util
-import util.Math._
-import util.logging._
+import scife.util._
+import Math._
 
 class ProductFinite[T, V](override val left: MemberFinite[T], override val right: MemberFinite[V])
   extends lzy.ProductFinite(left, right) with MemberFinite[(T, V)] {

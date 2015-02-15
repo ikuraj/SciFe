@@ -5,6 +5,8 @@ package dependent
 import scife.{ enumeration => e }
 import e.{ dependent => dp }
 
+import scife.util._
+
 class ChainFinite[I, O]
   (override val left: MemberFinite[I], override val right: MemberDependFinite[I, O])
   extends dp.lzy.ChainFinite[I, O](left, right) with MemberFinite[(I, O)] with HasLogger {

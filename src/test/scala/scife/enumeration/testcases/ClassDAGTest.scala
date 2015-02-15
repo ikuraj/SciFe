@@ -10,7 +10,6 @@ import scife.{ enumeration => e }
 import memoization._
 
 import scife.util._
-import scife.util.logging._
 import structures.BSTrees._
 
 import org.scalatest._
@@ -21,7 +20,7 @@ import scala.language.existentials
 
 // this testcase has only classes, not interfaces
 class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-  logging.HasLogger with ProfileLogger {
+  HasLogger with ProfileLogger {
   import Checks._
   import structures._
   import BSTrees._

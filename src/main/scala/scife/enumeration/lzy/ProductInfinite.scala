@@ -1,8 +1,8 @@
 package scife.enumeration
 package lzy
 
-import _root_.scife.util
-import util.Math._
+import scife.util._
+import Math._
 
 // Cantor inverse mapping is fine in this case
 protected[enumeration] class ProductInfinite[T, V]

@@ -3,7 +3,7 @@ package memoization
 
 import scife.enumeration.{ memoization => em }
 
-import scife.util.logging.HasLogger
+import scife.util._
 
 import scala.collection.mutable._
 
@@ -11,8 +11,8 @@ trait Memoized[T] extends Member[T] with HasLogger {
   
   self: em.Memoizable =>
     
-  override lazy val logger =
-    loggerFactory.newLogger("scife.enumeration.member.memoization.Memoized")
+//  override lazy val logger =
+//    loggerFactory.newLogger("scife.enumeration.member.memoization.Memoized")
 
   private[enumeration] val members = HashSet[T]()
 

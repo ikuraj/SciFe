@@ -7,6 +7,8 @@ package eager
 import combinators._
 import scife.{ enumeration => e }
 
+import scife.util._
+
 class ChainFinite[I, O]
   (override val left: MemberFinite[I], override val right: MemberDependFinite[I, O])
   extends e.dependent.ChainFinite[I, O](left, right) with MemberFinite[(I, O)] with HasLogger {

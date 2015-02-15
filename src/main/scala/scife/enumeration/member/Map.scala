@@ -3,6 +3,8 @@ package member
 
 import scife.{ enumeration => en }
 
+import scife.util._
+
 abstract class Map[T, U](enum: Member[T], modify: T=>U, revFun: U=>T)
 	extends en.Map[T, U](enum, modify) with Member[U] with HasLogger {
 

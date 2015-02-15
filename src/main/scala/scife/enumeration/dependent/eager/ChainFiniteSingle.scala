@@ -4,6 +4,8 @@ package dependent
 import combinators.ChainSingle
 import scife.{ enumeration => e }
 
+import scife.util._
+
 class ChainFiniteSingle[I, O]
   (override val left: Finite[I], override val right: DependFinite[I, O])
   extends ChainSingle[I, O] with Finite[O] with HasLogger {
