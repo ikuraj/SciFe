@@ -113,13 +113,13 @@ public class IsomorphismInspectorTest extends TestCase {
         while (iso.hasNext()) {
             IsomorphismRelation isioResult = (IsomorphismRelation) iso.next();
 
-            if (false) {
-                if (counter == 0) {
-                    System.out.println(
-                        "Graphs are isomorphic. Iterating over all options:");
-                }
-                System.out.println(counter + " : " + isioResult);
-            }
+//            if (false) {
+//                if (counter == 0) {
+//                    System.out.println(
+//                        "Graphs are isomorphic. Iterating over all options:");
+//                }
+//                System.out.println(counter + " : " + isioResult);
+//            }
             counter++;
         }
 
@@ -166,9 +166,9 @@ public class IsomorphismInspectorTest extends TestCase {
             {
                 Integer v1 = iter.next();
                 Integer v2 = isoResult.getVertexCorrespondence(v1, true);
-                if (false) {
-                    System.out.println("Vertex relation " + v1 + " to " + v2);
-                }
+//                if (false) {
+//                    System.out.println("Vertex relation " + v1 + " to " + v2);
+//                }
             }
             Set<DefaultEdge> edgeSet = g1.edgeSet();
             for (
@@ -177,9 +177,9 @@ public class IsomorphismInspectorTest extends TestCase {
             {
                 DefaultEdge e1 = iter.next();
                 DefaultEdge e2 = isoResult.getEdgeCorrespondence(e1, true);
-                if (false) {
-                    System.out.println("Vertex relation " + e1 + " to " + e2);
-                }
+//                if (false) {
+//                    System.out.println("Vertex relation " + e1 + " to " + e2);
+//                }
             }
 
             // if (counter==0)

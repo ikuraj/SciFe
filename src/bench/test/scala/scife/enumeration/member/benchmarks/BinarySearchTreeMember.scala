@@ -11,6 +11,8 @@ import scife.enumeration.benchmarks._
 
 import org.scalameter.api._
 
+import scala.language.postfixOps
+
 class BinarySearchTreeMember
   extends DependentMemoizedBenchmark[
     (Int, Int),

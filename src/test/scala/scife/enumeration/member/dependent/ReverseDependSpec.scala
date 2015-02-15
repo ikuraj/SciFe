@@ -15,7 +15,7 @@ class MemberDependSpec extends WordSpec with Matchers {
   "A depend Member" should {
 
     "enumerate enumerators with appropriate type" in {
-      member(0) shouldBe a [Member[Int]]
+      member(0) shouldBe a [Member[_]]
     }
 
   }

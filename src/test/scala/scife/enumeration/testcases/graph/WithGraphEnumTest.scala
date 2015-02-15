@@ -232,6 +232,7 @@ class WithGraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPrope
                     sup(input) map {
                       case ((left, ord, right) &: rest) =>
                         ( shift(leftS) ++ left, ord, shift(rightS) ++ right ) &: rest
+                      case _ => ??? // although this cannot happen
                     }
                   }
                   else
