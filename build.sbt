@@ -78,3 +78,6 @@ libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
 //libraryDependencies += "org.jgrapht" % "jgrapht-ext" % "0.9.0"
 //
 //libraryDependencies += "org.jgrapht" % "jgrapht-dist" % "0.9.0"
+
+// Scalaz
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"
