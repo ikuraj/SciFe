@@ -63,6 +63,7 @@ ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
 // Check style
 org.scalastyle.sbt.ScalastylePlugin.Settings
 
+<<<<<<< HEAD
 // Combinatorics with collections
 libraryDependencies += "com.googlecode.combinatoricslib" % "combinatoricslib" % "2.1"
 
@@ -78,3 +79,7 @@ libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
 //libraryDependencies += "org.jgrapht" % "jgrapht-ext" % "0.9.0"
 //
 //libraryDependencies += "org.jgrapht" % "jgrapht-dist" % "0.9.0"
+=======
+// Scalaz
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"
+>>>>>>> 4ad293cd92ec16e24e2072374ab5e64a7bb1aebf

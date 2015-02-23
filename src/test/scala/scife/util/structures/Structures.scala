@@ -74,7 +74,6 @@ package structures {
   object BSTrees {
     trait Tree
     case object Leaf extends Tree
-    // if c == true then the node is black
     case class Node(l: Tree, v: Int, r: Tree) extends Tree {
       def this(v: Int) = this(Leaf, v, Leaf)
     }
@@ -136,6 +135,17 @@ package structures {
       }
     }
 
+  }
+  
+  object LazyBSTrees {
+    trait Tree
+    case object Leaf extends Tree
+    class Node(l: => Tree, v: => Int, r: => Tree) extends Tree
+    
+    object Node {
+      def apply(l: => Tree, v: => Int, r: => Tree) = new Node(l, v, r)
+      def apply(v: => Int) = new Node(Leaf, v, Leaf)
+    }
   }
   
   object RedBlackTrees {

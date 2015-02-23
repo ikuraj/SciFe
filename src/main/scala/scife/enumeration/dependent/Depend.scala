@@ -9,7 +9,7 @@ import scala.language.higherKinds
 
 trait Depend[I, +O] extends Serializable {
 
-  type EnumType <: Enum[O]
+  protected type EnumType <: Enum[O]
 
   def apply(parameter: I) = getEnum(parameter)
 
