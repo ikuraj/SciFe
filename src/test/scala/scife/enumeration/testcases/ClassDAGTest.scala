@@ -25,6 +25,7 @@ class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyCh
   import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   // (size, Id, #class, #overridableMethods, map(node->sealed))
   type Input = (Int, Int, Set[Int], List[Int], Predef.Map[Int, Set[Int]])

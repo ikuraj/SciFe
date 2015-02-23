@@ -25,6 +25,7 @@ class GraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
   import Checks._
   import Util._
   import Graph._
+  import Common._
 
   import GraphEnum._
 

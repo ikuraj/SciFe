@@ -25,6 +25,7 @@ class HeapArrayEqualTest extends FunSuite with Matchers with GeneratorDrivenProp
   import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   val bound = 6
 

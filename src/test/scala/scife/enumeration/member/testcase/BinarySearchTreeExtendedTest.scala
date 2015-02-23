@@ -13,6 +13,7 @@ import org.scalacheck.Gen
 import scife.enumeration.dependent.Depend
 
 class BinarySearchTreeExtendedTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
+
   import Checks._
   import scife.util.structures._
   import bst.ybanez._
@@ -147,7 +148,7 @@ class BinarySearchTreeExtendedTest extends FunSuite with Matchers with Generator
 
   test("correctness of enumeration") {
 
-    common.BinarySearchTreeTest.testCorrectness(Depend.fin {
+    common.BinarySearchTreeTestHelper.testCorrectness(Depend.fin {
       in: (Int, Range) =>
         constructEnumerator(in) map { x => BST.thisBST2simpleBST(x) }
     })

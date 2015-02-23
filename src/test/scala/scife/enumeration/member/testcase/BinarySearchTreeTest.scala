@@ -50,8 +50,8 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   }
 
   test("regular enumeration") {
-
-    common.BinarySearchTreeTest.testCorrectness(constructEnumerator)
+    
+    common.BinarySearchTreeTestHelper.testCorrectness( constructEnumerator )
 
   }
 

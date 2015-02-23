@@ -25,6 +25,7 @@ class GraphEnumFromToTest extends FunSuite with Matchers with GeneratorDrivenPro
   import Checks._
   import Util._
   import Graph._
+  import Common._
 
   import GraphEnum._
 

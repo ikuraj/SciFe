@@ -24,6 +24,7 @@ class ClassInterfaceDAGTest extends FunSuite with Matchers with GeneratorDrivenP
   import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   // (size, Id, #class, #interface, #overridableMethods, map(node->sealed))
   type Input = (Int, Int, Set[Int], Set[Int], List[Int], Predef.Map[Int, Set[Int]])

@@ -25,6 +25,7 @@ class DAGTestStructure extends FunSuite with Matchers with GeneratorDrivenProper
   import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   // (size, #class)
   type Input = (Int, Int)

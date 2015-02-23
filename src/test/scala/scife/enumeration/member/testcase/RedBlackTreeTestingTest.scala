@@ -8,7 +8,7 @@ import util._
 import scife.util.logging._
 import scife.util._
 
-import scife.enumeration.common.RedBlackTreeTest
+import scife.enumeration.common.RedBlackTreeTestHelper
 
 import org.scalatest._
 import org.scalatest.prop._
@@ -24,7 +24,7 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
   import Checks._
   import structures._
   import RedBlackTrees._
-  import RedBlackTreeTest._
+  import RedBlackTreeTestHelper._
 
   test("correct enumeration") {
 

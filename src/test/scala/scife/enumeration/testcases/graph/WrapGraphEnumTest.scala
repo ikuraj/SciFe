@@ -25,6 +25,7 @@ class WrapGraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPrope
   import Checks._
   import Util._
   import Graph._
+  import Common._
   
   import GraphEnum._
 

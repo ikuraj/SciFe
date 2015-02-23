@@ -25,6 +25,7 @@ class BinarySearchTreeCompBenchmarkTest extends FunSuite
   HasLogger with ProfileLogger {
     import Util.CheckerHelper
   import Checks._
+  import Common._
   import Math._
 
   type Output = Tree//(List[Int], Tree)

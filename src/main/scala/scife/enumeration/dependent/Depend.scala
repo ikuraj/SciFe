@@ -120,8 +120,7 @@ object Depend {
 
   import memoization.{ MemoizationScope }
   import memoization.dependent._
-  
-  import memoization.util._
+  import memoization.scope._
 
   def memoized[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]], ms: MemoizationScope): Depend[I, O] = {

@@ -147,7 +147,7 @@ class BinarySearchTreeFromSetTest extends FunSuite with Matchers with GeneratorD
 
   ignore("correctness of enumeration") {
 
-    common.BinarySearchTreeTest.testCorrectness(Depend.fin {
+    common.BinarySearchTreeTestHelper.testCorrectness(Depend.fin {
       in: (Int, Range) =>
         setValues(in._2)
         constructEnumerator(in) map { x => BST.thisBST2simpleBST(x) }

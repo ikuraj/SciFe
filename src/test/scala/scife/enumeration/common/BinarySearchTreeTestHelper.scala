@@ -18,10 +18,10 @@ import org.scalameter.api._
 
 import scala.language.existentials
 
-object BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-	HasLogger with ProfileLogger {  
+object BinarySearchTreeTestHelper extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
 
   import Util.CheckerHelper
+  import Common._
   import Checks._
   import Math._
   

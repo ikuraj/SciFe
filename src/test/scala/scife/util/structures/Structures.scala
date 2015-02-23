@@ -137,7 +137,7 @@ package structures {
     }
 
   }
-
+  
   object RedBlackTrees {
     trait Tree
     case object Leaf extends Tree
@@ -245,6 +245,16 @@ package structures {
       case Node(_, _, _, c) => c
     }
 
+  }
+  
+  object RedBlackTreesFastHash {
+    trait Tree
+    case object Leaf extends Tree
+    // if c == true then the node is black
+    case class Node(l: Tree, v: Int, r: Tree, c: Boolean) extends Tree {
+      override def hashCode =
+        super.hashCode()
+    }
   }
 
   object Program {

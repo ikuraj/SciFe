@@ -1,12 +1,16 @@
-package scife.enumeration.benchmarks
+package scife.enumeration
+package suite
+
+import benchmarks._
 
 import org.scalameter._
 
 import reporting._
 import execution._
 import Key._
-
+  
 package suite {
+  
   // if set, does not run full-blown micro-benchmark test suite; it runs
   // a quicker benchmark with less reliable results
 
@@ -56,14 +60,7 @@ package suite {
 
     import BenchmarkSuite._
 
-    implicit val configArguments =
-      org.scalameter.Context(
-        exec.maxWarmupRuns -> warmUps,
-        exec.benchRuns -> numberOfRuns,
-        exec.independentSamples -> JVMs,
-        exec.jvmcmd -> javaCommand,
-        exec.jvmflags -> JVMFlags.mkString(" ")
-      )
+    implicit val configArguments = configArgumentsFull
 
     for( ((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
       benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
@@ -135,7 +132,7 @@ package suite {
 }
 
 object BenchmarkSuite {
-
+  
   val benchmarkMainName = "Benchmarks"
 
   val allBenchmarks = List(
@@ -178,17 +175,37 @@ object BenchmarkSuite {
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
     // print important outputs
-//    "-XX:+PrintCompilation", "-verbose:gc",
+//    "-XX:+PrintCompilation",
+    // verbose GC
+//    "-verbose:gc", "-XX:+PrintGCTimeStamps", "-XX:+PrintGCDetails",
     // compilation
-//    "-Xbatch", "--XX:CICompilerCount=1",
-//    // optimizations
+    "-Xbatch",
+    // explicit GC calls we need
+    "-XX:-DisableExplicitGC",
+//    "--XX:CICompilerCount=1",
+    // optimizations
     "-XX:ReservedCodeCacheSize=512M",
-    "-XX:CompileThreshold=100", "-XX:+TieredCompilation",
+    "-XX:CompileThreshold=10", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512"
     ,
     // memory
-    "-Xms32G", "-Xmx32G"
+    "-Xms32G", "-Xmx32G",
+    // new generation size
+    "-XX:NewSize=30G",
+    // disable adaptive policy
+    "-XX:-UseAdaptiveSizePolicy",
+    "-XX:MinHeapFreeRatio=80",
+    "-XX:MaxHeapFreeRatio=100"
   )
 //  println("JVM FLags: " + JVMFlags.mkString(" "))
+  
+  
+  val configArgumentsFull =
+    org.scalameter.Context(
+      exec.maxWarmupRuns -> 3,
+      exec.benchRuns -> 3,
+      exec.independentSamples -> 1,
+      exec.jvmcmd -> javaCommand,
+      exec.jvmflags -> JVMFlags.mkString(" "))  
 
 }
