@@ -64,30 +64,42 @@ object Depend {
     new WrapFunction(producerFunction)
 
   // not sure about this one
-//  def apply[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
-//    (implicit ct: ClassTag[F[_]], ms: MemoizationScope = null): Depend[I, O] = {
+//  def apply[I, O, F[A] <: Enum[A]](producerFunction: (Depend[I, O], I) => F[O])
+//    (implicit ct: ClassTag[F[_]]): Depend[I, O] = {
+//    import iterable._
+//
 //    val finiteTag = implicitly[ClassTag[Finite[_]]]
 //    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
 //    val enum =
 //      implicitly[ClassTag[F[_]]] match {
+//        case _: Finite[_] with ResetIter[_] =>
+//          type EnumSort[A] = Finite[A] with ResetIter[A]
+//          val fun = producerFunction.asInstanceOf[I => EnumSort[O]]
+//          new WrapFunction[I, O, EnumSort](fun) with DependFinite[I, O]
 //        case `finiteTag` =>
 //          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
-//          new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O]
+//          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O]
 //        case _: Infinite[_] =>
 //          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
-//          new WrapFunction[I, O, Infinite[O]](fun) with DependInfinite[I, O]
+//          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O]
 //        case _ =>
-//          new WrapFunction[I, O, F[O]](producerFunction)
+//          new WrapFunction[I, O, F](producerFunction)
 //      }
 //
 //    enum
 //  }
 
-  def apply[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
+  def apply[I, O, F[A] <: Enum[A]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]]): Depend[I, O] = {
+    import iterable._
+    
     val finiteTag = implicitly[ClassTag[Finite[_]]]
     val infiniteTag = implicitly[ClassTag[Infinite[_]]]
     implicitly[ClassTag[F[_]]] match {
+      case _: Finite[_] with ResetIter[_] =>
+        type EnumSort[A] = Finite[A] with ResetIter[A]
+        val fun = producerFunction.asInstanceOf[I => EnumSort[O]]
+        new WrapFunction[I, O, EnumSort](fun) with DependFinite[I, O]
       case `finiteTag` =>
         val fun = producerFunction.asInstanceOf[I => Finite[O]]
         new WrapFunction[I, O, Finite](fun) with DependFinite[I, O]

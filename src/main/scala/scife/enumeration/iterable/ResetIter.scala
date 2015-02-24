@@ -10,3 +10,5 @@ trait ResetIter[+A] extends Iter[A] {
   def reset = ind = -1
     
 }
+
+//trait ResetIterFinite[+A] extends Finite[A] with ResetIter[A]

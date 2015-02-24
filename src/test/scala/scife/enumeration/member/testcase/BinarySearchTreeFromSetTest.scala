@@ -5,12 +5,14 @@ package testcase
 
 import scife.{ enumeration => e }
 import dependent._
+import scife.enumeration.dependent.Depend
+
 import scife.util.logging._
 import scife.util._
+
 import org.scalatest._
 import org.scalatest.prop._
 import org.scalacheck.Gen
-import scife.enumeration.dependent.Depend
 
 class BinarySearchTreeFromSetTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
   import Checks._

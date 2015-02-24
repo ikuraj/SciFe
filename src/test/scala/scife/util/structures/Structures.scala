@@ -140,11 +140,22 @@ package structures {
   object LazyBSTrees {
     trait Tree
     case object Leaf extends Tree
-    class Node(l: => Tree, v: => Int, r: => Tree) extends Tree
+    class Node(_l: => Tree, _v: => Int, _r: => Tree) extends Tree {
+      lazy val l = _l
+      lazy val v = _v
+      lazy val r = _r
+    }
     
     object Node {
       def apply(l: => Tree, v: => Int, r: => Tree) = new Node(l, v, r)
       def apply(v: => Int) = new Node(Leaf, v, Leaf)
+    }
+    
+    implicit def toRegularBSTTree(t: Tree): BSTrees.Tree = t match {
+      case Leaf => BSTrees.Leaf 
+      case n: Node => BSTrees.Node(
+        toRegularBSTTree(n.l), n.v, toRegularBSTTree(n.r)
+      )
     }
   }
   

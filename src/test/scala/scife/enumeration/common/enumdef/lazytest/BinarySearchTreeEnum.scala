@@ -12,11 +12,11 @@ import scife.enumeration.iterable.ResetIter
 object BinarySearchTreeEnum {
   
   import structures.LazyBSTrees._
-  import dependent._
+  import e.dependent._
   import memoization._
   
-  type ResetIterEnumType[+A] = Enum[A] with ResetIter[A]/* with Memoized[A]*/
-  type DepEnumType[I, +O] = Depend[I, O] { type EnumType = ResetIterEnumType[O] }
+  type ResetIterEnumType[A] = ResetIterFinite[A]/* with Memoized[A]*/
+  type DepEnumType[I, O] = Depend[I, O] { type EnumSort[A] = ResetIterEnumType[A] }
  
   val enumDefList =
     List(
@@ -27,8 +27,8 @@ object BinarySearchTreeEnum {
   
   // slightly changed constructEnumeratorBenchmark
   def constructEnumerator(implicit ms: MemoizationScope) = {
-    new WrapFunction (
-      ((self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
+    new WrapFunctionTest[(Int, Range), Tree, ResetIterEnumType](
+      ((self: DepEnumType[(Int, Range), Tree], pair: (Int, Range)) => {
         val (size, range) = pair
 
         if (size <= 0) new e.Singleton(Leaf) with ResetIter[Tree]
@@ -50,19 +50,21 @@ object BinarySearchTreeEnum {
           val leftTrees = new InMap(self, { (par: (Int, Int)) =>
             val (leftSize, median) = par
             (leftSize, range.start to (median - 1))
-          }) with DependFinite[(Int, Int), Tree] { override type EnumType = Finite[Tree] with ResetIter[Tree] }
+          }) with DependFinite[(Int, Int), Tree] {
+            override type EnumSort[A] = ResetIterEnumType[A]
+          }
 
           val rightTrees =
             new InMap(self, { (par: (Int, Int)) =>
               val (leftSize, median) = par
               (size - leftSize - 1, (median + 1) to range.end)
             }) with DependFinite[(Int, Int), Tree] {
-              override type EnumType = Finite[Tree] with ResetIter[Tree]
+              override type EnumSort[A] = ResetIterEnumType[A]
             }
 
           val leftRightPairs =
-            new e.dependent.ProductFinite(leftTrees, rightTrees) {
-              override type EnumType = Finite[(Tree, Tree)] with ResetIter[(Tree, Tree)]
+            new iterable.dependent.ProductFinite(leftTrees, rightTrees) {
+              override type EnumSort[A] = ResetIterEnumType[A]
             }
 
           val allNodes: ResetIterEnumType[Tree] =
@@ -72,8 +74,8 @@ object BinarySearchTreeEnum {
 
           allNodes
         }
-      }): (Depend[(Int, Range), Tree], (Int, Range)) => Enum[Tree]
-    )
+      }): (DepEnumType[(Int, Range), Tree], (Int, Range)) => ResetIterEnumType[Tree]
+    ) with DependFinite[(Int, Range), Tree] { override type EnumSort[A] = ResetIterEnumType[A] }
   }
   
 }

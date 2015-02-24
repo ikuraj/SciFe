@@ -4,8 +4,8 @@ package iterable
 import combinators.{ Product => CProduct }
 
 protected[enumeration] class ProductFinite[T, V]
-  (override val left: Finite[T] with ResetIter[T], override val right: Finite[V] with ResetIter[V])
-  extends lzy.ProductFinite[T, V](left, right) with ResetIter[(T, V)] with HasLogger {
+  (override val left: ResetIterFinite[T], override val right: ResetIterFinite[V])
+  extends lzy.ProductFinite[T, V](left, right) with ResetIter[(T, V)] {
   
   override def next = {
     if (!right.hasNext) {
