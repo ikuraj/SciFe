@@ -1,9 +1,11 @@
 package scife.enumeration
 package dependent
 
-trait DependFinite[I, +O] extends Depend[I, O] {
+import scala.language.higherKinds
 
-  override type EnumType <: Finite[O]
+trait DependFinite[I, O] extends Depend[I, O] {
+
+  override type EnumSort[A] <: Finite[A]
 
   // concatenation
 //  def concat(e: DependFinite[I, O]): DependFinite[I, O] =

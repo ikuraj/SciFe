@@ -10,8 +10,7 @@ class InMap[I, NewIn, O/*, MemberType <: MemberDepend[I, O]*/](
   override val inner: MemberDepend[I, O], override val f: NewIn => I  
 ) extends combinators.InMap[I, NewIn, O] with MemberDepend[NewIn, O] {
   
-  //override type DependType = MemberType
-  override type DependType = MemberDepend[I, O]
+  override type DependSort[A, B] = MemberDepend[A, B]
   
 }
 
@@ -19,7 +18,7 @@ class InMapFin[I, NewIn, O](
   override val inner: MemberDependFinite[I, O], override val f: NewIn => I  
 ) extends combinators.InMap[I, NewIn, O] with MemberDependFinite[NewIn, O] {
   
-  override type DependType = MemberDependFinite[I, O]
+  override type DependSort[A, B] = MemberDependFinite[A, B]
   
 }
 

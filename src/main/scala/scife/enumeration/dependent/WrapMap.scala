@@ -6,12 +6,14 @@ import scala.collection.mutable
 
 import scife.util._
 
-class WrapMap[I, O, E <: Enum[O]](initMap: ScalaMap[I, E] = ScalaMap.empty)
+import scala.language.higherKinds
+
+class WrapMap[I, O, E[A] <: Enum[A]](initMap: ScalaMap[I, E[O]] = ScalaMap.empty)
   extends Depend[I, O] with HasLogger {
 
-  override type EnumType = E
+  override type EnumSort[A] = E[A]
 
-  var _map: mutable.Map[I, E] = mutable.Map() ++ initMap
+  var _map: mutable.Map[I, E[O]] = mutable.Map() ++ initMap
 
   override def getEnum(parameter: I) =
     map(parameter)

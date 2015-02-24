@@ -3,19 +3,19 @@ package dependent
 
 import scala.language.higherKinds
 
-class InMap[I, NewIn, O, DependIn[I, +O] <: Depend[I, O]](
+class InMap[I, NewIn, O, DependIn[I, O] <: Depend[I, O]](
   override val inner: DependIn[I, O], override val f: NewIn => I
 ) extends combinators.InMap[I, NewIn, O] {
 
-  override type DependType = DependIn[I, O]
+  override type DependSort[A, B] = DependIn[A, B]
 
 }
 
-class InMapP[I, NewIn, O, DependIn[I, +O] <: Depend[I, O]](
+class InMapP[I, NewIn, O, DependIn[I, O] <: Depend[I, O]](
   override val inner: DependIn[I, O], override val f: PartialFunction[NewIn, I]
 ) extends combinators.InMap[I, NewIn, O] {
 
-  override type DependType = DependIn[I, O]
+  override type DependSort[A, B] = DependIn[A, B]
 
 }
 
