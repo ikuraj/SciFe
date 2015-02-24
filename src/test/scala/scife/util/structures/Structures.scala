@@ -144,6 +144,12 @@ package structures {
       lazy val l = _l
       lazy val v = _v
       lazy val r = _r
+      
+      override def equals(that: Any) = that match {
+        case thatNode: Node =>
+          thatNode.v == v && thatNode.l == l && thatNode.r == r
+        case _ => false
+      }
     }
     
     object Node {

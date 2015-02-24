@@ -1,6 +1,7 @@
 package scife
 package enumeration
 package iterable
+package testcase
 
 import scife.{ enumeration => e }
 import e.iterable._
@@ -30,5 +31,21 @@ class BinarySearchTreeEnum extends FunSuite with Matchers
         enum(in) map LazyBSTrees.toRegularBSTTree
     })
 
+  }
+  
+  test("resetting enumerator in the middle") {
+    val depEnum = BinarySearchTreeEnum.constructEnumerator
+    val enum = depEnum(10, 1 to 10)
+
+    val halfOfTheEnum =
+      for (ind <- 0 until enum.size/2)
+        yield enum(ind)
+        
+    enum.reset
+    
+    for ((el, ind) <- halfOfTheEnum.zipWithIndex)
+      enum(ind) should be (el)
+
   } 
+
 }
