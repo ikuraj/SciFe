@@ -1,6 +1,7 @@
 package scife
 package enumeration
 package iterable
+package lzy
 
 trait Touchable[+A] extends Iter[A] {
   

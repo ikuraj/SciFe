@@ -97,3 +97,17 @@ class WrapFunctionTest[I, O, E[A] <: Enum[A]](val producerFunction:
     producerFunction(this, parameter)
 
 }
+
+//class WrapFunctionTest2[I, O, E[A] <: Enum[A],
+//  D[I, O] <: Depend[I, O]{ type EnumSort[A] = E[A] }](val producerFunction:
+//  (D[I, O], I) => E[O])
+//  extends Depend[I, O] with HasLogger with Serializable {
+//
+//  override type EnumSort[A] = E[A]
+//
+//  val partiallyApplied = producerFunction(this, _: I)
+//
+//  override def getEnum(parameter: I) =
+//    producerFunction(this, parameter)
+//
+//}

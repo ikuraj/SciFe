@@ -10,17 +10,17 @@ import scife.util._
 
 object ConcatFinite {
 
-  def apply[T](left: Finite[T], right: Finite[T])/*(implicit ct: ClassTag[T])*/ =
+  def apply[T](left: Finite[T], right: Finite[T]) /*(implicit ct: ClassTag[T])*/ =
     if (left.size == right.size)
-      new ConcatFiniteEqualSize( Array(left, right) )
+      new ConcatFiniteEqualSize(Array(left, right))
     else
-      new ConcatFiniteVariedSize( Array(left, right) )
+      new ConcatFiniteVariedSize(Array(left, right))
 
-  def apply[T](finites: Array[Finite[T]])/*(implicit ct: ClassTag[T])*/ =
+  def apply[T](finites: Array[Finite[T]]) /*(implicit ct: ClassTag[T])*/ =
     if (finites.map(_.size).distinct.size == 1)
-      new ConcatFiniteEqualSize( finites )
+      new ConcatFiniteEqualSize(finites)
     else
-      new ConcatFiniteVariedSize( finites )
+      new ConcatFiniteVariedSize(finites)
 
   def fixed[T](streams: Array[Finite[T]]) =
     new ConcatFiniteVariedSize(streams)
@@ -77,10 +77,10 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
   override def enums = enumArray.toSeq
 
   override def apply(ind: Int) = {
-   entering("apply", ind)
-   val arrInd = binarySearch(ind)
-   val elInd = ind - limits(arrInd)
-   exiting("apply", enumArray(arrInd)(elInd))
+    entering("apply", ind)
+    val arrInd = binarySearch(ind)
+    val elInd = ind - limits(arrInd)
+    exiting("apply", enumArray(arrInd)(elInd))
   }
 
   private[this] val limits = {
@@ -99,23 +99,23 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
   }
 
   private[enumeration] def binarySearch(target: Int): Int = {
-   var left = 0
-   // limits are indexed 0..length
-   var right = enumArray.length
-   while (left <= right) {
-     val mid = (left + right) / 2
-     info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
-     if (limits(mid) <= target && limits(mid + 1) > target)
-       return mid
-     else if (limits(mid) > target)
-       right = mid
-     else
-       left = mid
-   }
-   // should not happen
-   throw new RuntimeException
+    var left = 0
+    // limits are indexed 0..length
+    var right = enumArray.length
+    while (left <= right) {
+      val mid = (left + right) / 2
+      info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
+      if (limits(mid) <= target && limits(mid + 1) > target)
+        return mid
+      else if (limits(mid) > target)
+        right = mid
+      else
+        left = mid
+    }
+    // should not happen
+    throw new RuntimeException
   }
-  
+
 }
 
 // Union of finite enumerators of equal length
@@ -125,9 +125,9 @@ class ConcatFiniteEqualSize[T] protected[enumeration] (val enumArray: Array[Fini
     "(sizes are %s)".format(enumArray.map(_.size).distinct))
 
   override def enums = enumArray.toSeq
-    
+
   override def size = {
-    assert( enumArray.length * enumArray(0).size == super.size )
+    assert(enumArray.length * enumArray(0).size == super.size)
     enumArray.length * enumArray(0).size
   }
 
