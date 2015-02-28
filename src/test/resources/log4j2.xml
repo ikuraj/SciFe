@@ -15,7 +15,7 @@
     <logger name="scife.enumeration.member.memoization" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="scife.enumeration.member.testcase" level="off" additivity="false">
+    <logger name="scife.enumeration.iterable" level="all" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="scife.enumeration.benchmarks" level="off" additivity="false">

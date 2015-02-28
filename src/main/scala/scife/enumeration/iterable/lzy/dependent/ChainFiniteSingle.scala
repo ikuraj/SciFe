@@ -48,11 +48,13 @@ class ChainFiniteSingleCombine[I, O, R]
           stream = right.getEnum(leftVal); if stream.size > 0 )
         yield
           (stream, e.Map( stream, { (rightProduced: O) => combine(leftVal, rightProduced) }))
+    info(s"streams=${streams}")
           
     val (_rightStreams, finalStreams) = streams.unzip
     
     ( _rightStreams.toArray, Array( finalStreams: _*))
   }
+  info(s"streamArray.size=${streamArray.size}")
   
   val sizeArray = (streamArray map { _.size }).scanLeft(0) { _ + _ }
 
@@ -64,14 +66,15 @@ class ChainFiniteSingleCombine[I, O, R]
     else categoryIndex < rightStreams.size - 1
   
   override def next = {
+    info(s"rightStreams=${rightStreams.size}")
     if (rightStreams(categoryIndex).touched) {
+      // check if going to next element switches to next inner enum
       if (ind >= sizeArray(categoryIndex) - 1)
         categoryIndex += 1
     }
     else {
       ind = sizeArray(categoryIndex) - 1
       categoryIndex += 1
-//      this.apply(ind)
     }
     super.next
   }
