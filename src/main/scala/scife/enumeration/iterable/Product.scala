@@ -17,8 +17,8 @@ object Product {
   
   def apply[T, V](s1: ResetIterFinite[T], s2: ResetIterFinite[V]): ResetIterFinite[(T, V)] =
     (s1, s2) match {
-//      case (Empty, _) | (_, Empty) =>
-//        Empty
+      case (_, _) | (_, _) if s1.size == 0 || s2.size == 0 =>
+        Empty
 //      case (s1: Singleton[T], s2: Finite[V]) =>
 //        new ProductSingleton(s1, s2)
 //      case (s1: Finite[T], s2: Singleton[V]) =>

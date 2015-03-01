@@ -41,7 +41,7 @@ class ChainFiniteSingleCombine[I, O, R]
   (implicit ct: ClassTag[I])
   extends
     //e.dependent.ChainFiniteSingleCombine(left, right, combine) with
-    Finite[R] with Iter[R] with HasLogger {
+    Finite[R] with ResetIter[R] with HasLogger {
 
   type E = right.EnumType
   
@@ -66,6 +66,8 @@ class ChainFiniteSingleCombine[I, O, R]
   
   val sizeArray = rightStreams map { _.size }
   info(s"sizeArray size=${sizeArray.mkString(" ")}")
+
+  override def head = combine( leftValues(categoryIndex), rightStreams(categoryIndex).head )
 
   override def hasNext =
     rightStreams(categoryIndex).touched && rightStreams(categoryIndex).hasNext ||
@@ -93,6 +95,17 @@ class ChainFiniteSingleCombine[I, O, R]
   override def apply(ind: Int): R =
     // does not work well with touched -- need to decouple
     throw new RuntimeException
+    
+  // TODO refactor this when inner enumerators are reset iter, than this can work
+  override def hasStarted = throw new RuntimeException//leftValues(categoryIndex).hasStarted
+  
+  override def reset = {
+    // can do this along the way (during next), but this is cleaner
+    for (i <- 0 to categoryIndex)
+      rightStreams(i).reset
+    categoryIndex = 0
+  }
+    
 }
 
 //class ChainFiniteSingleCombine[I, O, R]

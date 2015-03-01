@@ -51,8 +51,43 @@ class SortedListTest extends FunSuite with Matchers
 
   }
   
+  test("finding an element in a list") {
+    val listEnum = constructEnumerator
+    val testTuples =
+      new iterable.ProductFinite[Int, Collection[Int]](
+        new e.WrapArray( Array(3, 3, 3) ) with ResetIter[Int],
+        listEnum(3, 3)
+      )
+      
+    testTuples.size shouldBe 30
+      
+    for (i <- 1 to 3) {
+      testTuples.hasNext shouldBe true
+      val p = testTuples.next
+      p._2.mkString("")
+    }
+    testTuples.reset
+
+    for (i <- 1 to testTuples.size) {
+      testTuples.hasNext shouldBe true
+      val p = testTuples.next
+      p._2.mkString("")
+    }
+    testTuples.hasNext shouldBe false
+    testTuples.reset
+    
+    var count = 0
+    while (testTuples.hasNext) {
+      val (n, l) = testTuples.next
+      count += 1
+      val index = l.indexOf(n)
+    }
+    count shouldBe testTuples.size + (- 6 + 1) * 3 
+
+  }
+  
   test("correctness of iterative enumeration") {
-    val enum = constructEnumerator
+    val enum = constructEnumeratorStrict
     
     {
       val itEnum = enum(3, 3).asInstanceOf[
@@ -89,15 +124,51 @@ class SortedListTest extends FunSuite with Matchers
 
   test("correctness of exhaustive iterative enumeration") {
     val enum = constructEnumerator
-    val base = SortedListEnum.constructEnumeratorStrict
+    val base = SortedListEnum.constructEnumerator
 
     for (size <- 0 to 7; range <- 0 to 7; if range > size) {
       val itEnum = enum(size, range)
       val baseEnum = base(size, range)
+
+      itEnum.size shouldBe baseEnum.size
+
       for(i <- 0 until baseEnum.size)
         itEnum.next shouldBe baseEnum(i)
       
       itEnum.hasNext shouldBe false
+    }
+
+  }
+  
+  test("correctness of exhaustive iterative enumeration, next") {
+    val enum = constructEnumerator
+
+    for (size <- 0 to 7; range <- 0 to 7; if range > size) {
+      val itEnum = enum(size, range)
+      while (itEnum.hasNext) itEnum.next
+    }
+
+  }
+  
+  test("correctness of exhaustive iterative enumeration, next, reset") {
+    val enum = constructEnumerator
+    val base = SortedListEnum.constructEnumerator
+
+    for (size <- 0 to 7; range <- 0 to 7; if range > size) {
+      val itEnum = enum(size, range)
+      val baseEnum = base(size, range)
+
+      for (_ <- 1 to 3) {
+        itEnum.size shouldBe baseEnum.size
+  
+        for(i <- 0 until baseEnum.size) {
+          itEnum.hasNext shouldBe true
+          itEnum.next shouldBe baseEnum(i)
+        }
+        
+        itEnum.hasNext shouldBe false
+        itEnum.reset
+      }
     }
 
   }
@@ -118,6 +189,43 @@ class SortedListTest extends FunSuite with Matchers
   } 
   
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope) = {
+
+    new WrapFunctionTest[(Int, Int), Collection[Int], EnumType](
+      ( self: DepEnumType[(Int, Int), Collection[Int]], pair: (Int, Int) ) => {
+        val (size, max) = pair
+
+        if (size == 0) (new e.Singleton( Stream[Int]() ) with ResetIter[Collection[Int]] with
+          Touchable[Collection[Int]]): EnumType[Collection[Int]]
+        else //if (size > 0)
+          {
+            val roots = new e.WrapArray( 1 to max toArray ) with ResetIter[Int] with Touchable[Int]
+  
+            val innerCollections: DepEnumType[Int, Collection[Int]] = new InMap[(Int, Int), Int, Collection[Int],
+              DepEnumType] (self, { (par: Int) =>
+              (size - 1, par)
+            }) with DependFinite[Int, Collection[Int]] {
+              override type EnumSort[A] = SortedListTest.this.EnumType[A]
+            }
+  
+            val fConstructCollection: (=> Int, => Collection[Int]) => Collection[Int] =
+              (head, l) => {
+                info("fConstructCollection invoked!!")
+                head #:: l
+              }
+            val allCollections =
+              new iterable.lzy.dependent.ChainFiniteSingleCombine[Int, Collection[Int], Collection[Int]](
+                roots,
+                innerCollections.asInstanceOf[DepEnumTypeFinite[Int, Collection[Int]]],
+                fConstructCollection
+              ) with ResetIter[Collection[Int]] with Touchable[Collection[Int]]
+  
+            allCollections: LazyEnumFinite[Collection[Int]]
+        }
+      }
+    )
+  }
+  
+  def constructEnumeratorStrict(implicit ms: e.memoization.MemoizationScope) = {
 
     new WrapFunctionTest[(Int, Int), Collection[Int], EnumType](
       ( self: DepEnumType[(Int, Int), Collection[Int]], pair: (Int, Int) ) => {
