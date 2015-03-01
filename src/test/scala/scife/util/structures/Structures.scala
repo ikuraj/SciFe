@@ -136,7 +136,7 @@ package structures {
     }
 
   }
-  
+
   object LazyBSTrees {
     trait Tree
     case object Leaf extends Tree

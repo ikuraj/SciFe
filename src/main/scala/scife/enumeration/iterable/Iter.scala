@@ -9,7 +9,7 @@ trait Iter[+A] extends Enum[A] {
   
   def head = apply(ind)
   
-  def hasNext = ind + 1 == this.size
+  def hasNext = ind + 1 < this.size
   
   def next = {
     ind += 1

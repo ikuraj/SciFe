@@ -44,7 +44,7 @@ class ConcatFiniteVariedSize[@specialized T, E[A] <: Finite[A]] protected[enumer
     var right = enumArray.length
     while (left <= right) {
       val mid = (left + right) / 2
-      info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
+      fine("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))
       if (limits(mid) <= target && limits(mid + 1) > target)
         return mid
       else if (limits(mid) > target)
