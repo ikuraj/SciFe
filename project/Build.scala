@@ -26,6 +26,8 @@ object SciFeBuild extends Build {
         testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "3"),
         // exclude slow tests
 //        testOptions in Test += Tests.Argument("-l", "tags.Slow"),
+        // specs2
+        scalacOptions in Test ++= Seq("-Yrangepos"),
         
         // benchmark options
         unmanagedSourceDirectories in BenchConfig <+= sourceDirectory ( _ / "bench" ),
