@@ -1,3 +1,6 @@
+package scife.util
+
+// compiler matcher implementation from scalaxb
 /*
  * Copyright (c) 2010 e.e d3si9n
  * 
@@ -21,7 +24,7 @@
  */
 
 import org.specs2.matcher._
-import java.io.{File}
+import java.io.{File, BufferedWriter, FileWriter}
 import scala.tools.nsc.{Settings}
 import scala.tools.nsc.util.{SourceFile, BatchSourceFile}
 import scala.tools.nsc.io.{PlainFile} 
@@ -41,8 +44,9 @@ class Holder {
 }
 
 trait CompilerMatcher {  
-  private lazy val bootPathList = List(jarPathOfClass("scala.tools.nsc.Interpreter"),
-                                   jarPathOfClass("scala.ScalaObject"))
+  private lazy val bootPathList = List(jarPathOfClass("scala.tools.nsc.Interpreter")
+//      ,jarPathOfClass("scala.ScalaObject")
+    )
   
   /** evaluteTo matches a pair of code list and files against the expected value 
    * after evaluating the files and the given code list.
@@ -148,6 +152,41 @@ trait CompilerMatcher {
         files.value.mkString + " compile(s)",
         files.value.mkString + " do(es) not compile",
         files)
+    }
+  }
+
+  def compileString(outdir: String = ".",
+    classpath: List[String] = Nil,
+    usecurrentcp: Boolean = false,
+    unchecked: Boolean = true) = new Matcher[Seq[String]]() {
+
+    def apply[A <: Seq[String]](strings: Expectable[A]) = {
+      import scala.tools.nsc.{Global}
+      
+      val files = for ( (s, i) <- strings.value.zipWithIndex) yield {
+        val file: File = File.createTempFile("temp", ".scala")
+        file.deleteOnExit
+        val out = new BufferedWriter(new FileWriter(file))
+        out.write(s)
+        out.close
+        file
+      }
+      
+      val s = settings(outdir, classpath, usecurrentcp, unchecked)
+      val reporter = new ConsoleReporter(s)
+      val compiler = new Global(s, reporter)
+      val run = (new compiler.Run)
+      try {
+        run.compile(files.map(_.getAbsolutePath).toList)
+        reporter.printSummary
+        result(!reporter.hasErrors,
+          files.mkString + " compile(s)",
+          files.mkString + " do(es) not compile",
+          strings)
+      } catch {
+        case _: Throwable =>
+          failure("Compiler throws an exception", strings)
+      }
     }
   }
 
