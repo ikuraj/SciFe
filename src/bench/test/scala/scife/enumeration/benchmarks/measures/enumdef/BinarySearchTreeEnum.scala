@@ -21,7 +21,7 @@ object BinarySearchTreeEnum {
       exec.benchRuns -> 3,
       exec.independentSamples -> 3)
 
-  new BinarySearchTreeEnum getMeasurements (MinMaxSize, minConfigArguments)
+  new BinarySearchTreeEnum getMeasurements (MinMaxSize, minConfigArguments, 28)
 
 }
 
@@ -29,7 +29,7 @@ class BinarySearchTreeEnum extends Benchmarker with HasLogger {
 
   import e.memoization.scope.AccumulatingScope
 
-  def getMeasurements(maxSize: Int, configArguments: Context)(implicit enumDefList: List[(e.memoization.MemoizationScope => e.dependent.Depend[(Int, Range), scife.util.structures.BSTrees.Tree], String)] = e.common.enumdef.BinarySearchTreeEnum.enumDefList) = {
+  def getMeasurements(maxSize: Int, configArguments: Context, gbsToFreeUp: Int)(implicit enumDefList: List[(e.memoization.MemoizationScope => e.dependent.Depend[(Int, Range), scife.util.structures.BSTrees.Tree], String)] = e.common.enumdef.BinarySearchTreeEnum.enumDefList) = {
     for ((enumDef, name) <- enumDefList) {
       performance of "Binary Search Tree" in {
         performance of "Enumerator definition measurments" in {
@@ -50,7 +50,7 @@ class BinarySearchTreeEnum extends Benchmarker with HasLogger {
               _ =>
                 memScope.clear
                 info("Calling GC explicitly")
-                tryToFreeUpSpace(28)
+                tryToFreeUpSpace(gbsToFreeUp)
                 info("Explicit GC call done")
                 info(s"Measuring ${name} for sizes up to ${maxSize}")
                 System.out.flush

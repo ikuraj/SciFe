@@ -24,7 +24,7 @@ import scala.language.existentials
 
 class RedBlackTreeBenchmarkMember
   extends StructuresBenchmark[MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
 
 //  fixtureRun("member", "SciFe", 15, "RBTree")
   

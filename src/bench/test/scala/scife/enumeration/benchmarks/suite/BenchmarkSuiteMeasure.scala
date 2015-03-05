@@ -1,4 +1,5 @@
 package scife.enumeration
+package benchmarks
 package suite
 
 import benchmarks._
@@ -30,6 +31,7 @@ class BenchmarkSuiteMeasure extends scife.enumeration.util.Benchmarker {
   
   new BinarySearchTreeEnum().getMeasurements(15,
     BenchmarkSuite.configArgumentsFull// + (exec.maxWarmupRuns -> 2)
+    , 28
   )
     
   override val executor = SeparateJvmsExecutor(

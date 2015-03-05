@@ -9,17 +9,24 @@ import e.memoization._
 
 import scife.enumeration.benchmarks._
 
+import org.scalatest._
 import org.scalameter.api._
 
 import scala.language.postfixOps
+
+class BinarySearchTreeVerifyTest extends FunSuite {
+  
+  test("verify") {
+    new BinarySearchTreeVerify().fixture("BinarySearchTreeVerify", "SciFe", 5)
+  }
+
+}
 
 class BinarySearchTreeVerify
   extends DependentMemoizedBenchmark[
     (Int, Int),
     MemberDependFinite[(Int, Range), scife.util.structures.bst.ybanez.BST[Int]]] {
   
-  fixture("BinarySearchTreeVerify", "SciFe", 8)
-
   import scife.util.structures._
   import bst.ybanez._
   import BST._

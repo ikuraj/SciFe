@@ -16,7 +16,7 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTreeBenchmarkTest2 extends FunSuite with Matchers with GeneratorDrivenPropertyChecks
-  with HasLogger with ProfileLogger {
+  with ProfileLogger {
 
   import e.common.enumdef.BinarySearchTreeEnum._
   import structures._

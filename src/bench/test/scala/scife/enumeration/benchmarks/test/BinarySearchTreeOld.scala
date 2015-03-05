@@ -21,7 +21,7 @@ import scala.language.existentials
 object BinarySearchTreeBenchmarkOld
   extends PerformanceTest.Quickbenchmark
   with Matchers
-  with HasLogger with ProfileLogger {
+  with ProfileLogger {
 
   import structures._
   import BSTrees._

@@ -19,7 +19,7 @@ import scala.language.existentials
 
 class BinarySearchTreeBenchmark
   extends StructuresBenchmark[Depend[(Int, Range), Tree]]
-//  extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger
+//  extends PerformanceTest.OfflineReport with ProfileLogger
   {
 
   type EnumType = Depend[(Int, Range), Tree]
