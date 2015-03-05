@@ -1,43 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="WARN">
-	<appenders>
-		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-		</Console>
+  <appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+    </Console>
     <Console name="BenchmarkConsole" target="SYSTEM_OUT">
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %msg%n}{INFO=green blink}"/>
     </Console>
-		<File name="ProofTreeFile" fileName="logs/proofTree.log">
-			<PatternLayout
-				pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-			<ThresholdFilter level="debug" onMatch="DENY" onMismatch="ACCEPT"/>
-		</File>
-	</appenders>
-	<loggers>
-		<logger name="insynth.reconstruction.Streamer" level="all"
-			additivity="false">
-			<appender-ref ref="Console" />
-		</logger>
-		<logger name="insynth.Solver" level="trace" additivity="false">
-			<appender-ref ref="ProofTreeFile" />
-		</logger>
-    <logger name="insynth.streams.light" level="off" additivity="false">
+  </appenders>
+  <loggers>
+    <logger name="scife.enumeration.memoization" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.reverse" level="off" additivity="false">
+    <logger name="scife.enumeration.member.memoization" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.reverse.dependent" level="all" additivity="false">
+    <logger name="scife.enumeration.iterable" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.testcases" level="off" additivity="false">
+    <logger name="scife.enumeration.iterable.lzy.ChainFiniteSingleCombine" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="insynth.enumeration.benchmarks" level="off" additivity="false">
+    <logger name="scife.enumeration.iterable.lzy.ConcatFiniteVariedSize" level="off" additivity="false">
+      <appender-ref ref="Console" />
+    </logger>
+    <logger name="scife.enumeration.benchmarks" level="off" additivity="false">
       <appender-ref ref="BenchmarkConsole" />
     </logger>
-		<root level="error">
-			<appender-ref ref="Console" />
-		</root>
-	</loggers>
+    <root level="error">
+      <appender-ref ref="Console" />
+    </root>
+  </loggers>
 </configuration>

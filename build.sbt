@@ -1,44 +1,60 @@
 name := "SciFe"
 
-version := "1.0"
+version := "1.2.0"
 
 organization := "ch.epfl.lara"
 
-scalaVersion := "2.10.3"
+organizationName := "LARA/EPFL"
 
-scalaBinaryVersion := "2.10"
+organizationHomepage := Some(new URL("http://lara.epfl.ch"))
+
+scalaVersion := "2.11.4"
+
+// forcing the version
+ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+
+scalaBinaryVersion := "2.11"
 
 // Compiler options
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature") 
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"/*, "-Ylog-classpath" */) 
 
 javacOptions += "-Xlint:unchecked"
 
-// Test libraries
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test"
-
-libraryDependencies += "junit" % "junit" % "4.8" % "test"
-
-libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3" % "test"
-
-// ScalaLogging
-libraryDependencies ++= Seq(
-  "com.typesafe" %% "scalalogging-log4j" % "1.0.1",
-  "org.apache.logging.log4j" % "log4j-api" % "2.0-beta3",
-  "org.apache.logging.log4j" % "log4j-core" % "2.0-beta3"
-)
+// Testing libraries
 
 // ScalaCheck
 resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
 
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.3"
+//libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.1" % "test"
+libraryDependencies += "org.scalacheck" % "scalacheck_2.11" % "1.12.1" % "test"
+
+libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
+//libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+
+libraryDependencies += "junit" % "junit" % "4.11" % "test"
+
+// enables running JUnit tests from sbt
+libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+
+// ScalaLogging
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
+
+libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.7"
+//libraryDependencies += "com.typesafe" %% "scalalogging-log4j" % "1.0.1"
+
+libraryDependencies ++= Seq(
+  "org.apache.logging.log4j" % "log4j-api" % "2.0.2",
+  "org.apache.logging.log4j" % "log4j-core" % "2.0.2",
+  "org.apache.logging.log4j" % "log4j-slf4j-impl" % "2.0.2"
+)
 
 // ScalaMeter
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
-libraryDependencies += "com.github.axel22" %% "scalameter" % "0.5-SNAPSHOT" % "test"
+libraryDependencies += "com.storm-enroute" %% "scalameter" % "0.6"
 
 // Kiama attribute grammars
-libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.5.1"
+libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.7.0"
 
 // Coverage
 instrumentSettings
@@ -46,3 +62,25 @@ instrumentSettings
 CoverallsPlugin.coverallsSettings
 
 ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
+
+// Check style
+org.scalastyle.sbt.ScalastylePlugin.Settings
+
+// Combinatorics with collections
+libraryDependencies += "com.googlecode.combinatoricslib" % "combinatoricslib" % "2.1"
+
+// Math
+libraryDependencies += "org.apache.commons" % "commons-math3" % "3.4.1"
+
+// Graphs
+//projectDependencies += RootProject(uri("git://github.com/colder/bonsai.git"))
+libraryDependencies += "org.jgrapht" % "jgrapht" % "0.9.0"
+
+libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
+
+//libraryDependencies += "org.jgrapht" % "jgrapht-ext" % "0.9.0"
+//
+//libraryDependencies += "org.jgrapht" % "jgrapht-dist" % "0.9.0"
+
+// Scalaz
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"

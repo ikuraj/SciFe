@@ -98,7 +98,7 @@ do
   EXAMPLE_NAME="${EXAMPLES[$EXAMPLE_IND_1]}"
   let EXAMPLE_IND_2=EXAMPLE_IND_1+1
   EXTRAARG="${EXAMPLES[$EXAMPLE_IND_2]}"
-  
+
   echo -e "Example $EXAMPLE, example name $EXAMPLE_NAME, extra args $EXTRAARG"
 
   #mkdir -p ${OUTPUTDIR}/${EXAMPLE##*.}
@@ -106,14 +106,16 @@ do
   SAVEFILE="$OUTPUTDIR/${EXAMPLE_NAME}"
   echo "Save file is $SAVEFILE"
   #echo -e "Size\tAverage time" >> $SAVEFILE
-    
+
+  TIMED_OUT=false
+
   for SIZE in $SIZES; do
     ARG="$SIZE$EXTRAARG"
     echo "Measuring $EXAMPLE for $ARG"
 
     RUN_COMMAND="timeout $TIMEOUT $KORAT_RUN $KORAT_ARGS_CLASS_PART $EXAMPLE $KORAT_ARGS_ARGS_PART $ARG $KORAT_RUN_END"
-    echo "Running with command: $RUN_COMMAND"  
-    
+    echo "Running with command: $RUN_COMMAND"
+
     #LOG_FILE="$OUTPUTDIR/${EXAMPLE##*.}/$SIZE.txt"
     #SUM=0
     printf "%d\t" $SIZE >> $SAVEFILE
@@ -123,28 +125,35 @@ do
 	GREPD=`eval $RUN_COMMAND | tee -a $LOG_FILE | grep "Overall time:"`
 	#echo $COMMAND_OUT
 	#exit
-	
+
 	RET_CODE=$?
 	if [ $RET_CODE == 1 ]; then
 	  printf "This measurement timed out"
+	  TIMED_OUT=true
 	  #SUM=-1
 	  break
-	else	  
+	else
 	  # get time without copying
-	  ADD=`printf "%s\n" "$GREPD" |  grep "Overall time:" | sed 's/\[java\] Overall time: \([0-9\.]\+\) s./\1/'`	
+	  ADD=`printf "%s\n" "$GREPD" |  grep "Overall time:" | sed 's/\[java\] Overall time: \([0-9\.]\+\) s./\1/'`
 	  echo "Run #$i, running time: $ADD"
 	  #SUM=`echo "$SUM + $ADD" | bc -l`
 	  printf "%.5f\t" $ADD >> $SAVEFILE
 	fi
-		    
+
 	sleep $SLEEPTIME
-    done	
+    done
     #AVG=`echo "$SUM / $REPEAT" | bc -l`
-    #echo "Average accross $REPEAT runs for size $SIZE is $AVG"    
+    #echo "Average accross $REPEAT runs for size $SIZE is $AVG"
     #printf "%d\t%.5f\n" $SIZE $AVG >> $SAVEFILE
     printf "\n" >> $SAVEFILE
+
+    if [ "$TIMED_OUT" = true ] ; then
+      echo 'Skipping other sizes because of timeout'
+      break
+    fi
+
   done
-  
+
   #echo "Log files can be found in $OUTPUTDIR/${EXAMPLE##*.}"
 done
 

@@ -4,6 +4,8 @@
 # project junk files
 dep/
 backup/
+tmp/
+log.txt
 
 # kate junk files
 **/*~
@@ -32,3 +34,6 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 /bin
+
+# git
+*.orig

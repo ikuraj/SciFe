@@ -17,14 +17,14 @@ VLIB="$CLP_DIR/measure.pl"
 ## SIZE BOUNDS for each program ---------------------------
 
 # RBTREEs (Fig.3)
-SB2G=14
+SB2G=15
 SBsG=20
 # DISJOINTSETs (Fig.4)
-SBDG=13
+SBDG=15
 # HEAPARRAYs (Fig.4)
-SBHG=10
+SBHG=15
 # SEARCHTREEs (Fig.4)
-SBTG=14
+SBTG=15
 # SORTEDLISTs (Fig.4)
 SBLG=16
 
@@ -42,6 +42,11 @@ for (( i=0; i<=$SB2G; i++ ))
 do
   echo -n "."
   $RUN_PREFIX $CLP_DIR/rbtrees/rbtrees_2_gp rbtree $i >>  $OUTPUTDIR/RedBlackTree
+
+  if [ $? == 1 ] ; then
+    echo 'Skipping other sizes because of timeout'
+    break
+  fi
 done
 
 echo -e "
@@ -54,6 +59,11 @@ for (( i=0; i<=$SBsG; i++ ))
 do
   echo -n "."
   $RUN_PREFIX $CLP_DIR/rbtrees/rbtrees_sync_gp rbtree $i >>  $OUTPUTDIR/RedBlackTree_sync
+
+  if [ $? == 1 ] ; then
+    echo 'Skipping other sizes because of timeout'
+    break
+  fi
 done
 
 echo -e "
@@ -69,6 +79,11 @@ for (( i=0; i<=$SBDG; i++ ))
 do
   echo -n "."
   $RUN_PREFIX $CLP_DIR/disjset/disjset_gp disjset $i >> $OUTPUTDIR/DisjointSet
+
+  if [ $? == 1 ] ; then
+    echo 'Skipping other sizes because of timeout'
+    break
+  fi
 done
 
 echo -e "
@@ -84,6 +99,11 @@ for (( i=0; i<=$SBHG; i++ ))
 do
   echo -n "."
   $RUN_PREFIX $CLP_DIR/heaparray/heaparray_gp heaparray $i >> $OUTPUTDIR/HeapArray
+
+  if [ $? == 1 ] ; then
+    echo 'Skipping other sizes because of timeout'
+    break
+  fi
 done
 
 echo -e "
@@ -99,6 +119,11 @@ for (( i=0; i<=$SBTG; i++ ))
 do
   echo -n "."
   $RUN_PREFIX $CLP_DIR/searchtree/searchtree_gp searchtree $i >> $OUTPUTDIR/BinarySearchTree
+
+  if [ $? == 1 ] ; then
+    echo 'Skipping other sizes because of timeout'
+    break
+  fi
 done
 
 echo -e "
@@ -114,6 +139,11 @@ for (( i=0; i<=$SBLG; i++ ))
 do
   echo -n "."
   $RUN_PREFIX $CLP_DIR/sortedlist/sortedlist_gp sortedlist $i >> $OUTPUTDIR/SortedList
+
+  if [ $? == 1 ] ; then
+    echo 'Skipping other sizes because of timeout'
+    break
+  fi
 done
 
 echo -e "
