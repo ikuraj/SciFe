@@ -20,6 +20,7 @@ class BenchmarkSuiteMeasure extends scife.enumeration.util.Benchmarker {
 //  println(System.getProperty("NumOfJVMs"))
   
   import common.enumdef.BinarySearchTreeEnum._
+  import BenchmarkSuite._
   
   implicit val listToTest = { 
     val enumMap = (enumDefList.map(_._2) zip enumDefList).toMap
@@ -29,9 +30,11 @@ class BenchmarkSuiteMeasure extends scife.enumeration.util.Benchmarker {
     ).map(enumMap(_))
   }
   
-  new BinarySearchTreeEnum().getMeasurements(15,
-    BenchmarkSuite.configArgumentsFull// + (exec.maxWarmupRuns -> 2)
-    , 28
+  new BinarySearchTreeEnum().getMeasurements(13,
+    configArgumentsFull
+      + (exec.jvmflags -> (JVMFlags ++ heapSize(8)).mkString(" "))
+      + (exec.maxWarmupRuns -> 2)
+    , 8
   )
     
   override val executor = SeparateJvmsExecutor(

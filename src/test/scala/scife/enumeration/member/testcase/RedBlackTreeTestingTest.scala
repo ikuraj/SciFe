@@ -492,7 +492,7 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
 
               for (j <- 0 until innerEnum.size)
                 withClue(innerEnum + "did not memoize index " + j) {
-                  innerEnum.asInstanceOf[e.memoization.Memoized[_]].memoizedFlags contains j shouldBe true
+                  innerEnum.asInstanceOf[e.memoization.Memoized[_]].isMemoized(j) shouldBe true
                 }
             }
 
@@ -733,7 +733,10 @@ class RedBlackTreeTestingTest extends FunSuite with Matchers
               }
           }
 
-          new Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree, invertTree) with member.memoization.Memoized[Tree] with e.memoization.Memoized[Tree] with MemberFinite[Tree]: MemberFinite[Tree]
+          new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree, invertTree) with
+            e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with member.memoization.Memoized[Tree] with MemberFinite[Tree]: MemberFinite[Tree]
         } else new Empty: MemberFinite[Tree]
       }) with e.memoization.dependent.Memoized[(Int, Range, Set[Boolean], Int), Tree]
 

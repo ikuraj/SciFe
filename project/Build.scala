@@ -17,11 +17,12 @@ object SciFeBuild extends Build {
         // add commands
         commands ++= Seq(benchCommand, benchBadgeCommand),
         // fork by default,
-        fork := false,
+//        fork := false,
 
         // test options 
-        fork in Test := false,
-        javaOptions in Test += "-Xmx4096m",
+        fork in Test := true,
+        javaOptions in Test ++= Seq("-Xms2048m", "-Xmx2048m",
+          "-XX:MaxPermSize=512m", "-XX:+UseConcMarkSweepGC"),
         // verbose QuickCheck error ouput
         testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "3"),
         // exclude slow tests

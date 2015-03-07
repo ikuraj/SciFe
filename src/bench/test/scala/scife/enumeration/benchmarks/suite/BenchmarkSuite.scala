@@ -167,14 +167,16 @@ object BenchmarkSuite {
     "-XX:ReservedCodeCacheSize=512M",
     "-XX:CompileThreshold=10", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
-    // memory
-    "-Xms32G", "-Xmx32G",
-    // new generation size
-    "-XX:NewSize=30G",
     // disable adaptive policy
     "-XX:-UseAdaptiveSizePolicy",
     "-XX:MinHeapFreeRatio=80",
     "-XX:MaxHeapFreeRatio=100")
+
+  def heapSize(s: Int) = List(
+    // new generation size
+    s"-XX:NewSize=${s-2}G",
+    s"-Xms${s}G", s"-Xmx${s}G"
+  )
   //  println("JVM FLags: " + JVMFlags.mkString(" "))
 
   val configArgumentsFull =
@@ -183,7 +185,7 @@ object BenchmarkSuite {
       exec.benchRuns -> 3,
       exec.independentSamples -> 1,
       exec.jvmcmd -> javaCommand,
-      exec.jvmflags -> JVMFlags.mkString(" "))
+      exec.jvmflags -> (JVMFlags ++ heapSize(32)).mkString(" "))
       
   val contextMinimal =
     org.scalameter.Context(

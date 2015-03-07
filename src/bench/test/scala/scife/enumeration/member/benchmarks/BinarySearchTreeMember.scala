@@ -153,7 +153,11 @@ class BinarySearchTreeMember
               ((leftSize, currRoot), (leftTree, rightTree))
             }
 
-          new Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
+          new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with
+            MemberFinite[Tree] with e.memoization.MemoizedSize with
+            e.memoization.MemoizedStatic[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
         }
       }) with e.dependent.DependFinite[(Int, Range), Tree] with e.memoization.dependent.Memoized[(Int, Range), Tree]
   }

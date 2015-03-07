@@ -5,28 +5,53 @@ import scala.collection.mutable._
 
 import scife.util._
 
-trait Memoized[T] extends Enum[T] with Memoizable with HasLogger {
+import scala.reflect._
 
-  protected[enumeration] val memoizedFlags = new BitSet()
-  protected[enumeration] val memoizedValues = new ArrayBuffer[T]()
-//  val memoizedValues = new ArrayList[T](128)
+// TODO maybe later
+trait MemoizedStatic[T] extends Enum[T] with Memoizable with HasLogger {
+  
+  implicit val classTagT: ClassTag[T]// = implicitly[ClassTag[T]]
+  assert(classTagT != null)
+
+  private[this] var memoizedValues = new Array[T](this.size)
+  private[this] var memoizedFlags = new Array[Boolean](this.size)
+  
+  def isMemoized(ind: Int) = memoizedFlags(ind)
 
   override abstract def apply(ind: Int) = {
-//    entering("apply", ind)
-    if (memoizedFlags contains ind)
-      memoizedValues(ind)
-    else {
-      val nextValue = super.apply(ind)
-      memoizedFlags += ind
-      memoizedValues.appendAll( List.fill(ind - memoizedValues.size + 1)(nextValue) )
-//      memoizedValues(ind) = nextValue
-      nextValue
+    assert(this.size > ind)
+    if (!memoizedFlags(ind)) {
+      memoizedFlags(ind) = true
+      memoizedValues(ind) = super.apply(ind)
     }
+
+    memoizedValues(ind)
   }
 
   override def clearMemoization {
-    memoizedFlags.clear
-    memoizedValues.clear
+    memoizedValues = new Array[T](this.size)
+    memoizedFlags = new Array[Boolean](this.size)
+  }
+
+}
+
+// TODO maybe later
+trait MemoizedStaticNull[T >: Null] extends Enum[T] with Memoizable with HasLogger {
+  
+  implicit def classTagT: ClassTag[T]
+
+  protected[enumeration] val memoizedValues = new Array[T](this.size)
+
+  override abstract def apply(ind: Int) = {
+    if (memoizedValues(ind) == null)
+      memoizedValues(ind) = super.apply(ind)
+
+    memoizedValues(ind)
+  }
+
+  override def clearMemoization {
+    for (ind <- 0 until memoizedValues.size)
+      memoizedValues(ind) = null
   }
 
 }

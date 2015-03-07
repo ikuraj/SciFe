@@ -235,7 +235,10 @@ class BinarySearchTreeExtendedTest extends FunSuite with Matchers with Generator
               ((leftSize, currRoot), (leftTree, rightTree))
             }
 
-          new Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
+          new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with MemberFinite[Tree] with
+            e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
         }
       }) with e.dependent.DependFinite[(Int, Range), Tree] with e.memoization.dependent.Memoized[(Int, Range), Tree]
   }
@@ -305,7 +308,10 @@ class BinarySearchTreeExtendedTest extends FunSuite with Matchers with Generator
               ((leftSize, currRoot), (leftTree, rightTree))
             }
 
-          new e.Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree) with DummyMember[Tree] with MemberFinite[Tree] with e.memoization.Memoized[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
+          new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with e.Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree) with DummyMember[Tree] with MemberFinite[Tree] with
+            e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
           //          allNodes map makeTree: Finite[Tree]
         }
       }) with e.dependent.DependFinite[(Int, Range), Tree] with e.memoization.dependent.Memoized[(Int, Range), Tree]
