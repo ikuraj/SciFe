@@ -10,15 +10,23 @@ import e.memoization._
 import scife.enumeration.benchmarks._
 
 import org.scalameter.api._
+import org.scalatest._
 
 import scala.language.postfixOps
+
+class BinarySearchTreeMemberTest extends FunSuite {
+  
+  test("verify") {
+    new BinarySearchTreeMember fixture("BinarySearchTreeMember", "SciFe", 8)
+  }
+  
+}
 
 class BinarySearchTreeMember
   extends DependentMemoizedBenchmark[
     (Int, Int),
     MemberDependFinite[(Int, Range), scife.util.structures.bst.ybanez.BST[Int]]] {
   
-  fixture("BinarySearchTreeMember", "SciFe", 8)
 
   import scife.util.structures._
   import bst.ybanez._
@@ -145,7 +153,11 @@ class BinarySearchTreeMember
               ((leftSize, currRoot), (leftTree, rightTree))
             }
 
-          new Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
+          new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with
+            MemberFinite[Tree] with e.memoization.MemoizedSize with
+            e.memoization.MemoizedStatic[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
         }
       }) with e.dependent.DependFinite[(Int, Range), Tree] with e.memoization.dependent.Memoized[(Int, Range), Tree]
   }

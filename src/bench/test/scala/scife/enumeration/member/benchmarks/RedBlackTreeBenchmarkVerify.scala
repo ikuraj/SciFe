@@ -22,12 +22,18 @@ import org.scalameter.api._
 import scala.language.postfixOps
 import scala.language.existentials
 
+class RedBlackTreeBenchmarkVerifyTest extends FunSuite {
+  test("verify") {
+    new RedBlackTreeBenchmarkVerify().fixtureRun("verify", "SciFe", 5, "RBTree")
+  }
+}
+
 // runs executable invariant
 class RedBlackTreeBenchmarkVerify
   extends StructuresBenchmark[MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
 
-  fixtureRun("verify", "SciFe", 15, "RBTree")
+//  fixtureRun("verify", "SciFe", 5, "RBTree")
 
   type EnumType = MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree]
 
@@ -154,8 +160,11 @@ class RedBlackTreeBenchmarkVerify
               }
           }
 
-          val mapEnum = new Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree,
-            invertTree) with e.member.memoization.Memoized[Tree] with e.memoization.Memoized[Tree] with MemberFinite[Tree] 
+          val mapEnum = new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree,
+            invertTree) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with
+              e.member.memoization.Memoized[Tree] with MemberFinite[Tree] 
 
           ms add mapEnum
 

@@ -21,10 +21,13 @@ class MemoizedMemberTest extends FunSuite with Matchers
   
   test("memoized enumeration") {
     val memoizedEnum =
-      new member.ProductFinite( 
+      new {
+        override val classTagT = implicitly[scala.reflect.ClassTag[(Int, Int)]] 
+      } with member.ProductFinite( 
         new WrapArray( Array(1 to 10: _*) ),
         new WrapArray( Array(10 to 1 by -1: _*) )
-      ) with e.memoization.Memoized[(Int, Int)] with Memoized[(Int, Int)]
+      ) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[(Int, Int)]
+    with Memoized[(Int, Int)]
 
     val enumerated =
       for ( ind <- 0 until memoizedEnum.size) yield {
@@ -39,10 +42,13 @@ class MemoizedMemberTest extends FunSuite with Matchers
   
   test("memoized member") {
     val memoizedEnum =
-      new member.ProductFinite( 
+      new {
+        override val classTagT = implicitly[scala.reflect.ClassTag[(Int, Int)]] 
+      } with member.ProductFinite( 
         new WrapArray( Array(1 to 10: _*) ),
         new WrapArray( Array(10 to 1 by -1: _*) )
-      ) with e.memoization.Memoized[(Int, Int)] with Memoized[(Int, Int)]
+      ) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[(Int, Int)]
+    with Memoized[(Int, Int)]
 
     val enumerated =
       for ( ind <- 0 until memoizedEnum.size) yield {

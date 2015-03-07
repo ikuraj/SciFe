@@ -35,7 +35,7 @@ class BinarySearchTreeFromSetTest extends FunSuite with Matchers with GeneratorD
     val dependEnumNormal = constructEnumerator
     val dependEnumMember = constructEnumerator
 
-    for (size <- 1 to 12; depend <- dependEnumMember :: dependEnumNormal :: Nil) {
+    for (size <- 1 to 10; depend <- dependEnumMember :: dependEnumNormal :: Nil) {
       setValues(1 to size)
       val enum = depend(size, 1 to size)
       for (ind <- 0 until enum.size) yield enum(ind)
@@ -43,7 +43,7 @@ class BinarySearchTreeFromSetTest extends FunSuite with Matchers with GeneratorD
 
     var flag = 0
 
-    for (size <- 1 to 11) {
+    for (size <- 1 to 9) {
 
       {
         setValues(1 to size)
@@ -247,7 +247,10 @@ class BinarySearchTreeFromSetTest extends FunSuite with Matchers with GeneratorD
               ((leftSize, currRoot), (leftTree, rightTree))
             }
 
-          new Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
+          new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[((Int, Int), (Tree, Tree)), Tree](allNodes, makeTree, memberTree) with MemberFinite[Tree] with
+            e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with member.memoization.Memoized[Tree]: MemberFinite[Tree]
         }
       }) with e.dependent.DependFinite[(Int, Range), Tree] with e.memoization.dependent.Memoized[(Int, Range), Tree]
   }

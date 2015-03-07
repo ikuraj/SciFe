@@ -21,7 +21,7 @@
 //    //(Int, List[Int], List[Int], List[Int]), List[(List[Int], List[Int], List[Int])]
 //    (Int, Int, Int, List[Int]), List[(Int, List[Int], List[Int], List[Int])]
 //  ]]
-//  with java.io.Serializable with HasLogger {
+//  with java.io.Serializable {
 //
 //  // (size, #class, #interface, #overridableMethods)
 ////  type Input = (Int, List[Int], List[Int], List[Int])

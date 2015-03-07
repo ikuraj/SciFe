@@ -5,7 +5,7 @@ import scala.collection.mutable._
 
 import scife.util._
 
-trait Memoized[T] extends Enum[T] with Memoizable with HasLogger {
+trait MemoizedDynamic[T] extends Enum[T] with Memoizable with HasLogger {
 
   protected[enumeration] val memoizedFlags = new BitSet()
   protected[enumeration] val memoizedValues = new ArrayBuffer[T]()

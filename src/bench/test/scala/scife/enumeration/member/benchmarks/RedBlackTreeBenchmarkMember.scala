@@ -24,7 +24,7 @@ import scala.language.existentials
 
 class RedBlackTreeBenchmarkMember
   extends StructuresBenchmark[MemberDependFinite[(Int, Range, Set[Boolean], Int), Tree]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
 
 //  fixtureRun("member", "SciFe", 15, "RBTree")
   
@@ -138,8 +138,11 @@ class RedBlackTreeBenchmarkMember
               }
           }
 
-          val mapEnum = new Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree,
-            invertTree) with MemberFinite[Tree] with e.memoization.Memoized[Tree]// with Memoized[Tree]
+          val mapEnum = new {
+            override val classTagT = implicitly[scala.reflect.ClassTag[Tree]]
+          } with Map[(((Int, Int), Boolean), (Tree, Tree)), Tree](allNodes, makeTree,
+            invertTree) with MemberFinite[Tree] with e.memoization.MemoizedSize with
+            e.memoization.MemoizedStatic[Tree]// with Memoized[Tree]
           
           ms add mapEnum
           

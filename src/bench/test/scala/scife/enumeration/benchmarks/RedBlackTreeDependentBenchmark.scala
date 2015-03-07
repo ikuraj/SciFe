@@ -18,7 +18,7 @@ import scala.language.existentials
 
 class RedBlackTreeDependentBenchmark
   extends StructuresBenchmark[Depend[(Int, Range, Set[Boolean], Int), Tree]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
 
   type EnumType = Depend[(Int, Range, Set[Boolean], Int), Tree]
 

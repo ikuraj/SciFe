@@ -1,4 +1,5 @@
 package scife.enumeration
+package benchmarks
 package suite
 
 import benchmarks._
@@ -19,18 +20,23 @@ class BenchmarkSuiteMeasure extends scife.enumeration.util.Benchmarker {
 //  println(System.getProperty("NumOfJVMs"))
   
   import common.enumdef.BinarySearchTreeEnum._
+  import BenchmarkSuite._
   
   implicit val listToTest = { 
     val enumMap = (enumDefList.map(_._2) zip enumDefList).toMap
     List(
       "constructEnumeratorBenchmarkNoTuplesWhenConstructingTree",
-      "constructEnumeratorBenchmark"
+      "constructEnumeratorBenchmark",
+      "constructEnumeratorBenchmark_DynamicMemoized"
     ).map(enumMap(_))
   }
   
   new BinarySearchTreeEnum().getMeasurements(15,
-    BenchmarkSuite.configArgumentsFull// + (exec.maxWarmupRuns -> 2)
-  )
+    configArgumentsFull
+      + (exec.jvmflags -> (JVMFlags ++ heapSize(16)).mkString(" "))
+      + (exec.maxWarmupRuns -> 2)
+    , 8
+  )(listToTest)
     
   override val executor = SeparateJvmsExecutor(
     Executor.Warmer.Default(),

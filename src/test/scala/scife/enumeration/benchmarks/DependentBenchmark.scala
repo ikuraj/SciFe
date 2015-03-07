@@ -20,7 +20,9 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
 //  @transient override lazy val reporter = new DsvReporter(',')
 
-  val defaultContext = Context.empty
+  val defaultContext =
+    suite.BenchmarkSuite.contextMinimal
+    //Context.empty
 
   def fixtureRun(
     benchmarkMainName: String,

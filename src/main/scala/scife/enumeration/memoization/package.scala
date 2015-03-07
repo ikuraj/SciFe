@@ -4,6 +4,8 @@ package enumeration
 import scala.language.implicitConversions
 
 package object memoization {
+  
+  type Memoized[T] = MemoizedStatic[T] with MemoizedSize
 
   import scope._
   
