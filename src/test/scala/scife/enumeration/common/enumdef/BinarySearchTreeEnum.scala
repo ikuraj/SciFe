@@ -20,10 +20,12 @@ object BinarySearchTreeEnum {
       constructEnumeratorBenchmark(_: MemoizationScope),
       constructEnumTestcase(_: MemoizationScope),
       constructBenchmarkOld(_: MemoizationScope),
-      constructEnumeratorBenchmarkNoTuplesWhenConstructingTree(_: MemoizationScope)
+      constructEnumeratorBenchmarkNoTuplesWhenConstructingTree(_: MemoizationScope),
+      constructEnumeratorBenchmark_DynamicMemoized(_: MemoizationScope)
     ) zip List(
       "constructEnumeratorBenchmark", "constructEnumTestcase", "constructBenchmarkOld",
-      "constructEnumeratorBenchmarkNoTuplesWhenConstructingTree" 
+      "constructEnumeratorBenchmarkNoTuplesWhenConstructingTree",
+      "constructEnumeratorBenchmark_DynamicMemoized"
     )
   
   // slightly changed constructEnumeratorBenchmark
@@ -135,7 +137,7 @@ object BinarySearchTreeEnum {
             Product(leftTrees, rightTrees)
 
           val allNodes =
-            memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
+            memoization.Chain.dynamic[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
               (p1: (Int, Int), p2: (Tree, Tree)) => {
                 val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
 

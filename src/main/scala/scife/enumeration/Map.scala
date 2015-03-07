@@ -36,6 +36,11 @@ object Map {
       override val classTagT = ct
     } with Map(streamable, modify) with Finite[U] with MemoizedSize with MemoizedStatic[U]
   }
+  
+  def memoizedDyn[T, U](streamable: Finite[T], modify: T=>U) =
+  {
+    new Map(streamable, modify) with Finite[U] with MemoizedSize with MemoizedDynamic[U]
+  }
 
   def apply[T, U](streamable: Infinite[T], modify: T=>U) =
     new Map(streamable, modify) with Infinite[U]

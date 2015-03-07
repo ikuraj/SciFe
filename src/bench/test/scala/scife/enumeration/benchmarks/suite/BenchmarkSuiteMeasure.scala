@@ -26,16 +26,17 @@ class BenchmarkSuiteMeasure extends scife.enumeration.util.Benchmarker {
     val enumMap = (enumDefList.map(_._2) zip enumDefList).toMap
     List(
       "constructEnumeratorBenchmarkNoTuplesWhenConstructingTree",
-      "constructEnumeratorBenchmark"
+      "constructEnumeratorBenchmark",
+      "constructEnumeratorBenchmark_DynamicMemoized"
     ).map(enumMap(_))
   }
   
-  new BinarySearchTreeEnum().getMeasurements(13,
+  new BinarySearchTreeEnum().getMeasurements(15,
     configArgumentsFull
-      + (exec.jvmflags -> (JVMFlags ++ heapSize(8)).mkString(" "))
+      + (exec.jvmflags -> (JVMFlags ++ heapSize(16)).mkString(" "))
       + (exec.maxWarmupRuns -> 2)
     , 8
-  )
+  )(listToTest)
     
   override val executor = SeparateJvmsExecutor(
     Executor.Warmer.Default(),
