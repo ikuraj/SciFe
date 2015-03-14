@@ -63,3 +63,25 @@ class ProductSingletonRight[T, V]
   }
 
 }
+
+protected[enumeration] class ProductFiniteList[T](val enums: Array[Finite[T]])
+  extends Finite[List[T]] with HasLogger {
+  
+  val sizes = enums.map(_.size)
+
+  override def apply(ind: Int) = {
+    val buffer = scala.collection.mutable.ListBuffer.empty[T]
+    var currInd = ind
+    var currEnumInd = 0
+    while (currEnumInd < enums.size) {
+      buffer += enums(currEnumInd)(currInd % sizes(currEnumInd))
+      currInd /= sizes(currEnumInd)
+      currEnumInd += 1
+    }
+    
+    buffer.toList
+  }
+  
+  override def size = sizes.reduce(_ * _)
+
+}

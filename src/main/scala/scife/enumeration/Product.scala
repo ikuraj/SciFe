@@ -61,5 +61,8 @@ object Product {
 //
 //  def apply[T, V, U](s1: T, s2: Finite[V]): Finite[(T, V)] =
 //    new ProductSingleton(s1, s2)
+  
+  def apply[T](array: Array[Finite[T]]): Finite[List[T]] =
+    new ProductFiniteList(array)
 
 }
