@@ -3,7 +3,7 @@ package scife.util.structures
 object BTree {
 
   case class Tree(keys: List[Int], children: List[Tree]) {
-    require { keys.size + 1 == children.size }
+    require { children.isEmpty || keys.size + 1 == children.size }
   }
 
   def invariant(tree: Tree, min: Int, max: Int, t: Int) =
