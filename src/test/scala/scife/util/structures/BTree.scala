@@ -4,6 +4,9 @@ object BTree {
 
   case class Tree(keys: List[Int], children: List[Tree]) {
     require { children.isEmpty || keys.size + 1 == children.size }
+    
+//    override def toString =
+//      listOfKeys(this).mkString("[", ",", "]")
   }
 
   def invariant(tree: Tree, min: Int, max: Int, t: Int) =
@@ -22,6 +25,18 @@ object BTree {
     keys.zip(keys.tail).forall( { case (a, b) => a < b } ) &&
     keys.zip(keys.tail).zip(children).forall(( { case ((a, b), c) => valuesInRange(c, a, b) }))
 
+  }
+  
+  def listOfKeys(t: Tree): List[Int] = t match {
+    case Tree(k, Nil) =>
+      k
+    case Tree(k, l) =>
+//      k ::: (l map listOfKeys).flatten
+//      (l map listOfKeys).flatten ::: k
+      ((k zip l.init) map {
+        case (key, child) =>
+          listOfKeys(child) :+ key
+      }).flatten ::: listOfKeys(l.last)
   }
   
   def correctT(tree: Tree, t: Int) = {

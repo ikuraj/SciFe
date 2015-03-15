@@ -43,17 +43,17 @@ class RiffImageTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
     val enum = constructEnumerator
 
     withLazyClue("Elements are: " + clue) {
-//      res = enum.getEnum((1, 4, 1, 0))
-//      res.size should be (1)
-//      res(0) shouldBe a [Payload]
-//      val ds = res(0).asInstanceOf[Payload]
-//      ds.data shouldBe 4 
-//      ds.isAudio shouldBe 0
-//      ds.jiff shouldBe 1
-//      RiffFormat.size(ds) shouldBe 1
+      res = enum.getEnum((1, 4, 1, 0))
+      res.size should be (1)
+      res(0) shouldBe a [Payload]
+      val ds = res(0).asInstanceOf[Payload]
+      ds.data shouldBe 4 
+      ds.isAudio shouldBe 0
+      ds.jiff shouldBe 1
+      RiffFormat.size(ds) shouldBe 1
 
-//      res = enum.getEnum((2, 4, 1, 1))
-//      res.size should be (1)
+      res = enum.getEnum((2, 4, 1, 1))
+      res.size should be (1)
       
       res = enum.getEnum((2, 2, 1, 1))
       res.size should be (1)
@@ -89,7 +89,7 @@ class RiffImageTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
         if (size == 0 && dataSize != 0 ||
             size > 0 && dataSize == 0 ||
             size == 1 && avChunks <= 1 && (jiffLoss * 4) % dataSize != 0) {
-          println(s"(size, dataSize, jiffLoss, avChunks)=${(size, dataSize, jiffLoss, avChunks)}")
+          info(s"(size, dataSize, jiffLoss, avChunks)=${(size, dataSize, jiffLoss, avChunks)}")
           e.Empty
         }
         else if (size == 0 && dataSize == 0) {

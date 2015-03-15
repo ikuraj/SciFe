@@ -61,53 +61,97 @@ class BTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
       res = enum(3, 1 to 3, 1)
       res.size shouldBe 1
       res = enum(3, 1 to 3, 2)
-      res.size shouldBe 0
+      res.size shouldBe 1
 
       res = enum(4, 1 to 4, 1)
       res.size shouldBe 0
       res = enum(4, 1 to 4, 2)
       res.size shouldBe 2
-      
+
       res = enum(5, 1 to 5, 1)
       res.size shouldBe 0
       res = enum(5, 1 to 5, 2)
       res.size shouldBe 4
-      
+
       res = enum(6, 1 to 6, 1)
       res.size shouldBe 0
       res = enum(6, 1 to 6, 2)
       res.size shouldBe 5
+      
+      res = enum(3, 1 to 4, 1)
+      res.size shouldBe 4
+      res = enum(3, 1 to 4, 2)
+      res.size shouldBe 4
 
+      res = enum(3, 1 to 5, 1)
+      res.size shouldBe 10
+      res = enum(3, 1 to 5, 2)
+      res.size shouldBe 10
+      res = enum(3, 1 to 5, 3)
+      res.size shouldBe 0
+    }
+
+    for ((size, count) <- List(
+      (1, 1), (2, 3)
+      ,(3, 8),
+      (4, 20)
+      ,(5, 49)
+      ,(6, 120)
+      ,(10, 4853)
+      ,(12, 33971)
+    )) {
+      val range = 1 to size
+
+      val allEl =
+        (for (h <- 1 to (math.log(size+1).toInt + 1)) yield {
+          //val newE = e.dependent.Chain.single(Enum((1 to size).toArray) map { x => (x, range, h) }, enum)
+          (for (s <- 1 to size) yield  {
+          val newE = enum(s, range, h)
+
+          info(s"(s, r, h)=${(s, range, h)}, got ${newE.toList.mkString("\n")}")
+          newE.toList
+          }) flatten
+        }) flatten
+
+      withLazyClue("Elements are:\n" + allEl.mkString("\n")) {
+        allEl.size shouldBe count
+      }
     }
 
   }
-  
+
   test("additions") {
     val enum = getAdditionsEnum
-    
+
     var res = enum(3, 6, 5)
     res.size shouldBe 25
-    
+
     res.toList should contain allOf (
       List(3, 3, 0),
       List(2, 2, 2),
       List(1, 2, 3),
-      List(0, 5, 1)
-    )
+      List(0, 5, 1))
     res.toList should not contain List(
       List(1, 3, 1),
       List(0, 3, 4),
       List(6, 0, 2),
       List(6, 0, 2),
-      List(6, 0, 0)
-    )
+      List(6, 0, 0))
 
     res = enum(4, 0, 3)
     res.size shouldBe 1
-    
+
     res = enum(2, 1, 3)
     res foreach print
     res.size shouldBe 2
+  }
+  
+  test("sublists test") {
+    var enum = e.Sublists.apply(List(1, 2, 3), 1)
+    enum.size shouldBe 3
+    
+    enum = e.Sublists.apply(1 to 5 toList, 3)
+    enum.size shouldBe 10
   }
 
   def getAdditionsEnum(implicit ms: MemoizationScope = null): DependFinite[(Int, Int, Int), List[Int]] = {
@@ -137,12 +181,12 @@ class BTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
     def maxChildSize(h: Int) = math.pow(2 * t, h).toInt - 1
 
     val additionsEnum = getAdditionsEnum(ms)
-    
+
     var nonRootNodeEnum: DependFinite[(Int, Range, Int), Output] = null
 
     val enumChildren: DependFinite[(Int, Int, Range, Int), Output] = Depend.fin({ in: (Int, Int, Range, Int) =>
       val (nChildren: Int, size: Int, keyRange: Range, h: Int) = in
-      info(s"nChildren=$nChildren")
+      info(s"nChildren=$nChildren, range=$keyRange")
 
       val minChildSizeBelow = minChildSize(h - 1)
       val maxChildSizeBelow = maxChildSize(h - 1)
@@ -163,30 +207,34 @@ class BTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
             info(s"childSizes=$childSizes")
             childSizes.size shouldBe nChildren
 
-            val keys: List[Int] = (childSizes.scanLeft(keyRange.start-1) {
-              case (soFar, el) => soFar + el + 1
-            }).tail.init
-            info(s"keys=$keys")
-            keys.size shouldBe nKeys
-
-            val childRanges =
-              ((keyRange.start-1 :: keys) zip (keys :+ (keyRange.end+1))) map {
-                case (a, b) => (a + 1) to (b - 1)
-              }
-            info(s"childRanges=$childRanges, zip=${(keyRange.start-1 :: keys) zip (keyRange.tail :+ (keyRange.end+1))}")
-            childRanges.size shouldBe nChildren
-
-            childSizes.size shouldBe childRanges.size
-            val childEnums: Array[Finite[Output]] = (childSizes zip childRanges) map {
-              case (cs, cr) => nonRootNodeEnum(cs, cr, h - 1)
-            } toArray;
-            childEnums.size shouldBe nChildren
-
-            e.Product.fin(childEnums) map {
-              children =>
-                children.size shouldBe keys.size + 1
-                Tree(keys, children)
-            }
+            e.dependent.Chain.single[List[Int], Output](
+              additionsEnum(nChildren, keyRange.size - size, keyRange.size): Finite[List[Int]],
+              Depend.fin({ (addKeys: List[Int]) =>
+                val keys: List[Int] = ((childSizes zip addKeys).scanLeft(keyRange.start - 1) {
+                  case (soFar, (childSize, add)) => soFar + childSize + add + 1
+                }).tail.init
+                info(s"keys=$keys")
+                keys.size shouldBe nKeys
+    
+                val childRanges =
+                  ((keyRange.start - 1 :: keys) zip (keys :+ (keyRange.end + 1))) map {
+                    case (a, b) => (a + 1) to (b - 1)
+                  }
+                info(s"childRanges=$childRanges, zip=${(keyRange.start - 1 :: keys) zip (keyRange.tail :+ (keyRange.end + 1))}")
+                childRanges.size shouldBe nChildren
+    
+                childSizes.size shouldBe childRanges.size
+                val childEnums: Array[Finite[Output]] = (childSizes zip childRanges) map {
+                  case (cs, cr) => nonRootNodeEnum(cs, cr, h - 1)
+                } toArray;
+                childEnums.size shouldBe nChildren
+    
+                e.Product.fin(childEnums) map {
+                  children =>
+                    children.size shouldBe keys.size + 1
+                    Tree(keys, children)
+                }
+              }))
           }): DependFinite[List[Int], Output])
       }
     })
@@ -195,9 +243,10 @@ class BTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
       (self: DependFinite[Input, Output], pair: Input) => {
         val (size: Int, keyRange: Range, h: Int) = pair
 
-        if (h == 1 && size == keyRange.size && size < 2 * t && size >= t - 1) {
-          e.Singleton(Tree(keyRange.toList, Nil)): Finite[Output]
-        } else if (h > 1 && size == keyRange.size && size > 0) {
+        if (h == 1 /*&& size == keyRange.size*/ && size < 2 * t && size >= t - 1) {
+          //e.Singleton(Tree(keyRange.toList, Nil)): Finite[Output]
+          e.Sublists(keyRange.toList, size) map { x => Tree(x.toList, Nil) }
+        } else if (h > 1 /*&& size == keyRange.size*/ && size > 0) {
           val nChildrenEnum = e.Enum(t to 2 * t)
 
           e.dependent.Chain.single(nChildrenEnum map { x => (x, size, keyRange, h) },
@@ -212,9 +261,12 @@ class BTreeTest extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
       (self: DependFinite[Input, Output], pair: Input) => {
         val (size: Int, keyRange: Range, h: Int) = pair
 
-        if (h == 1 && size == keyRange.size && size < 2 * t) {
-          e.Singleton(Tree(keyRange.toList, Nil)): Finite[Output]
-        } else if (h > 1 && size == keyRange.size && size >= 2 * t) {
+        if (h == 1 /*&& size == keyRange.size*/ && size < 2 * t) {
+          //e.Singleton(Tree(keyRange.toList, Nil)): Finite[Output]
+          e.Sublists(keyRange.toList, size) map { x => Tree(x.toList, Nil) }
+        } else
+          // uncomenting size >= 2*t will actually prevent some trees that cannot happen by insertion?
+          if (h > 1 /*&& size == keyRange.size && size >= 2 * t*/) {
           val nChildrenEnum = e.Enum(2 to 2 * t)
 
           e.dependent.Chain.single(nChildrenEnum map { x => (x, size, keyRange, h) },
