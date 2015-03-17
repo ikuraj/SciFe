@@ -88,15 +88,27 @@ class BenchmarkSuiteParallel extends PerformanceTest {
 
   val benchmarkSizes =
     15 :: Nil
-
-  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
-    benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
     
-  override def reporter = new LoggingReporter
+  for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
+    new scife.enumeration.parallel.BinarySearchTreeBenchmark(threads).
+      fixtureRun(benchmarkMainName, "SciFe", 15, s"Binary Search Trees - parallel/$threads")
+  }
+
+//  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
+//    benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
+    
+  //override def reporter = new LoggingReporter
+  override def reporter =
+    Reporter.Composite(
+        new RegressionReporter(
+          RegressionReporter.Tester.OverlapIntervals(),
+          RegressionReporter.Historian.Complete()),
+        // do not embed data into js
+        HtmlReporter(false))
   
   override def persistor =
-    Persistor.None
-//    new persistence.SerializationPersistor
+    //Persistor.None
+    new persistence.SerializationPersistor
 
 }
 
