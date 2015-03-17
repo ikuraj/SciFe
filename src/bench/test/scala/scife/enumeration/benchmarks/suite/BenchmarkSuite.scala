@@ -19,10 +19,13 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
   import BenchmarkSuite._
 
   val benchmarks = List(
-    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
-    (new SortedListDependentBenchmark, "Sorted Lists"),
-    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
-    (new HeapArrayBenchmark, "Heap Arrays"))
+//    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
+//    (new SortedListDependentBenchmark, "Sorted Lists"),
+//    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
+//    (new HeapArrayBenchmark, "Heap Arrays"),
+    (new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2),
+      "Binary Search Trees - parallel")
+    )
 
   implicit val configArguments = contextMinimal
 
@@ -62,6 +65,38 @@ class BenchmarkSuiteFull extends PerformanceTest {
 
   for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
     dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+
+}
+
+class BenchmarkSuiteParallel extends PerformanceTest {
+
+  override def executor = SeparateJvmsExecutor(
+    Executor.Warmer.Default(),
+    Aggregator.min,
+    new Executor.Measurer.Default)
+
+  import BenchmarkSuite._
+
+  implicit val configArguments = configArgumentsFull +
+    (exec.jvmflags -> (JVMFlags ++ heapSize(32)).mkString(" "))
+  
+  val parallelBenchmarks =
+    new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil
+    
+  val benchmarkNames =
+    "Binary Search Trees - parallel" :: Nil
+
+  val benchmarkSizes =
+    15 :: Nil
+
+  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
+    benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
+    
+  override def reporter = new LoggingReporter
+  
+  override def persistor =
+    Persistor.None
+//    new persistence.SerializationPersistor
 
 }
 
@@ -123,7 +158,8 @@ object BenchmarkSuite {
     new SortedListDependentBenchmark,
     new RedBlackTreeDependentBenchmark,
     new HeapArrayBenchmark,
-    new DAGStructureBenchmark)
+    new DAGStructureBenchmark
+  )
 
   val allBenchmarksNames = List(
     "Binary Search Tree",
@@ -131,7 +167,8 @@ object BenchmarkSuite {
     "Red-Black Tree",
     "Heap Array",
     "Directed Acyclic Graph",
-    "Class-Interface DAG")
+    "Class-Interface DAG"
+  )
 
   val clpBenchmarksNames = List(
     "Binary Search Tree",
@@ -154,6 +191,8 @@ object BenchmarkSuite {
 
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
+    // not sure if we should repeat this flag
+    "-server",
     // print important outputs
     //    "-XX:+PrintCompilation",
     // verbose GC
@@ -170,7 +209,8 @@ object BenchmarkSuite {
     // disable adaptive policy
     "-XX:-UseAdaptiveSizePolicy",
     "-XX:MinHeapFreeRatio=80",
-    "-XX:MaxHeapFreeRatio=100")
+    "-XX:MaxHeapFreeRatio=100"
+  )
 
   def heapSize(s: Int) = List(
     // new generation size
