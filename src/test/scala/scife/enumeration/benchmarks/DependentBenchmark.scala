@@ -29,7 +29,8 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     name: String,
     maxSize: Int,
     run: String,
-    maxSizeWarmup: Option[Int] = None
+    maxSizeWarmup: Option[Int] = None,
+    memScope: MemoizationScope = new AccumulatingScope
 //    ,
 //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
 //    generator: Int => Gen[I] = this.generator,
@@ -44,7 +45,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
     performance of benchmarkMainName in {
         measure method run in {
-          val memScope = new AccumulatingScope
+//          val memScope = new AccumulatingScope
           val enumerator = constructEnumerator(memScope)
   
             using( generator(maxSize) ) config (
@@ -68,7 +69,8 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     benchmarkMainName: String,
     name: String,
     maxSize: Int,
-    maxSizeWarmup: Option[Int] = None
+    maxSizeWarmup: Option[Int] = None,
+    memScope: MemoizationScope = new AccumulatingScope
 //    ,
 //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
 //    generator: Int => Gen[I] = this.generator,
@@ -82,7 +84,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
 
     performance of benchmarkMainName in {
-        val memScope = new AccumulatingScope
+//        val memScope = new AccumulatingScope
         val enumerator = constructEnumerator(memScope)
 
           using( generator(maxSize) ) config (
@@ -126,6 +128,7 @@ System.gc()
 //    System.gc
 //    System.gc
 //    System.gc
+    memScope.clear
     info("[DependentBenchmark:] Begin run")
   }
   
@@ -133,6 +136,8 @@ System.gc()
   
   final def tearDownFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     tearDown(i, tdEnum, memScope)
+    System.gc
+    System.gc
     info("[DependentBenchmark:] End run")
   }
 
