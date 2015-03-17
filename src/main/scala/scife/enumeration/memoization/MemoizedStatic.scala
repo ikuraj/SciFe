@@ -21,8 +21,8 @@ trait MemoizedStatic[T] extends Enum[T] with Memoizable with HasLogger {
   override abstract def apply(ind: Int) = {
     assert(this.size > ind)
     if (!memoizedFlags(ind)) {
-      memoizedFlags(ind) = true
       memoizedValues(ind) = super.apply(ind)
+      memoizedFlags(ind) = true
     }
 
     memoizedValues(ind)
