@@ -22,4 +22,26 @@ class ProductFiniteTest extends FunSuite with Matchers {
 
   }
 
+  test("product of list of finites") {
+    val bs = Product(
+      Array[Finite[Int]](
+        WrapArray(1, 2, 3),
+        WrapArray(4, 5, 6),
+        WrapArray(7, 8, 9)
+      )
+    )
+
+    bs shouldBe a [ProductFiniteList[_]]
+    bs.size should be (27)
+
+    val res =
+      (0 until bs.size).map(
+        bs(_)
+      )
+
+    res should contain allOf ( List(1, 4, 8), List(2, 5, 9), List(1, 6, 7), List(3, 6, 8),
+      List(1, 4, 7), List(3, 6, 9) )
+
+  }
+
 }
