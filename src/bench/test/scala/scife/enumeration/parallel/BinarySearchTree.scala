@@ -32,6 +32,7 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
       this.tdEnum = tdEnum
       this.size = size
 
+    initExecutor
       exec.invokeAll(runners)
       exec.shutdown()
     }
@@ -39,9 +40,17 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 
   var size: Int = _
   var tdEnum: EnumType = _
-  val exec = Executors.newFixedThreadPool(numberOfThreads)
 
-  val runners: java.util.Collection[Callable[Object]] = {
+  @transient
+  var exec: ExecutorService = _
+
+  def initExecutor = exec = Executors.newFixedThreadPool(numberOfThreads)
+
+  @transient
+  lazy val runners: java.util.Collection[Callable[Object]] =
+//_
+//  def initRunners = runners =
+{
     val al = new java.util.ArrayList[Callable[Object]]()
     var i = 0
     while (i < numberOfThreads) {
@@ -73,13 +82,20 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 //  }
 
   def warmUp(tdEnum: EnumType, maxSize: Int) {
+    this.tdEnum = tdEnum
     for (size <- 1 to maxSize) {
-      this.tdEnum = tdEnum
       this.size = maxSize
 
+    	initExecutor
       exec.invokeAll(runners)
       exec.shutdown()
     }
+    initExecutor
+//    exec.awaitTermination(10, TimeUnit.SECONDS)
+  }
+  
+  override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
+//    exec.shutdown()
   }
 
   val enumeratorFunction =
