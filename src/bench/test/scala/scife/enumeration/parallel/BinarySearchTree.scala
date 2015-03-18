@@ -23,67 +23,59 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTreeBenchmark(numberOfThreads: Int)
-  extends StructuresBenchmark[Depend[(Int, Range), Tree]]
-  {
+  extends StructuresBenchmark[Depend[(Int, Range), Tree]] {
 
   type EnumType = Depend[(Int, Range), Tree]
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
-      val exec = Executors.newFixedThreadPool(numberOfThreads)
+      this.tdEnum = tdEnum
+      this.size = size
 
-      import scala.collection.JavaConversions._
-
-      val runners =
-        for (i <- 0 until numberOfThreads)
-          yield new Runnable {
-          def run = {
-            try {
-              var myInd = i
-              val enum = tdEnum.getEnum((size, 1 to size))
-
-              while (myInd < enum.size) {
-                enum(myInd)
-                myInd += numberOfThreads
-              }
-            } catch {
-              case t: Throwable =>
-                println(s"Thrown $t:${t.getStackTrace.mkString("\n")} at $i")
-            }
-          }
-        }
-
-      exec.invokeAll(runners map { r => Executors.callable(r) })
+      exec.invokeAll(runners)
       exec.shutdown()
     }
   }
 
-  def warmUp(tdEnum: EnumType, maxSize: Int) {
-    for (size <- 1 to maxSize) {
-      val exec = Executors.newFixedThreadPool(numberOfThreads)
+  var size: Int = _
+  var tdEnum: EnumType = _
+  val exec = Executors.newFixedThreadPool(numberOfThreads)
 
-      import scala.collection.JavaConversions._
-
-      val runners =
-        for (i <- 0 until numberOfThreads)
-          yield new Runnable {
-          def run = {
-            try {
-              var myInd = i
-              val enum = tdEnum.getEnum((size, 1 to size))
-
-              while (myInd < enum.size) {
-                enum(myInd)
-                myInd += numberOfThreads
-              }
-            } catch {
-              case t: Throwable =>
-                println(s"Thrown $t:${t.getStackTrace.mkString("\n")} at $i")
+  val runners: java.util.Collection[Callable[Object]] = {
+    val al = new java.util.ArrayList[Callable[Object]]()
+    var i = 0
+    while (i < numberOfThreads)
+      al add Executors.callable(new Runnable {
+        def run = {
+          try {
+            var myInd = i
+            val enum = tdEnum.getEnum((size, 1 to size))
+  
+            while (myInd < enum.size) {
+              enum(myInd)
+              myInd += numberOfThreads
             }
+            
+          } catch {
+            case t: Throwable =>
+              println(s"Thrown $t:${t.getStackTrace.mkString("\n")} at $i")
           }
         }
+      })
+    
+    al
+  }
 
-      exec.invokeAll(runners map { r => Executors.callable(r) })
+//  override def setup(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
+//
+//  }
+
+  def warmUp(tdEnum: EnumType, maxSize: Int) {
+    for (size <- 1 to maxSize) {
+      this.tdEnum = tdEnum
+      this.size = maxSize
+
+      exec.invokeAll(runners)
       exec.shutdown()
     }
   }
