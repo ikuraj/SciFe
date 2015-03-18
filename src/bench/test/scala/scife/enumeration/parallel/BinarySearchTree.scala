@@ -44,7 +44,7 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
   val runners: java.util.Collection[Callable[Object]] = {
     val al = new java.util.ArrayList[Callable[Object]]()
     var i = 0
-    while (i < numberOfThreads)
+    while (i < numberOfThreads) {
       al add Executors.callable(new Runnable {
         def run = {
           try {
@@ -62,6 +62,8 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
           }
         }
       })
+      i+=1
+    }
     
     al
   }
