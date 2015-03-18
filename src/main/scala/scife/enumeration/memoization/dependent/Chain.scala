@@ -86,6 +86,16 @@ object Chain {
         ! new ChainFiniteCombine(f, df, combine) with MemoizedSize with MemoizedDynamic[R]
     }
   }
+  
+  def single[I, O](s1: Finite[I], s2: DependFinite[I, O])
+    (implicit ms: MemoizationScope, ct: scala.reflect.ClassTag[O]): Finite[O] = {
+    (s1, s2) match {
+      case (Empty, _) => Empty
+      case (s: Singleton[I], df: DependFinite[I, O]) => df.apply(s.el)
+      case (f: Finite[I], df: DependFinite[I, O]) =>
+        ! new ChainFiniteSingle(f, df) with MemoizedSize with MemoizedDynamic[O]
+    }
+  }
 
   //  def fin[I, O, R](s1: Finite[I], s2: DependFinite[I, O], combine: (I, O) => R)
   //    (implicit ms: MemoizationScope = NoScope) = {

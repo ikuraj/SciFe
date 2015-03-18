@@ -114,7 +114,7 @@ class BTreeTest
                   case (cs, cr) => nonRootNodeEnum(cs, cr, h - 1)
                 } toArray;
     
-                e.Product.fin(childEnums) map {
+                e.Product.memoized(childEnums) map {
                   children =>
                     Tree(keys, children)
                 }
@@ -132,7 +132,7 @@ class BTreeTest
         } else if (h > 1 /*&& size == keyRange.size*/ && size > 0) {
           val nChildrenEnum = e.Enum(t to 2 * t)
 
-          e.dependent.Chain.single(nChildrenEnum map { x => (x, size, keyRange, h) },
+          e.memoization.Chain.single(nChildrenEnum map { x => (x, size, keyRange, h) },
             enumChildren): Finite[Output]
         } else {
           e.Empty //throw new RuntimeException(s"input=$pair")
@@ -150,7 +150,7 @@ class BTreeTest
           if (h > 1 /*&& size == keyRange.size && size >= 2 * t*/) {
           val nChildrenEnum = e.Enum(2 to 2 * t)
 
-          e.dependent.Chain.single(nChildrenEnum map { x => (x, size, keyRange, h) },
+          e.memoization.Chain.single(nChildrenEnum map { x => (x, size, keyRange, h) },
             enumChildren): Finite[Output]
         } else {
           info(s"input at root=$pair")

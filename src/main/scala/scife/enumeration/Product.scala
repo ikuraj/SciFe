@@ -76,5 +76,10 @@ object Product {
   
   def fin[T](array: Array[Finite[T]]): Finite[List[T]] =
     new ProductFiniteList(array.asInstanceOf[Array[Finite[T]]])
+  
+  def memoized[T](array: Array[Finite[T]]): Finite[List[T]] =
+    new ProductFiniteList(array.asInstanceOf[Array[Finite[T]]]) with
+      scife.enumeration.memoization.MemoizedSize with
+      scife.enumeration.memoization.MemoizedDynamic[List[T]]
 
 }

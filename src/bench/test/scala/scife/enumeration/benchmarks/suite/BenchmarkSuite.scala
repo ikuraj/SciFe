@@ -148,7 +148,7 @@ object BenchmarkSuite {
 
   // max datastructure size
   val minimalSizes = List(3, 3, 3, 3)
-  val fullBlownSizes = List(15, 15, 15, 11, 4, 5)
+  val fullBlownSizes = List(15, 15, 15, 11, 4, 15)
   // normal executor options
   val warmUps = 8
   val numberOfRuns = 3
