@@ -78,14 +78,14 @@ class BenchmarkSuiteParallel extends PerformanceTest {
   import BenchmarkSuite._
 
   implicit val configArguments = configArgumentsFull +
-    (exec.jvmflags -> (JVMFlags ++ heapSize(60)).mkString(" "))
+    (exec.jvmflags -> (JVMFlags ++ heapSize(10)).mkString(" "))
   
   val parallelBenchmarks =
     new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil
     
   val benchmarkNames = "Binary Search Trees - parallel" :: Nil
 
-  val benchmarkSizes = 15 :: Nil
+  val benchmarkSizes = 12 :: Nil
     
   for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
     for (size <- benchmarkSizes)
@@ -218,14 +218,14 @@ object BenchmarkSuite {
     "-XX:CompileThreshold=10", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // disable adaptive policy
-    "-XX:-UseAdaptiveSizePolicy",
-    "-XX:MinHeapFreeRatio=80",
-    "-XX:MaxHeapFreeRatio=100"
+    "-XX:-UseAdaptiveSizePolicy"
+//    "-XX:MinHeapFreeRatio=80",
+//    "-XX:MaxHeapFreeRatio=100"
   )
 
   def heapSize(s: Int) = List(
     // new generation size
-    s"-XX:NewSize=${s-2}G",
+//    s"-XX:NewSize=${s-2}G",
     s"-Xms${s}G", s"-Xmx${s}G"
   )
   //  println("JVM FLags: " + JVMFlags.mkString(" "))

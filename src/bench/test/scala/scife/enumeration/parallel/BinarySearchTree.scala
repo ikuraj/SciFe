@@ -29,12 +29,15 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
+      println("RUUUUUUUUUUUUUN")
       this.tdEnum = tdEnum
       this.size = size
 
     initExecutor
       exec.invokeAll(runners)
       exec.shutdown()
+      println("EEEEEEEEEEEEEEEEEEND")
+      System.out.flush
     }
   }
 
@@ -76,12 +79,24 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
     
     al
   }
+  
+  var freeMemory: Int = _
+  import scala.scife.enumeration.util._
 
-//  override def setup(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) = {
+//  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
+//    import Memory._
 //
+//    getFreeMemory
+//    println(s"Freeing up $freeMemory")
+//    tryToFreeUpSpaceG(freeMemory)    
+//    getFreeMemory
 //  }
 
   def warmUp(tdEnum: EnumType, maxSize: Int) {
+
+    freeMemory = Memory.getFreeMemory
+
+    initExecutor
     this.tdEnum = tdEnum
     for (size <- 1 to maxSize) {
       this.size = maxSize
@@ -89,9 +104,18 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
     	initExecutor
       exec.invokeAll(runners)
       exec.shutdown()
+    initExecutor
+    initRunners
     }
     initExecutor
+    initRunners
 //    exec.awaitTermination(10, TimeUnit.SECONDS)
+    import Memory._
+
+    getFreeMemory
+    println(s"Freeing up $freeMemory")
+    tryToFreeUpSpaceG(freeMemory)    
+    getFreeMemory
   }
   
   override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
