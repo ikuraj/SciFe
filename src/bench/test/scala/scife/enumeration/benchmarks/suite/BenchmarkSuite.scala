@@ -78,7 +78,7 @@ class BenchmarkSuiteParallel extends PerformanceTest {
   import BenchmarkSuite._
 
   implicit val configArguments = configArgumentsFull +
-    (exec.jvmflags -> (JVMFlags ++ heapSize(32)).mkString(" "))
+    (exec.jvmflags -> (JVMFlags ++ heapSize(60)).mkString(" "))
   
   val parallelBenchmarks =
     new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil

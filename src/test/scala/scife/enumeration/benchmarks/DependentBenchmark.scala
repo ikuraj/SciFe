@@ -127,10 +127,13 @@ System.gc()
 
   def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope)
-//    System.gc
-//    System.gc
-//    System.gc
+    System.gc
+    System.gc
+    System.gc
     memScope.clear
+    System.gc
+    System.gc
+    System.gc
     info("[DependentBenchmark:] Begin run")
   }
   
