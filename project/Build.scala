@@ -36,7 +36,7 @@ object SciFeBuild extends Build {
         //sources in (BenchConfig, test) := Seq ( sourceDirectory.value / "bench" ),
         fork in BenchConfig := false,        
         includeFilter in BenchConfig := AllPassFilter,
-        testOptions in BenchConfig := Seq( benchmarksFilter, noSuiteFilter ),
+        testOptions in BenchConfig := Seq( benchmarksFilter ),
 //        testOptions in BenchConfig += Tests.Filter({ (s: String) =>
 //          val isFull = s endsWith "Full"
 //          !isFull

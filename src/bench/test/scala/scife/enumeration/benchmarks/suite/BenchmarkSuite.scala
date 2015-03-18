@@ -52,16 +52,17 @@ class BenchmarkSuiteFull extends PerformanceTest {
 
   implicit val configArguments = configArgumentsFull
 
-  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
+  for (((benchmark, name), maxSize) <-
+    (allBenchmarks zip allBenchmarksNames zip fullBlownSizes last):: Nil)
     benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
 
-  val dummyBenchmark = new DummyBenchmark
-
-  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
-    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
-
-  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
-    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+//  val dummyBenchmark = new DummyBenchmark
+//
+//  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+//    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
+//
+//  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
+//    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
 
 }
 
@@ -123,7 +124,9 @@ object BenchmarkSuite {
     new SortedListDependentBenchmark,
     new RedBlackTreeDependentBenchmark,
     new HeapArrayBenchmark,
-    new DAGStructureBenchmark)
+    new DAGStructureBenchmark,
+    new BTreeTest
+  )
 
   val allBenchmarksNames = List(
     "Binary Search Tree",
@@ -131,7 +134,9 @@ object BenchmarkSuite {
     "Red-Black Tree",
     "Heap Array",
     "Directed Acyclic Graph",
-    "Class-Interface DAG")
+//    "Class-Interface DAG",
+    "B-tree"
+  )
 
   val clpBenchmarksNames = List(
     "Binary Search Tree",
@@ -143,7 +148,7 @@ object BenchmarkSuite {
 
   // max datastructure size
   val minimalSizes = List(3, 3, 3, 3)
-  val fullBlownSizes = List(15, 15, 15, 11, 4)
+  val fullBlownSizes = List(15, 15, 15, 11, 4, 5)
   // normal executor options
   val warmUps = 8
   val numberOfRuns = 3
@@ -185,7 +190,7 @@ object BenchmarkSuite {
       exec.benchRuns -> 3,
       exec.independentSamples -> 1,
       exec.jvmcmd -> javaCommand,
-      exec.jvmflags -> (JVMFlags ++ heapSize(32)).mkString(" "))
+      exec.jvmflags -> (JVMFlags ++ heapSize(12)).mkString(" "))
       
   val contextMinimal =
     org.scalameter.Context(
