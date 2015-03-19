@@ -17,11 +17,11 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
 
   import BenchmarkSuite._
 
-  val benchmarks = allBenchmarksZip
+  val benchmarks = allBenchmarks
 
   implicit val configArguments = contextMinimal
 
-  for (((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
+  for (((name, benchmark, _), maxSize) <- benchmarks zip minimalSizes)
     benchmark.fixture("Minimal benchmarks", name, maxSize)
 
 }
@@ -47,8 +47,7 @@ class BenchmarkSuiteFull extends PerformanceTest {
 
   implicit val configArguments = configArgumentsFull
 
-  for (((benchmark, name), maxSize) <-
-    (allBenchmarks zip allBenchmarksNames zip fullBlownSizes last):: Nil)
+  for ( (name, benchmark, maxSize) <- allBenchmarks)
     benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
 
 //  val dummyBenchmark = new DummyBenchmark
@@ -96,8 +95,7 @@ class DummyBenchmark extends PerformanceTest.OfflineReport {
     benchmarkMainName: String,
     name: String,
     maxSize: Int,
-    run: String)(
-      implicit configArguments: org.scalameter.Context) = {
+    run: String)(implicit configArguments: org.scalameter.Context) = {
     require(name != null)
 
     performance of benchmarkMainName in {
@@ -114,36 +112,37 @@ object BenchmarkSuite {
 
   val benchmarkMainName = "Benchmarks"
   
-  val allBenchmarksZip = List(
-    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
-    (new SortedListDependentBenchmark, "Sorted Lists"),
-    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
-    (new HeapArrayBenchmark, "Heap Arrays"),
-    (new DAGStructureBenchmark, "Directed Acyclic Graph"),
-    (new BTreeTest, "B-tree"),
-    (new RiffImage, "RIFF Format")
-  )
-
   val allBenchmarks = List(
-    new BinarySearchTreeBenchmark,
-    new SortedListDependentBenchmark,
-    new RedBlackTreeDependentBenchmark,
-    new HeapArrayBenchmark,
-    new DAGStructureBenchmark,
-    new BTreeTest,
-    new RiffImage
+    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15),
+    ("Sorted Lists", new SortedListDependentBenchmark, 15),
+//    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15),
+    ("Red-Black Trees", new RedBlackTreeConcise, 15),
+    ("Heap Arrays", new HeapArrayBenchmark, 11),
+    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
+    ("B-tree", new BTreeTest, 15),
+    ("RIFF Format", new RiffImage, 3)
   )
 
-  val allBenchmarksNames = List(
-    "Binary Search Tree",
-    "Sorted List",
-    "Red-Black Tree",
-    "Heap Array",
-    "Directed Acyclic Graph",
-//    "Class-Interface DAG",
-    "B-tree",
-    "RIFF Format"
-  )
+//  val allBenchmarks = List(
+//    new BinarySearchTreeBenchmark,
+//    new SortedListDependentBenchmark,
+//    new RedBlackTreeDependentBenchmark,
+//    new HeapArrayBenchmark,
+//    new DAGStructureBenchmark,
+//    new BTreeTest,
+//    new RiffImage
+//  )
+//
+//  val allBenchmarksNames = List(
+//    "Binary Search Tree",
+//    "Sorted List",
+//    "Red-Black Tree",
+//    "Heap Array",
+//    "Directed Acyclic Graph",
+////    "Class-Interface DAG",
+//    "B-tree",
+//    "RIFF Format"
+//  )
 
   val clpBenchmarksNames = List(
     "Binary Search Tree",
@@ -180,13 +179,15 @@ object BenchmarkSuite {
     "-XX:CompileThreshold=10", "-XX:+TieredCompilation",
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // disable adaptive policy
-    "-XX:-UseAdaptiveSizePolicy",
-    "-XX:MinHeapFreeRatio=80",
-    "-XX:MaxHeapFreeRatio=100")
+    "-XX:-UseAdaptiveSizePolicy"
+    //,
+    //"-XX:MinHeapFreeRatio=80",
+    //"-XX:MaxHeapFreeRatio=100"
+  )
 
   def heapSize(s: Int) = List(
     // new generation size
-    s"-XX:NewSize=${s-2}G",
+    //s"-XX:NewSize=${s-2}G",
     s"-Xms${s}G", s"-Xmx${s}G"
   )
   //  println("JVM FLags: " + JVMFlags.mkString(" "))

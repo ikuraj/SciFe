@@ -23,7 +23,7 @@ class RedBlackTreeDependentBenchmarkTest
 
   import e.common.enumdef.RedBlackTreeEnum._
   import structures.RedBlackTrees._
-  
+
   import Util._
   import Checks._
   import Common._
@@ -122,6 +122,81 @@ class RedBlackTreeDependentBenchmarkTest
       }
 
       assert((for (el <- elements) yield el).forall(invariant(_)))
+    }
+
+  }
+
+  test("correctness of new definitions") {
+    val ms = new scope.AccumulatingScope
+    val enums =
+      constructEnumerator_new(ms) ::
+        constructEnumerator_concise(ms) :: Nil
+
+    for (enum <- enums) {
+
+      val helper = new CheckerHelperFun(checker)
+      import helper._
+
+      val profileRange = 1 to 6
+      implicit def setToRange(s: Set[Boolean]) = {
+        val start = if (s contains false) 0 else 1
+        val end = if (s contains true) 1 else 0
+        start to end
+      }
+
+      withLazyClue("Elements are: " + clue) {
+        // specific cases
+        elements = enum.getEnum((1, 1 to 1, Set(true), 2)).toList
+        elements.size should be(1)
+        elements = enum.getEnum((2, 1 to 2, Set(true), 2)).toList
+        elements.size should be(2)
+        elements = enum.getEnum((4, 1 to 4, Set(true, false), 2)).toList
+        elements.size should be(4)
+
+        elements = enum.getEnum((3, 1 to 3, Set(true, false), 2)).toList
+        elements.size should be(2)
+        elements = enum.getEnum((3, 1 to 3, Set(true, false), 3)).toList
+        elements.size should be(1)
+
+        for (size <- profileRange) {
+          info("Generating for size " + size)
+          elements =
+            for (
+              blackHeight <- 0 to (size + 1); e = enum.getEnum(size, 1 to size, Set(true, false), blackHeight);
+              ind <- 0 until e.size
+            ) yield e(ind)
+
+          elements.forall(invariant(_)) should be(true)
+
+          profile("Claculating size %d".format(size)) {
+            elements.size should be(numberOfTrees(size))
+          }
+        }
+
+        // logged
+        for (size <- profileRange) {
+          info("Generating for size " + size)
+          elements =
+            for (
+              blackHeight <- 1 to (Math.log2(size + 1).toInt + 1); e = enum.getEnum(size, 1 to size, Set(true, false), blackHeight);
+              ind <- 0 until e.size
+            ) yield e(ind)
+
+          elements.forall(invariant(_)) should be(true)
+
+          profile("Claculating size %d".format(size)) {
+            elements.size should be(numberOfTrees(size))
+          }
+        }
+
+        // some confirmed counts
+        elements =
+          for (
+            blackHeight <- 0 to 6; e = enum.getEnum(9, 1 to 9, Set(true, false), blackHeight);
+            ind <- 0 until e.size
+          ) yield e(ind)
+        elements.size should be(122)
+      }
     }
 
   }

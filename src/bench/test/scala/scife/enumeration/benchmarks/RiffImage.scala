@@ -82,9 +82,15 @@ class RiffImage extends StructuresBenchmark[Depend[(Int, Int, Int, Int), RiffFor
             Product(leftTrees, rightTrees)
 
           val allNodes =
-            memoization.Chain[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
-              (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
-            )
+            
+            if (size < 15)
+              memoization.Chain[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
+                (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
+              )
+            else
+              e.dependent.Chain[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
+                (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
+              )
 
           allNodes: Finite[Chunk]
         } else e.Empty

@@ -27,7 +27,7 @@ object RedBlackTreeEnum {
   def constructEnumeratorBenchmarkVersion_1 = {
     import RedBlackTrees._
     import dependent._
-    
+
     val colorsProducer = Depend.memoized(
       (set: Set[Boolean]) => { e.WrapArray(set.toArray) })
 
@@ -35,16 +35,15 @@ object RedBlackTreeEnum {
       (self: Depend[(Int, Range, Set[Boolean], Int), Tree], pair: (Int, Range, Set[Boolean], Int)) => {
         val (size, range, colors, blackHeight) = pair
 
-          if (range.size >= size && range.size < 0 || blackHeight < 0) e.Empty
-          else
-          if (size == 0 && blackHeight == 1 && colors.contains(true)) e.Singleton(Leaf)
-//            else if (size == 1 && blackHeight == 1 && colors.contains(false)) e.WrapArray(range map { v => Node(Leaf, v, Leaf, false) })
-//            else if (size == 1 && blackHeight == 2 && colors.contains(true)) e.WrapArray(range map { v => Node(Leaf, v, Leaf, true) })
-//            else if (size == 1) e.WrapArray(range map { v => Node(Leaf, v, Leaf, true) })
-          else if (size > 0 && blackHeight >= 1) {
-            val roots = e.Enum(range)
-            val leftSizes = e.WrapArray(0 until size)
-            val rootColors = colorsProducer(colors)
+        if (range.size >= size && range.size < 0 || blackHeight < 0) e.Empty
+        else if (size == 0 && blackHeight == 1 && colors.contains(true)) e.Singleton(Leaf)
+        //            else if (size == 1 && blackHeight == 1 && colors.contains(false)) e.WrapArray(range map { v => Node(Leaf, v, Leaf, false) })
+        //            else if (size == 1 && blackHeight == 2 && colors.contains(true)) e.WrapArray(range map { v => Node(Leaf, v, Leaf, true) })
+        //            else if (size == 1) e.WrapArray(range map { v => Node(Leaf, v, Leaf, true) })
+        else if (size > 0 && blackHeight >= 1) {
+          val roots = e.Enum(range)
+          val leftSizes = e.WrapArray(0 until size)
+          val rootColors = colorsProducer(colors)
 
           val rootLeftSizePairs = e.Product(leftSizes, roots)
           val rootLeftSizeColorTuples = e.Product(rootLeftSizePairs, rootColors)
@@ -74,14 +73,13 @@ object RedBlackTreeEnum {
                 Node(leftTree, currRoot, rightTree, rootColor)
               })
 
-        allNodes
-      } else e.Empty
-    })
+          allNodes
+        } else e.Empty
+      })
 
     treesOfSize
   }
-  
-  
+
   def constructEnumeratorBenchmarkTest(implicit ms: MemoizationScope) = {
     import dependent._
     import memoization._
@@ -145,6 +143,151 @@ object RedBlackTreeEnum {
               })
 
           allNodes
+        } else e.Empty
+      })
+
+    treesOfSize
+  }
+
+  def constructEnumerator_currentBenchmark(implicit ms: MemoizationScope) = {
+    import e.dependent._
+
+    val colorsProducer = Depend.memoized(
+      (set: Set[Boolean]) => { e.WrapArray(set.toArray) })
+
+    val treesOfSize: Depend[(Int, Range, Set[Boolean], Int), Tree] = Depend.memoized(
+      (self: Depend[(Int, Range, Set[Boolean], Int), Tree], pair: (Int, Range, Set[Boolean], Int)) => {
+        val (size, range, colors, blackHeight) = pair
+
+        if (range.size >= size && range.size < 0 || blackHeight < 0) e.Empty
+        else if (size == 0 && blackHeight == 1 && colors.contains(true)) e.Singleton(Leaf)
+        //            else if (size == 1 && blackHeight == 1 && colors.contains(false)) e.WrapArray(range map { v => Node(Leaf, v, Leaf, false) })
+        //            else if (size == 1 && blackHeight == 2 && colors.contains(true)) e.WrapArray(range map { v => Node(Leaf, v, Leaf, true) })
+        //            else if (size == 1) e.WrapArray(range map { v => Node(Leaf, v, Leaf, true) })
+        else if (size > 0 && blackHeight >= 1) {
+          val roots = e.Enum(range)
+          val leftSizes = e.WrapArray(0 until size)
+          val rootColors = colorsProducer(colors)
+
+          val rootLeftSizePairs = e.Product(leftSizes, roots)
+          val rootLeftSizeColorTuples = e.Product(rootLeftSizePairs, rootColors)
+
+          val leftTrees: Depend[((Int, Int), Boolean), Tree] = InMap(self, { (par: ((Int, Int), Boolean)) =>
+            val ((leftSize, median), rootColor) = par
+            val childColors = if (rootColor) Set(true, false) else Set(true)
+            val childBlackHeight = if (rootColor) blackHeight - 1 else blackHeight
+            (leftSize, range.start to (median - 1), childColors, childBlackHeight)
+          })
+
+          val rightTrees: Depend[((Int, Int), Boolean), Tree] = InMap(self, { (par: ((Int, Int), Boolean)) =>
+            val ((leftSize, median), rootColor) = par
+            val childColors = if (rootColor) Set(true, false) else Set(true)
+            val childBlackHeight = if (rootColor) blackHeight - 1 else blackHeight
+            (size - leftSize - 1, (median + 1) to range.end, childColors, childBlackHeight)
+          })
+
+          val leftRightPairs: Depend[((Int, Int), Boolean), (Tree, Tree)] =
+            Product(leftTrees, rightTrees)
+
+          val allNodes =
+            memoization.Chain[((Int, Int), Boolean), (Tree, Tree), Node](rootLeftSizeColorTuples, leftRightPairs,
+              (p1: ((Int, Int), Boolean), p2: (Tree, Tree)) => {
+                val (((leftSize, currRoot), rootColor), (leftTree, rightTree)) = (p1, p2)
+
+                Node(leftTree, currRoot, rightTree, rootColor)
+              })
+
+          allNodes
+        } else e.Empty
+      })
+
+    treesOfSize
+  }
+
+  def constructEnumerator_new(implicit ms: MemoizationScope) = {
+    import e.dependent._
+
+    val treesOfSize: Depend[(Int, Range, Range, Int), Tree] = Depend.memoized(
+      (self: Depend[(Int, Range, Range, Int), Tree], pair: (Int, Range, Range, Int)) => {
+        val (size, range, colors, blackHeight) = pair
+
+        if (range.size >= size && range.size < 0 || blackHeight < 0) e.Empty
+        else if (size == 0 && blackHeight == 1 && colors.end >= 1) e.Singleton(Leaf)
+        else if (size > 0 && blackHeight >= 1) {
+          val roots: Finite[Int] = e.Enum(range)
+          val leftSizes: Finite[Int] = e.WrapArray(0 until size)
+          val rootColors: Finite[Int] = e.WrapArray(colors.toArray)
+
+          val rootLeftSizePairs = e.Product(leftSizes, roots)
+          val rootLeftSizeColorTuples: Finite[((Int, Int), Int)] = e.Product(rootLeftSizePairs, rootColors)
+
+          val leftTrees: Depend[((Int, Int), Int), Tree] = InMap(self, { (par: ((Int, Int), Int)) =>
+            val ((leftSize, median), rootColor) = par
+            val childColors = if (rootColor == 1) 0 to 1 else 1 to 1
+            val childBlackHeight = if (rootColor == 1) blackHeight - 1 else blackHeight
+            (leftSize, range.start to (median - 1), childColors, childBlackHeight)
+          })
+
+          val rightTrees: Depend[((Int, Int), Int), Tree] = InMap(self, { (par: ((Int, Int), Int)) =>
+            val ((leftSize, median), rootColor) = par
+            val childColors = if (rootColor == 1) 0 to 1 else 1 to 1
+            val childBlackHeight = if (rootColor == 1) blackHeight - 1 else blackHeight
+            (size - leftSize - 1, (median + 1) to range.end, childColors, childBlackHeight)
+          })
+
+          val leftRightPairs: Depend[((Int, Int), Int), (Tree, Tree)] =
+            Product(leftTrees, rightTrees)
+
+          val allNodes =
+            memoization.Chain[((Int, Int), Int), (Tree, Tree), Node](rootLeftSizeColorTuples, leftRightPairs,
+              (p1: ((Int, Int), Int), p2: (Tree, Tree)) => {
+                val (((leftSize, currRoot), rootColor), (leftTree, rightTree)) = (p1, p2)
+
+                Node(leftTree, currRoot, rightTree, rootColor == 1)
+              })
+
+          allNodes
+        } else e.Empty
+      })
+
+    treesOfSize
+  }
+  
+  
+  def constructEnumerator_concise(implicit ms: MemoizationScope) = {
+    import e.dependent._
+
+    val treesOfSize: Depend[(Int, Range, Range, Int), Tree] = Depend.memoized(
+      (self: Depend[(Int, Range, Range, Int), Tree], pair: (Int, Range, Range, Int)) => {
+        val (size, range, colors, blackHeight) = pair
+
+        if (range.size >= size && range.size < 0 || blackHeight < 0) e.Empty
+        else if (size == 0 && blackHeight == 1 && colors.end >= 1) e.Singleton(Leaf)
+        else if (size > 0 && blackHeight >= 1) {
+          val roots = e.Enum(range)
+          val leftSizes = e.WrapArray(0 until size)
+          val rootColors = e.WrapArray(colors.toArray)
+
+          val rootLeftSizeColorTuples = e.Product(e.Product(leftSizes, roots), rootColors)
+
+          val leftTrees = InMap(self, { (par: ((Int, Int), Int)) =>
+            val childColors = if (par._2 == 1) 0 to 1 else 1 to 1
+            val childBlackHeight = if (par._2 == 1) blackHeight - 1 else blackHeight
+            (par._1._1, range.start to (par._1._2 - 1), childColors, childBlackHeight)
+          })
+
+          val rightTrees = InMap(self, { (par: ((Int, Int), Int)) =>
+            val childColors = if (par._2 == 1) 0 to 1 else 1 to 1
+            val childBlackHeight = if (par._2 == 1) blackHeight - 1 else blackHeight
+            (size - par._1._1 - 1, (par._1._2 + 1) to range.end, childColors, childBlackHeight)
+          })
+
+          val leftRightPairs = Product(leftTrees, rightTrees)
+
+          memoization.Chain[((Int, Int), Int), (Tree, Tree), Node](rootLeftSizeColorTuples, leftRightPairs,
+            (p1: ((Int, Int), Int), p2: (Tree, Tree)) => Node(p2._1, p1._1._2, p2._2, p1._2 == 1)
+          )
+
         } else e.Empty
       })
 
