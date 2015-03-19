@@ -55,9 +55,9 @@ object BenchmarkSuite {
 //    (new RedBlackTreeBenchmarkMember, "Red-Black Trees, membership")
 //    ,
 //    (new RedBlackTreeBenchmarkVerify, "Red-Black Trees, invariant execution")
-    (new BinarySearchTreeMember, "Binary Srach Trees, membership")
+    (new BinarySearchTreeMember, "Binary Search Trees, membership")
     ,
-    (new BinarySearchTreeVerify, "Binary Srach Trees, invariant execution")
+    (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
   )
     
   val minimalSizes = List(3, 3)

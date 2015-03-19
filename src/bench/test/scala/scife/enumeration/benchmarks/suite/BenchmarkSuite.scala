@@ -10,19 +10,14 @@ import reporting._
 import execution._
 import Key._
 
-// if set, does not run full-blown micro-benchmark test suite; it runs
+// does not run full-blown micro-benchmark test suite; it runs
 // a quicker benchmark with less reliable results
-
 class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
   override def persistor = new persistence.SerializationPersistor
 
   import BenchmarkSuite._
 
-  val benchmarks = List(
-    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
-    (new SortedListDependentBenchmark, "Sorted Lists"),
-    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
-    (new HeapArrayBenchmark, "Heap Arrays"))
+  val benchmarks = allBenchmarksZip
 
   implicit val configArguments = contextMinimal
 
@@ -118,6 +113,16 @@ class DummyBenchmark extends PerformanceTest.OfflineReport {
 object BenchmarkSuite {
 
   val benchmarkMainName = "Benchmarks"
+  
+  val allBenchmarksZip = List(
+    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
+    (new SortedListDependentBenchmark, "Sorted Lists"),
+    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
+    (new HeapArrayBenchmark, "Heap Arrays"),
+    (new DAGStructureBenchmark, "Directed Acyclic Graph"),
+    (new BTreeTest, "B-tree"),
+    (new RiffImage, "RIFF Format")
+  )
 
   val allBenchmarks = List(
     new BinarySearchTreeBenchmark,
@@ -125,7 +130,8 @@ object BenchmarkSuite {
     new RedBlackTreeDependentBenchmark,
     new HeapArrayBenchmark,
     new DAGStructureBenchmark,
-    new BTreeTest
+    new BTreeTest,
+    new RiffImage
   )
 
   val allBenchmarksNames = List(
@@ -135,7 +141,8 @@ object BenchmarkSuite {
     "Heap Array",
     "Directed Acyclic Graph",
 //    "Class-Interface DAG",
-    "B-tree"
+    "B-tree",
+    "RIFF Format"
   )
 
   val clpBenchmarksNames = List(
@@ -147,8 +154,8 @@ object BenchmarkSuite {
   var maxSize = 15
 
   // max datastructure size
-  val minimalSizes = List(3, 3, 3, 3)
-  val fullBlownSizes = List(15, 15, 15, 11, 4, 15)
+  val minimalSizes = Stream.continually(3)
+  val fullBlownSizes = List(15, 15, 15, 11, 4, 15, 3)
   // normal executor options
   val warmUps = 8
   val numberOfRuns = 3
