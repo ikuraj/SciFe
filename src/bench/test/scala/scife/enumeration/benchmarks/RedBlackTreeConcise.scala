@@ -44,7 +44,11 @@ class RedBlackTreeConcise
     }
   }
   
-  def constructEnumerator(implicit ms: MemoizationScope) =
-    e.common.enumdef.RedBlackTreeEnum.constructEnumerator_concise(ms)
+  def constructEnumerator(implicit ms: MemoizationScope) = {
+    val noScope = scope.NoScope
+    val enum = e.common.enumdef.RedBlackTreeEnum.constructEnumerator_concise(noScope)
+    ms.add(enum)
+    enum
+  }
 
 }

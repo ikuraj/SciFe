@@ -36,7 +36,7 @@ object SciFeBuild extends Build {
         //sources in (BenchConfig, test) := Seq ( sourceDirectory.value / "bench" ),
         fork in BenchConfig := false,        
         includeFilter in BenchConfig := AllPassFilter,
-        testOptions in BenchConfig := Seq( benchmarksFilter ),
+        testOptions in BenchConfig := Seq( benchmarksFilter/*, noSuiteFilter */ ),
 //        testOptions in BenchConfig += Tests.Filter({ (s: String) =>
 //          val isFull = s endsWith "Full"
 //          !isFull
@@ -129,13 +129,13 @@ object SciFeBuild extends Build {
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512"
     ,
     // memory
-    "-Xms32G", "-Xmx32G",
+    "-Xms32G", "-Xmx32G"
     // new generation size
-    "-XX:NewSize=20G",
-    // disable adaptive policy
-    "-XX:-UseAdaptiveSizePolicy",
-    "-XX:MinHeapFreeRatio=100",
-    "-XX:MaxHeapFreeRatio=100"
+//    ,"-XX:NewSize=20G",
+//    // disable adaptive policy
+//    "-XX:-UseAdaptiveSizePolicy",
+//    "-XX:MinHeapFreeRatio=100",
+//    "-XX:MaxHeapFreeRatio=100"
   )
   
   val remoteConnectionJVMFlagList = List(

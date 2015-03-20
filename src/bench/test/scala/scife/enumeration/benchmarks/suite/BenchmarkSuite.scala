@@ -60,6 +60,49 @@ class BenchmarkSuiteFull extends PerformanceTest {
 
 }
 
+class BenchmarkSuiteParallel extends PerformanceTest {
+
+  override def executor = SeparateJvmsExecutor(
+    Executor.Warmer.Default(),
+    Aggregator.min,
+    new Executor.Measurer.Default)
+
+  import BenchmarkSuite._
+
+  implicit val configArguments = configArgumentsFull +
+    (exec.jvmflags -> (JVMFlags ++ heapSize(10)).mkString(" "))
+  
+  val parallelBenchmarks =
+    new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil
+    
+  val benchmarkNames = "Binary Search Trees - parallel" :: Nil
+
+  val benchmarkSizes = 12 :: Nil
+    
+  for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
+    for (size <- benchmarkSizes)
+      new scife.enumeration.parallel.BinarySearchTreeBenchmark(threads).
+        fixtureRun(benchmarkMainName, "SciFe", size, s"Binary Search Trees - parallel/$threads")
+  }
+
+//  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
+//    benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
+    
+  //override def reporter = new LoggingReporter
+  override def reporter =
+    Reporter.Composite(
+        new RegressionReporter(
+          RegressionReporter.Tester.OverlapIntervals(),
+          RegressionReporter.Historian.Complete()),
+        // do not embed data into js
+        HtmlReporter(false))
+  
+  override def persistor =
+    //Persistor.None
+    new persistence.SerializationPersistor
+
+}
+
 // benchmarks for which it may take a while to finish (e.g. ones without memoization)
 class BenchmarkSuiteSlow extends PerformanceTest {
   override def persistor = api.Persistor.None
@@ -165,6 +208,8 @@ object BenchmarkSuite {
 
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
+    // not sure if we should repeat this flag
+    "-server",
     // print important outputs
     //    "-XX:+PrintCompilation",
     // verbose GC
@@ -180,14 +225,13 @@ object BenchmarkSuite {
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512",
     // disable adaptive policy
     "-XX:-UseAdaptiveSizePolicy"
-    //,
-    //"-XX:MinHeapFreeRatio=80",
-    //"-XX:MaxHeapFreeRatio=100"
+//    "-XX:MinHeapFreeRatio=80",
+//    "-XX:MaxHeapFreeRatio=100"
   )
 
   def heapSize(s: Int) = List(
     // new generation size
-    //s"-XX:NewSize=${s-2}G",
+//    s"-XX:NewSize=${s-2}G",
     s"-Xms${s}G", s"-Xmx${s}G"
   )
   //  println("JVM FLags: " + JVMFlags.mkString(" "))
@@ -198,7 +242,7 @@ object BenchmarkSuite {
       exec.benchRuns -> 3,
       exec.independentSamples -> 1,
       exec.jvmcmd -> javaCommand,
-      exec.jvmflags -> (JVMFlags ++ heapSize(12)).mkString(" "))
+      exec.jvmflags -> (JVMFlags ++ heapSize(32)).mkString(" "))
       
   val contextMinimal =
     org.scalameter.Context(
