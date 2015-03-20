@@ -12,8 +12,8 @@ import scife.util.logging._
 
 import java.util.concurrent._
 
-import structures._
-import BSTrees._
+import structures.riff._
+import RiffFormat._
 
 import benchmarks._
 
@@ -22,10 +22,16 @@ import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeBenchmark(numberOfThreads: Int)
-  extends StructuresBenchmark[Depend[(Int, Range), Tree]] {
+class RiffImage(numberOfThreads: Int)
+  extends StructuresBenchmark[Depend[(Int, Int, Int, Int), RiffFormat.Chunk]] {
 
-  type EnumType = Depend[(Int, Range), Tree]
+  // size, dataSize, totalJiff, avRatio
+  type Input = (Int, Int, Int, Int)
+  type PInput = ((Int, Int), (Int, Int))
+  // list of extends
+  type Output = RiffFormat.Chunk
+  type UnsOutput = (Int, Int, Int, Int)
+  type EnumType = Depend[Input, Output]
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
@@ -61,7 +67,7 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
         def run = {
           try {
             var myInd = i
-            val enum = tdEnum.getEnum((size, 1 to size))
+            val enum = tdEnum.getEnum((size, size, (size + 1) / 2, size/2))
   
             while (myInd < enum.size) {
               enum(myInd)
@@ -103,7 +109,7 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
   def warmUp(tdEnum: EnumType, maxSize: Int) {
     
     for (size <- 1 to maxSize) {
-      val enum = tdEnum.getEnum((size, 1 to size))
+      val enum = tdEnum.getEnum((size, size, (size + 1) / 2, size/2))
       for (i <- 0 until enum.size) enum(i)
     }
 
@@ -132,43 +138,57 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
   }
 
   val enumeratorFunction =
-    (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
-      val (size, range) = pair
+      (self: Depend[Input, Output], in: Input) => {
+        // size of the structure, payload size, #jiffed chunks, #audio chunks
+        val (size, dataSize, jiffLoss, avChunks) = in
 
-      if (size <= 0) e.Singleton(Leaf)
-      else if (size == 1)
-        e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
-      else {
-        val roots = e.Enum(range)
-        val leftSizes = e.Enum(0 until size)
+        if (size == 0 && dataSize == 0) e.Singleton(RiffFormat.Leaf): Finite[Chunk]
+        else if (size == 1 && dataSize > 0 && avChunks <= 1 && (jiffLoss * 4) % dataSize == 0)
+          e.Singleton( Payload(dataSize, jiffLoss * 4 / dataSize, avChunks) ): Finite[Chunk]
+        else if (size > 1 && dataSize > 0) {
+          val leftSizes = e.Enum(0 until size-1)
+          val rootLeftPairs1 = e.dependent.Chain(leftSizes,
+            Depend({ (x: Int) => Enum(
+              math.max(0, avChunks - (size - x - 1)) to math.min(x, avChunks))
+            } ))
 
-        val rootLeftSizePairs = e.Product(leftSizes, roots)
+          val leftDataSizes = e.Enum(0 to dataSize/2)
+          val rootLeftPairs2: Enum[(Int, Int)] = e.dependent.Chain(leftDataSizes,
+            Depend({ (x: Int) => Enum(
+              math.max(0, jiffLoss - (dataSize - x)) to math.min(x, jiffLoss))
+          } ))
 
-        val leftTrees: Depend[(Int, Int), Tree] = InMap(self, { (par: (Int, Int)) =>
-          val (leftSize, median) = par
-          (leftSize, range.start to (median - 1))
-        })
+          
+          val rootLeftPairs = e.Product(rootLeftPairs1, rootLeftPairs2)
 
-        val rightTrees: Depend[(Int, Int), Tree] =
-          InMap(self, { (par: (Int, Int)) =>
-            val (leftSize, median) = par
-            (size - leftSize - 1, (median + 1) to range.end)
+          val leftTrees: Depend[PInput, Output] = InMap(self, { (in: PInput) =>
+            val ((leftSize, leftAudio), (leftData, leftJiff)) = in
+            (leftSize, leftData, leftJiff, leftAudio)
           })
 
-        val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-          Product(leftTrees, rightTrees)
+          val rightTrees: Depend[PInput, Output] = InMap(self, { (in: PInput) =>
+            val ((leftSize, leftAudio), (leftData, leftJiff)) = in
+            (size - leftSize - 1, dataSize - leftData,
+              jiffLoss - leftJiff, avChunks - leftAudio)
+          })
+          
+          val leftRightTreePairs: Depend[PInput, (Output, Output)] =
+            Product(leftTrees, rightTrees)
 
-        val allNodes =
-          e.memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
-            (p1: (Int, Int), p2: (Tree, Tree)) => {
-              val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
+          val allNodes =
+            
+            if (size < 15)
+              e.memoization.Chain[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
+                (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
+              )
+            else
+              e.dependent.Chain[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
+                (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
+              )
 
-              Node(leftTree, currRoot, rightTree)
-            })
-
-        allNodes
-      }
-    }
+          allNodes: Finite[Chunk]
+        } else e.Empty
+  }
 
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope) = {
     val enum = Depend.memoizedConcurrentNoScope(enumeratorFunction)

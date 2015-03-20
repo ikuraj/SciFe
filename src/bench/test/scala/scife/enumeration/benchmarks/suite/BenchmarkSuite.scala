@@ -10,18 +10,26 @@ import reporting._
 import execution._
 import Key._
 
-// does not run full-blown micro-benchmark test suite; it runs
+// if set, does not run full-blown micro-benchmark test suite; it runs
 // a quicker benchmark with less reliable results
+
 class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
   override def persistor = new persistence.SerializationPersistor
 
   import BenchmarkSuite._
 
-  val benchmarks = allBenchmarks
+  val benchmarks = List(
+//    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
+//    (new SortedListDependentBenchmark, "Sorted Lists"),
+//    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
+//    (new HeapArrayBenchmark, "Heap Arrays"),
+    (new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2),
+      "Binary Search Trees - parallel")
+    )
 
   implicit val configArguments = contextMinimal
 
-  for (((name, benchmark, _), maxSize) <- benchmarks zip minimalSizes)
+  for (((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
     benchmark.fixture("Minimal benchmarks", name, maxSize)
 
 }
@@ -71,18 +79,26 @@ class BenchmarkSuiteParallel extends PerformanceTest {
 
   implicit val configArguments = configArgumentsFull +
     (exec.jvmflags -> (JVMFlags ++ heapSize(10)).mkString(" "))
-  
-  val parallelBenchmarks =
-    new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil
     
-  val benchmarkNames = "Binary Search Trees - parallel" :: Nil
-
-  val benchmarkSizes = 12 :: Nil
+  import scife.enumeration.parallel._
+    
+  val benchmarks = List(
+    ("Binary Search Trees - parallel",
+      new BinarySearchTreeBenchmark(_: Int), 15),
+    ("Riff Image - parallel", new RiffImage(_: Int), 15)
+  )
+  
+//  val parallelBenchmarks =
+//    new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil
+//    
+//  val benchmarkNames = "Binary Search Trees - parallel" :: Nil
+//
+//  val benchmarkSizes = 15 :: Nil
     
   for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
-    for (size <- benchmarkSizes)
+    for ((name, benchmark, maxSize) <- allBenchmarks)
       new scife.enumeration.parallel.BinarySearchTreeBenchmark(threads).
-        fixtureRun(benchmarkMainName, "SciFe", size, s"Binary Search Trees - parallel/$threads")
+        fixtureRun(benchmarkMainName, "SciFe", maxSize, s"$name/$threads")
   }
 
 //  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
