@@ -83,9 +83,9 @@ class BenchmarkSuiteParallel extends PerformanceTest {
   import scife.enumeration.parallel._
     
   val benchmarks = List(
-    ("Binary Search Trees - parallel",
-      new BinarySearchTreeBenchmark(_: Int), 15),
-    ("Riff Image - parallel", new RiffImage(_: Int), 15)
+//    ("Binary Search Trees - parallel",
+//      new BinarySearchTreeBenchmark(_: Int), 15),
+    ("Riff Image - parallel", new RiffImage(_: Int), 12)
   )
   
 //  val parallelBenchmarks =
@@ -95,10 +95,10 @@ class BenchmarkSuiteParallel extends PerformanceTest {
 //
 //  val benchmarkSizes = 15 :: Nil
     
-  for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
-    for ((name, benchmark, maxSize) <- allBenchmarks)
-      new scife.enumeration.parallel.BinarySearchTreeBenchmark(threads).
-        fixtureRun(benchmarkMainName, "SciFe", maxSize, s"$name/$threads")
+//  for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
+  for (threads <- 5 to 10) {
+    for ((name, benchmark, maxSize) <- benchmarks)
+      benchmark(threads).fixtureRun(benchmarkMainName, "SciFe", maxSize, s"$name/$threads")
   }
 
 //  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)

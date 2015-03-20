@@ -55,23 +55,28 @@ class RiffImage(numberOfThreads: Int)
 
   def initExecutor = exec = Executors.newFixedThreadPool(numberOfThreads)
 
+  var i = 0
   @transient
   lazy val runners: java.util.Collection[Callable[Object]] =
 //_
 //  def initRunners = runners =
 {
     val al = new java.util.ArrayList[Callable[Object]]()
-    var i = 0
+    i = 0
     while (i < numberOfThreads) {
       al add Executors.callable(new Runnable {
+        val myInd = i
+        
         def run = {
           try {
-            var myInd = i
+//            var myInd = Thread.currentThread().getId.toInt
+            println(s"my id is $myInd")
             val enum = tdEnum.getEnum((size, size, (size + 1) / 2, size/2))
   
-            while (myInd < enum.size) {
-              enum(myInd)
-              myInd += numberOfThreads
+            var ind = myInd
+            while (ind < enum.size) {
+              enum(ind)
+              ind += numberOfThreads
             }
             
           } catch {
@@ -82,6 +87,8 @@ class RiffImage(numberOfThreads: Int)
       })
       i+=1
     }
+//    println(s"list has ${al.size}")
+    if (al.size != numberOfThreads) throw new RuntimeException("al.size")
     
     al
   }
