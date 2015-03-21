@@ -39,6 +39,19 @@ object Chain {
         } with ChainFiniteCombine(f, df, combine) with MemoizedSize with MemoizedStatic[R]
     }
   }
+  
+  def breadthSearch[I, O, R](s1: Enum[I], s2: Depend[I, O], combine: (I, O) => R)
+    (implicit ms: MemoizationScope, ct: scala.reflect.ClassTag[R]) = {
+    (s1, s2) match {
+      case (Empty, _) => Empty
+      case (s: Singleton[I], df: DependFinite[_, _]) =>
+        ! Map.memoized(df.apply(s.el), { (v: O) => combine(s.el, v) })
+      case (f: Finite[I], df: DependFinite[_, _]) =>
+        ! new {
+          override val classTagT = ct
+        } with breadth.ChainFiniteCombine(f, df, combine) with MemoizedSize with MemoizedStatic[R]
+    }
+  }
 
   def apply[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2)(implicit ms: MemoizationScope, ct: ClassTag[(I, O)]) = {
     (s1, s2) match {

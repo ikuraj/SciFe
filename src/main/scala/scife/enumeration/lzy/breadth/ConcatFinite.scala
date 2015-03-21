@@ -9,10 +9,41 @@ import scala.reflect.ClassTag
 
 import scife.util._
 
-class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArray: Array[Finite[T]])
+object ConcatFinite {
+
+  def apply[T](left: Finite[T], right: Finite[T]) /*(implicit ct: ClassTag[T])*/ =
+    if (left.size == right.size)
+      new ConcatFiniteEqualSize(Array(left, right))
+    else
+      new ConcatFiniteVariedSize(Array(left, right))
+
+  def apply[T](finites: Array[Finite[T]]) /*(implicit ct: ClassTag[T])*/ =
+    if (finites.map(_.size).distinct.size == 1)
+      new ConcatFiniteEqualSize(finites)
+    else
+      new ConcatFiniteVariedSize(finites)
+
+  def apply[T](finites: Seq[Finite[T]]) =
+    if (finites.map(_.size).distinct.size == 1)
+      new ConcatFiniteEqualSize(finites.toArray)
+    else
+      new ConcatFiniteVariedSize(finites)
+
+  def fixed[T](streams: Array[Finite[T]]) =
+    new ConcatFiniteVariedSize(streams)
+
+  def equal[T](streams: Array[Finite[T]]) =
+    new ConcatFiniteEqualSize(streams)
+
+  def buffer[T](streams: Seq[Finite[T]]) =
+    new dynamic.ConcatFiniteBuffer(streams)
+
+}
+
+class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArray: Seq[Finite[T]])
   extends Finite[T] with ConcatMul[T] with HasLogger {
 
-  override def enums = enumArray.toSeq
+  override def enums = enumArray
 
   override def apply(ind: Int) = {
     println("apply", ind)
@@ -42,7 +73,7 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
 //        if (a.size > b.size) 1 else -1 
 //    }
 //
-    sortedEnums = enumArray sortWith { (a, b) => a.size > b.size }
+    sortedEnums = enumArray.toArray sortWith { (a, b) => a.size > b.size }
     println(s"sortedEnums=${sortedEnums.map(_.size).mkString(", ")}")
     
     var currOffset = 0
@@ -131,7 +162,7 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
   private[enumeration] def binarySearch(target: Int): Int = {
     var left = 0
     // limits are indexed 0..length
-    var right = enumArray.length
+    var right = limits.length
     while (left <= right) {
       val mid = (left + right) / 2
       info("target=%d, left=%d, mid=%d, right=%d".format(target, left, mid, right))

@@ -50,6 +50,13 @@ class RiffImageTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
 
   }
   
+  test("enumeration breadth stragegy") {
+
+    val enum = constructEnumeratorBreadth
+    doTest(enum)
+
+  }
+  
   def doTest(enum: EnumType) = {
     val checkerHelper = new CheckerHelper[Output]
     import checkerHelper._
@@ -207,6 +214,67 @@ class RiffImageTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
           val allNodes =
             // TODO: Input not needed to construct Node
             memoization.Chain[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
+              (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
+            )
+//          allNodes.size shouldBe > (0)
+
+          allNodes: Finite[Chunk]
+        } else e.Empty
+      })
+  }
+  
+  def constructEnumeratorBreadth(implicit ms: MemoizationScope = null) = {
+
+    Depend.memoized(
+      (self: Depend[Input, Output], in: Input) => {
+        // size of the structure, payload size, #jiffed chunks, #audio chunks
+        val (size, dataSize, jiffLoss, avChunks) = in
+
+        if (size == 0 && dataSize == 0) {
+          avChunks shouldBe 0 
+          dataSize shouldBe 0
+          jiffLoss shouldBe 0
+          e.Singleton(RiffFormat.Leaf): Finite[Chunk]
+        }
+        else if (size == 1 && dataSize > 0 && avChunks <= 1 && (jiffLoss * 4) % dataSize == 0)
+          e.Singleton( Payload(dataSize, jiffLoss * 4 / dataSize, avChunks) ): Finite[Chunk]
+        else if (size > 1 && dataSize > 0) {
+          val leftSizes = e.Enum(0 until size-1)
+          val rootLeftPairs1 = e.dependent.Chain(leftSizes,
+            Depend({ (x: Int) => Enum(
+              math.max(0, avChunks - (size - x - 1)) to math.min(x, avChunks))
+            } ))
+//          rootLeftPairs1.size shouldBe > (0)
+
+          val leftDataSizes = e.Enum(0 to dataSize/2)
+          val rootLeftPairs2: Enum[(Int, Int)] = e.dependent.Chain(leftDataSizes,
+            Depend({ (x: Int) => Enum(
+              math.max(0, jiffLoss - (dataSize - x)) to math.min(x, jiffLoss))
+          } ))
+          rootLeftPairs2.size shouldBe > (0)
+
+//          val rootLeftPairs1 = e.Product(leftSizes, leftDataSizes)
+//          val rootLeftPairs2 = e.Product(leftJiffs, leftAudios)
+          
+          val rootLeftPairs = e.Product(rootLeftPairs1, rootLeftPairs2)
+
+          val leftTrees: Depend[PInput, Output] = InMap(self, { (in: PInput) =>
+            val ((leftSize, leftAudio), (leftData, leftJiff)) = in
+            (leftSize, leftData, leftJiff, leftAudio)
+          })
+
+          val rightTrees: Depend[PInput, Output] = InMap(self, { (in: PInput) =>
+            val ((leftSize, leftAudio), (leftData, leftJiff)) = in
+            (size - leftSize - 1, dataSize - leftData,
+              jiffLoss - leftJiff, avChunks - leftAudio)
+          })
+          
+          val leftRightTreePairs: Depend[PInput, (Output, Output)] =
+            Product(leftTrees, rightTrees)
+
+          val allNodes =
+            // TODO: Input not needed to construct Node
+            memoization.Chain.breadthSearch[PInput, (Output, Output), Output](rootLeftPairs, leftRightTreePairs,
               (p1: PInput, p2: (Output, Output)) => Node(dataSize, p2._1, p2._2)
             )
 //          allNodes.size shouldBe > (0)
