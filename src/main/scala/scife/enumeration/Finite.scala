@@ -48,6 +48,13 @@ trait Finite[+A] extends Enum[A] {
     
   def schain[B, A2 >: A](dep: DependFinite[A2, B]): Finite[B] = 
     dep chainSingle this
+      
+  def flatMap[B](f: A => Finite[B]): Finite[B] = {
+    val innerEnums =
+      for (el <- this) yield f(el)
+    
+    scife.enumeration.lzy.ConcatFinite.fixed( innerEnums.toArray )
+  }
 
 }
 

@@ -59,6 +59,8 @@ trait Enum[+A] extends Serializable {
   def schain[B, A2 >: A](dep: Depend[A2, B]): Enum[B] = 
     dep chainSingle this
   
+//  def flatMap[B](f: A => Enum[B]): Enum[B]
+  
 }
 
 object Enum extends EnumLessPriority {
