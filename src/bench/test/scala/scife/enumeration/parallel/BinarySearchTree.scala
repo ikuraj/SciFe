@@ -34,7 +34,9 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
       this.size = size
 
       initExecutor
+//      var beg = System.currentTimeMillis()
       exec.invokeAll(runners)
+//      println(System.currentTimeMillis() - beg)
 //      exec.shutdown()
 //      println("EEEEEEEEEEEEEEEEEEND")
 //      System.out.flush

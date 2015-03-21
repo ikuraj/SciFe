@@ -39,7 +39,7 @@ class RiffImage(numberOfThreads: Int)
       this.tdEnum = tdEnum
       this.size = size
 
-      initExecutor
+//      initExecutor
       exec.invokeAll(runners)
 //      exec.shutdown()
 //      println("EEEEEEEEEEEEEEEEEEND")
@@ -51,9 +51,9 @@ class RiffImage(numberOfThreads: Int)
   var tdEnum: EnumType = _
 
   @transient
-  var exec: ExecutorService = _
+  lazy val exec: ExecutorService = Executors.newFixedThreadPool(numberOfThreads)
 
-  def initExecutor = exec = Executors.newFixedThreadPool(numberOfThreads)
+//  def initExecutor = exec = Executors.newFixedThreadPool(numberOfThreads)
 
   var i = 0
   @transient
@@ -104,6 +104,7 @@ class RiffImage(numberOfThreads: Int)
 //    tryToFreeUpSpaceG(freeMemory)    
 //    getFreeMemory
     runners != null
+    executor != null
 //    Thread.sleep(runners.size)
 //    System.gc;
 //    System.gc;

@@ -46,17 +46,17 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
   override def enums = enumArray
 
   override def apply(ind: Int) = {
-    println("apply", ind)
+//    println("apply", ind)
     val sectorInd = binarySearch(ind)
-    println("sectorInd=" + sectorInd)
+//    println("sectorInd=" + sectorInd)
     val (enumOffset, numEnums, _) = metadata(sectorInd)
-    println("meta" + metadata(sectorInd))
+//    println("meta" + metadata(sectorInd))
     val indWithinSector = ind - limits(sectorInd)
-    println("limits(sectorInd)=" + limits(sectorInd))
+//    println("limits(sectorInd)=" + limits(sectorInd))
     val arrayInd = indWithinSector % numEnums
     val arrayOffset = indWithinSector / numEnums
     
-    println(s"arrayInd=$arrayInd, enumOffset + arrayOffset=${enumOffset + arrayOffset}")
+//    println(s"arrayInd=$arrayInd, enumOffset + arrayOffset=${enumOffset + arrayOffset}")
     sortedEnums(arrayInd)(enumOffset + arrayOffset)
   }
   
@@ -74,7 +74,7 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
 //    }
 //
     sortedEnums = enumArray.toArray sortWith { (a, b) => a.size > b.size }
-    println(s"sortedEnums=${sortedEnums.map(_.size).mkString(", ")}")
+//    println(s"sortedEnums=${sortedEnums.map(_.size).mkString(", ")}")
     
     var currOffset = 0
     var leftEnums = enums.size
@@ -88,8 +88,8 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
     for (enumSize <- sortedKeys) {
       val bucketSize = enumMap(enumSize).size
       val tuple = (currOffset, leftEnums, bucketSize)
-      println(s"tuple=$tuple")
-      println(s"bucketSize=$bucketSize, enumSize=$enumSize")
+//      println(s"tuple=$tuple")
+//      println(s"bucketSize=$bucketSize, enumSize=$enumSize")
       
       // search bound
       currBound += leftEnums * (enumSize - currOffset)
@@ -101,8 +101,8 @@ class ConcatFiniteVariedSize[@specialized T] protected[enumeration] (val enumArr
       
       metadata += tuple
     }
-    println(s"bounds=$bounds")
-    println(s"meta=$metadata")
+//    info(s"bounds=$bounds")
+//    println(s"meta=$metadata")
     
     this.metadata = metadata.toArray
 

@@ -44,9 +44,9 @@ class BenchmarkSuiteMeasure extends scife.enumeration.util.Benchmarker {
     
     val size = 15
 
-    benchmark.fixtureRun("BinarySearchTree", "SciFe - parallel", size, s"(#treads=$numOfThreads)",
-      Some(size), memScope = new parallel.memoization.scope.AccumulatingConcurrentScope)(
-      configArguments)
+//    benchmark.fixtureRun("BinarySearchTree", "SciFe - parallel", size, s"(#treads=$numOfThreads)",
+//      Some(size), memScope = new parallel.memoization.scope.AccumulatingConcurrentScope)(
+//      configArguments)
   }
     
   override val executor = SeparateJvmsExecutor(
