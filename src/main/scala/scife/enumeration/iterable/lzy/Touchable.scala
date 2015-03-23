@@ -12,7 +12,7 @@ trait Touchable[+A] extends Enum[A] with Iter[A] with HasLogger {
   var touched = true
     
   abstract override def next = {
-    entering("next[Touchable]", ind)
+//    entering("next[Touchable]", ind)
     touched = true
     super.next
   }
