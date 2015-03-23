@@ -83,8 +83,8 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
   
   override def reset = {
     super.reset
-    left.reset
-    right.reset
+    if (left.touched) left.reset
+    if (right.touched) right.reset
 //    for (i <- 0 until skipMap.size) skipMap(0) = right.size
   }
 

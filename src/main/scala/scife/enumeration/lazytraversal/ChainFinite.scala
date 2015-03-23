@@ -84,7 +84,7 @@ class ChainFiniteSingleCombine[I, O, R]
   
   override def reset = {
     super.reset
-    for (en <- enumArray) en.reset
+    for (en <- enumArray; if en.touched) en.reset
   }
 
   override def size = {
