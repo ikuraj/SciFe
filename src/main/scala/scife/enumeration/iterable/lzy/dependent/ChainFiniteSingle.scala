@@ -10,30 +10,30 @@ import scife.util._
 
 import scala.reflect.ClassTag
 
-class ChainFiniteSingle[I, O]
-  (override val left: LazyEnumFinite[I], override val right: LazyDependFinite[I, O])
-  extends e.dependent.ChainFiniteSingle[I, O](left, right) with Finite[O]
-    with ResetIter[O] with Touchable[O] with HasLogger {
-  
-  // TODO
-  var categoryIndex = 0
-  
-  val streamArray = {
-    val rightStreams =
-      for (ind <- 0 until left.size; stream = right.getEnum(left(ind)); if stream.size > 0 )
-        yield stream
-    
-    Array(rightStreams: _*)
-  }
-
-  override val rr = new ConcatFiniteVariedSize(streamArray)
-
-//  override def next = {
-////    if (false)
-//    super.next
+//class ChainFiniteSingle[I, O]
+//  (override val left: LazyEnumFinite[I], override val right: LazyDependFinite[I, O])
+//  extends e.dependent.ChainFiniteSingle[I, O](left, right) with Finite[O]
+//    with ResetIter[O] with Touchable[O] with HasLogger {
+//  
+//  // TODO
+//  var categoryIndex = 0
+//  
+//  val streamArray = {
+//    val rightStreams =
+//      for (ind <- 0 until left.size; stream = right.getEnum(left(ind)); if stream.size > 0 )
+//        yield stream
+//    
+//    Array(rightStreams: _*)
 //  }
-
-}
+//
+//  override val rr = new ConcatFiniteVariedSize(streamArray)
+//
+////  override def next = {
+//////    if (false)
+////    super.next
+////  }
+//
+//}
 
 
 class ChainFiniteSingleCombine[I, O, R]
