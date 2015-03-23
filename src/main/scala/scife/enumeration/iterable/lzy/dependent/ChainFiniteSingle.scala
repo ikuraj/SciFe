@@ -10,30 +10,30 @@ import scife.util._
 
 import scala.reflect.ClassTag
 
-class ChainFiniteSingle[I, O]
-  (override val left: LazyEnumFinite[I], override val right: LazyDependFinite[I, O])
-  extends e.dependent.ChainFiniteSingle[I, O](left, right) with Finite[O]
-    with ResetIter[O] with Touchable[O] with HasLogger {
-  
-  // TODO
-  var categoryIndex = 0
-  
-  val streamArray = {
-    val rightStreams =
-      for (ind <- 0 until left.size; stream = right.getEnum(left(ind)); if stream.size > 0 )
-        yield stream
-    
-    Array(rightStreams: _*)
-  }
-
-  override val rr = new ConcatFiniteVariedSize(streamArray)
-
-//  override def next = {
-////    if (false)
-//    super.next
+//class ChainFiniteSingle[I, O]
+//  (override val left: LazyEnumFinite[I], override val right: LazyDependFinite[I, O])
+//  extends e.dependent.ChainFiniteSingle[I, O](left, right) with Finite[O]
+//    with ResetIter[O] with Touchable[O] with HasLogger {
+//  
+//  // TODO
+//  var categoryIndex = 0
+//  
+//  val streamArray = {
+//    val rightStreams =
+//      for (ind <- 0 until left.size; stream = right.getEnum(left(ind)); if stream.size > 0 )
+//        yield stream
+//    
+//    Array(rightStreams: _*)
 //  }
-
-}
+//
+//  override val rr = new ConcatFiniteVariedSize(streamArray)
+//
+////  override def next = {
+//////    if (false)
+////    super.next
+////  }
+//
+//}
 
 
 class ChainFiniteSingleCombine[I, O, R]
@@ -51,16 +51,16 @@ class ChainFiniteSingleCombine[I, O, R]
   val (rightStreams, leftValues): (Array[E], Array[I]) = {
     val streams =
       for (
-//          ind <- 0 until left.size; leftVal = left(ind);
-          ind <- 0 until left.size; leftVal = left.next;
+          ind <- 0 until left.size; leftVal = left(ind);
+//          ind <- 0 until left.size; leftVal = left.next;
           stream = right.getEnum(leftVal); if stream.size > 0)
         yield {
         _size += stream.size
           (stream, leftVal)
         }
     info(s"streams=${streams}")
-    assert(!left.hasNext)
-    left.reset
+//    assert(!left.hasNext)
+//    left.reset
           
     val (_rightStreams, lefts) = streams.unzip
     
@@ -71,7 +71,9 @@ class ChainFiniteSingleCombine[I, O, R]
   val sizeArray = rightStreams map { _.size }
   info(s"sizeArray size=${sizeArray.mkString(" ")}")
 
-  override def head = combine( leftValues(categoryIndex), rightStreams(categoryIndex).head )
+  override def head =
+    throw new RuntimeException
+//    combine( leftValues(categoryIndex), rightStreams(categoryIndex).head )
 
   override def hasNext =
     rightStreams(categoryIndex).touched && rightStreams(categoryIndex).hasNext ||
