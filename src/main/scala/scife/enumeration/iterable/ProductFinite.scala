@@ -9,28 +9,31 @@ protected[enumeration] class ProductFinite[T, V]
   (override val left: ResetIterFinite[T], override val right: ResetIterFinite[V])
   extends scife.enumeration.lzy.ProductFinite[T, V](left, right) with ResetIter[(T, V)] {
   
-  override def apply(ind: Int) = throw new RuntimeException
+//  override def apply(ind: Int) = throw new RuntimeException
   
   require(left.hasNext)
   require(right.hasNext)
   
   // prepare for next head call
-  left.next
+  var currLeft = left.next
   
   override def next = {
     if (!right.hasNext) {
       right.reset
-      left.next
+      currLeft = left.next
     }
 
-//    (left.head, right.next)
-    right.next
-    constructCurrent
+    
+//    left.head
+    (currLeft, right.next)
+//    constructCurrent
   }
   
-  private[this] def constructCurrent = (left.head, right.head)
-  
-  override def head = constructCurrent
+//  private[this] def constructCurrent = (left.head, right.head)
+//  
+  override def head =
+    throw new RuntimeException
+//    constructCurrent
   
   override def hasNext = {
     right.hasNext || left.hasNext
@@ -39,7 +42,7 @@ protected[enumeration] class ProductFinite[T, V]
   override def reset = {
     left.reset
     right.reset
-    left.next
+    currLeft = left.next
   }
 
 }
@@ -61,7 +64,8 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
   require(right.hasNext)
   
   // prepare for next head call
-  left.next
+  var currLeft: T =
+    left.next
   
   override def next = {
     require(hasNext,
@@ -69,12 +73,12 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
     )
     if (!right.hasNext) {
       right.reset
-      left.next
+      currLeft = left.next
     }
 
-//    LazyTuple2(left.head, right.next)
-    right.next
-    constructCurrent
+    LazyTuple2(currLeft, right.next)
+//    right.next
+//    constructCurrent
   }
   
   private[this] def constructCurrent = 
@@ -90,7 +94,9 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
     left.next
   }
   
-  override def head = constructCurrent
+  override def head =
+    throw new RuntimeException
+//    constructCurrent
 
   override def size = left.size * right.size
   

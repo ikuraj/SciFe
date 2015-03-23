@@ -15,10 +15,10 @@
     <logger name="scife.enumeration.member.memoization" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="scife.enumeration.iterable" level="all" additivity="false">
+    <logger name="scife.enumeration.iterable" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="scife.enumeration.iterable.lzy.ChainFiniteSingleCombine" level="all" additivity="false">
+    <logger name="scife.enumeration.iterable.lzy.ChainFiniteSingleCombine" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="scife.enumeration.iterable.lzy.ConcatFiniteVariedSize" level="off" additivity="false">
@@ -27,7 +27,7 @@
     <logger name="scife.enumeration.parallel" level="all" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="scife.enumeration.benchmarks.test.parallel" level="all" additivity="false">
+    <logger name="scife.enumeration.benchmarks.test.parallel" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="scife.enumeration.benchmarks" level="off" additivity="false">
