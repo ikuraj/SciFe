@@ -182,6 +182,9 @@ package structures {
           (lf == null || lf.correctOrdering(min, v)) &&
           (rf == null || rf.correctOrdering(v + 1, max))
       }
+      
+      override def toString =
+        "Node(" + l.toString + "," + v + "," + r.toString + ")"
     }
 
     object Node {
