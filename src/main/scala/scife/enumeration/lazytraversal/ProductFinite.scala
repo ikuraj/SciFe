@@ -21,10 +21,12 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
     val i1 = ind % left.size
     val i2 = ind / left.size
     
-    if (left.touched && right.touched)
+    if (left.touched && right.touched) {
+//      println("both touched")
       ind + 1
+    }
     else if (!left.touched && right.touched) {
-      println(s"left $left, not touched")
+//      println(s"left $left, not touched")
       i2 * left.size + left.size
     }
     else if (left.touched && !right.touched) {
@@ -42,9 +44,10 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
         i2 * left.size + row      
       else {
         val newColumn = i2 + 1
-        val newRow = skipMap.indexWhere( newColumn < skipMap(_) )
+        val newRow = skipMap.indexWhere( newColumn < _ )
+//        println(s"newColumn=$newColumn, newRow=$newRow")
 
-        if (newRow < left.size) newColumn * left.size + newRow
+        if (newRow >= 0) newColumn * left.size + newRow
         else size
       }
     }
@@ -63,8 +66,7 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
 //    left.touched = false
 //    right.touched = false
     
-    println(s"invoke(untouch) from ${this.hashCode} for " +
-      s"${left.hashCode}/$i1, ${right.hashCode}/$i2")
+//    println(s"invoke(untouch) from ${this.hashCode} for " + s"${left.hashCode}/$i1, ${right.hashCode}/$i2")
 //    val leftO = leftOffset
 //    val rightO = rightOffset
 //    println(s"left/right offest: $i1/$i2")
@@ -80,8 +82,10 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
   }
   
   override def reset = {
+    super.reset
     left.reset
     right.reset
+//    for (i <- 0 until skipMap.size) skipMap(0) = right.size
   }
 
   override def size = left.size * right.size
@@ -127,7 +131,7 @@ protected[enumeration] class ProductFiniteStrictTuple[T, V]
         val newColumn = i2 + 1
         val newRow = skipMap.indexWhere( newColumn < skipMap(_) )
 
-        if (newRow < left.size) newColumn * left.size + newRow
+        if (newRow >= 0) newColumn * left.size + newRow
         else size
       }
     }
@@ -152,6 +156,7 @@ protected[enumeration] class ProductFiniteStrictTuple[T, V]
   override def size = left.size * right.size
   
   override def reset = {
+    super.reset
     left.reset
     right.reset
   }
