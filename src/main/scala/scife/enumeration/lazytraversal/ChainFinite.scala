@@ -13,7 +13,7 @@ class ChainFiniteSingleCombine[I, O, R]
   (implicit ct: scala.reflect.ClassTag[I])
   extends
     //e.dependent.ChainFiniteSingleCombine(left, right, combine) with
-    Finite[R] with Skippable[R] with HasLogger {
+    Finite[R] with Skippable[R] with Resetable[R] with HasLogger {
   
   info(s"new ChainFinite with: " + left.toList)
   
@@ -23,7 +23,7 @@ class ChainFiniteSingleCombine[I, O, R]
     val elInd = ind - limits(arrInd)
     
     println(s"arrInd=$arrInd, elInd=$elInd")
-    println(s"touched=${enumArray.map(_.touched).mkString(",")}")
+//    println(s"touched=${enumArray.map(_.touched).mkString(",")}")
     println(s"limits=${limits.mkString(",")}")
     if (!enumArray(arrInd).touched) limits(arrInd + 1)
     else {
@@ -32,7 +32,6 @@ class ChainFiniteSingleCombine[I, O, R]
       println(s"innerNext=$innerNext")
       if (innerNext <= enumArray(arrInd).size) limits(arrInd) + innerNext
       else {
-        enumArray(arrInd).touched = false
         limits(arrInd + 1)
       }
     }
@@ -70,7 +69,7 @@ class ChainFiniteSingleCombine[I, O, R]
 //    assert(flag)
     
     // mark as untouched
-    enumArray(arrInd).touched = false
+//    enumArray(arrInd).touched = false
 //    println(s"unoutch:${enumArray(arrInd).hashCode}")
     
 //    val leftV = left(arrInd)
@@ -78,8 +77,13 @@ class ChainFiniteSingleCombine[I, O, R]
 //    combine(leftV, rightV)
     combine(leftArray(arrInd), {
 //      println(s"invoke from $this, with ${leftArray(arrInd)}, $elInd"); enumArray(arrInd)(elInd) 
-      val res= enumArray(arrInd)(elInd);  enumArray(arrInd).touched = true; res
+      enumArray(arrInd)(elInd) 
+//      val res= enumArray(arrInd)(elInd);  enumArray(arrInd).touched = true; res
     })
+  }
+  
+  override def reset = {
+    for (en <- enumArray) en.reset
   }
 
   override def size = {

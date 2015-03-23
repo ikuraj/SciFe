@@ -7,7 +7,7 @@ import scalaz.LazyTuple2
 
 protected[enumeration] class ProductFiniteLazyTuple[T, V]
   (val left: TouchableEnum[T], val right: TouchableEnum[V])
-  extends Finite[LazyTuple2[T, V]] with Skippable[LazyTuple2[T, V]] with Touchable[LazyTuple2[T, V]] {
+  extends Finite[LazyTuple2[T, V]] with Skippable[LazyTuple2[T, V]] with Resetable[LazyTuple2[T, V]] {
   
 //  require(left.size > 0, "at " + this.hashCode())
 //  var leftOffset = 0
@@ -93,7 +93,7 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
 
 protected[enumeration] class ProductFiniteStrictTuple[T, V]
   (val left: TouchableEnum[T], val right: TouchableEnum[V])
-  extends Finite[(T, V)] with Skippable[(T, V)] {
+  extends Finite[(T, V)] with Skippable[(T, V)] with Resetable[(T, V)] {
   
 //  require(left.size > 0, "at " + this.hashCode())
 //  var leftOffset = 0
@@ -139,8 +139,6 @@ protected[enumeration] class ProductFiniteStrictTuple[T, V]
     entering("apply", ind)
     val i1 = ind % left.size
     val i2 = ind / left.size
-    left.touched = false
-    right.touched = false
     
 //    val leftO = leftOffset
 //    val rightO = rightOffset
@@ -152,5 +150,10 @@ protected[enumeration] class ProductFiniteStrictTuple[T, V]
   }
 
   override def size = left.size * right.size
+  
+  override def reset = {
+    left.reset
+    right.reset
+  }
   
 }
