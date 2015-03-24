@@ -13,9 +13,10 @@ trait Touchable[+A] extends Enum[A] with HasLogger {
   abstract override def apply(ind: Int): A = {
 //    println(s"apply[$ind]$hashCode")
 //    if (this.isInstanceOf[scife.enumeration.WrapArray[_]]) println(s"apply from $hashCode")
-//    println(s"apply from $hashCode")
+    println(s"touch $hashCode")
     _touched = true
     val res = super.apply(ind)
+    _touched = true
 //    if (this.isInstanceOf[scife.enumeration.WrapArray[_]]) println(s"end apply from $hashCode")
     res
   }
@@ -26,7 +27,8 @@ trait Touchable[+A] extends Enum[A] with HasLogger {
 
 trait Resetable[+A] {
   
-  protected var _touched = true
+//  protected var _touched = false
+  var _touched = false
   def touched = _touched
     
   def reset = _touched = false

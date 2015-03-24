@@ -26,11 +26,11 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
       ind + 1
     }
     else if (!left.touched && right.touched) {
-//      println(s"left $left, not touched")
+      println(s"left $left, not touched")
       i2 * left.size + left.size
     }
     else if (left.touched && !right.touched) {
-//      println("rigjt not touched")
+      println("rigjt not touched")
       // add vertical skip
       skipMap( i1 ) = i2
       var row = i1
@@ -74,10 +74,10 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
 //    val rightV =right(i2) 
 //    LazyTuple2(leftV, rightV)
     LazyTuple2(
-//      { val res = left(i1); left.touched = true; res},
-//      { val res = right(i2); right.touched = true; res}
-      { left(i1) },
-      { right(i2) }
+      { val res = left(i1); left._touched = true; res},
+      { val res = right(i2); right._touched = true; res}
+//      { left(i1) },
+//      { right(i2) }
     )
   }
   
@@ -85,6 +85,8 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
     super.reset
     if (left.touched) left.reset
     if (right.touched) right.reset
+//    left.reset
+//     right.reset
 //    for (i <- 0 until skipMap.size) skipMap(0) = right.size
   }
 

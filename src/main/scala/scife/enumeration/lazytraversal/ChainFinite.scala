@@ -22,14 +22,14 @@ class ChainFiniteSingleCombine[I, O, R]
     val arrInd = binarySearch(ind)
     val elInd = ind - limits(arrInd)
     
-//    println(s"arrInd=$arrInd, elInd=$elInd")
-//    println(s"touched=${enumArray.map(_.touched).mkString(",")}")
-//    println(s"limits=${limits.mkString(",")}")
+    println(s"arrInd=$arrInd, elInd=$elInd")
+    println(s"touched=${enumArray.map(_.touched).mkString(",")}")
+    println(s"limits=${limits.mkString(",")}")
     if (!enumArray(arrInd).touched) limits(arrInd + 1)
     else {
       val innerNext = enumArray(arrInd).next(elInd)
 //      println(s"innerArray=${enumArray(arrInd)}")
-//      println(s"innerNext=$innerNext")
+      println(s"innerNext=$innerNext")
       if (innerNext <= enumArray(arrInd).size) limits(arrInd) + innerNext
       else {
         limits(arrInd + 1)
@@ -77,14 +77,15 @@ class ChainFiniteSingleCombine[I, O, R]
 //    combine(leftV, rightV)
     combine(leftArray(arrInd), {
 //      println(s"invoke from $this, with ${leftArray(arrInd)}, $elInd"); enumArray(arrInd)(elInd) 
-      enumArray(arrInd)(elInd) 
-//      val res= enumArray(arrInd)(elInd);  enumArray(arrInd).touched = true; res
+//      enumArray(arrInd)(elInd) 
+      val res= enumArray(arrInd)(elInd);  enumArray(arrInd)._touched = true; res
     })
   }
   
   override def reset = {
     super.reset
     for (en <- enumArray; if en.touched) en.reset
+//    for (en <- enumArray) en.reset
   }
 
   override def size = {
@@ -111,6 +112,6 @@ class ChainFiniteSingleCombine[I, O, R]
   }
   
   override def toString =
-    s"ChainFinite[$hashCode](left=${left.toString}"
+    s"ChainFinite[$hashCode](l=${left.toList},r=${right.hashCode()}"
 
 }
