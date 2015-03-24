@@ -237,6 +237,33 @@ class SortedTreeTest extends FunSuite with Matchers
   //    }
   //
   //  }
+  
+  test("numbers") {
+    {
+     val size = 15 
+    val dEnum: DepEnumType[((Int, Range), Ugly), Tree] = consMess(ms, treeTag)
+    //    
+    //        testTuples.size shouldBe 15
+
+    val n: Ugly = null
+        var count = 0
+        val enum = dEnum((size, 1 to size), null)
+        for (i <- 1 to size) {
+          var nextInd = 0
+          while (nextInd < enum.size) {
+            enum.reset
+            val t = enum(nextInd)
+            val index = LazyBSTrees.insert(t, i)
+  //          toRegularBSTTree(t)
+            nextInd = enum.next(nextInd)
+            count += 1
+          }
+        }
+//        count shouldBe givenCnt
+        println(s"For size $size, count is $count / ${enum.size * size}")
+      }
+  }
+  
   //
   //  test("insert into a tree") {
   //    implicit def parTrans(p: (Int, Range)) =
