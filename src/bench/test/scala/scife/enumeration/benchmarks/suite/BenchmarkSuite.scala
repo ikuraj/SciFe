@@ -164,7 +164,8 @@ object BenchmarkSuite {
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
     ("B-tree", new BTreeTest, 15),
     ("RIFF Format", new RiffImage, 3),
-    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 3)
+    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15),
+    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
   )
 
 //  val allBenchmarks = List(
