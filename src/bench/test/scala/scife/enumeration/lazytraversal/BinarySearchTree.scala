@@ -43,9 +43,11 @@ class BinarySearchTree
 //      
   def measureCode(tdEnum: EType) = {
     (size: Int) =>
-      var enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
+//      var enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
+      var enum = tdEnum.getEnum((size, 1 to size), null)
       for (el <- 1 to size) {
-        enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
+//        enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
+        enum = tdEnum.getEnum((size, 1 to size), null)
         var nextInd = 0
         while (nextInd < enum.size) {
           enum.reset
@@ -65,6 +67,7 @@ class BinarySearchTree
   }
 
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope): DepEnumType[((Int, Range), LazyEnum[Tree]), Tree] = {
+    val res =
     new WrapFunctionTest2[((Int, Range), Ugly), Tree, EnumType](
       ((self: DepEnumType[((Int, Range), Ugly), Tree], pair: ((Int, Range), Ugly)) => {
         val ((size, range), ug) = pair
@@ -135,6 +138,10 @@ class BinarySearchTree
           allNodes: BinarySearchTree.this.EnumType[Tree]
         }
       }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree]) with split.Memoized[(Int, Range), Tree, Ugly]
+    
+    ms add res
+    
+    res
   }
 
 }

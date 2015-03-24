@@ -35,7 +35,8 @@ class BinarySearchTreeNormal
   def measureCode(tdEnum: EType) = {
     { (size: Int) =>
       for (el <- 1 to size) {
-        val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
+//        val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
+        val enum = tdEnum.getEnum((size, 1 to size))
         for (i <- 0 until enum.size) {
           val t = enum(i)
           val index = BSTrees.insert(t, el)
