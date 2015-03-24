@@ -42,11 +42,11 @@ class BinarySearchTree
   def measureCode(tdEnum: EType) = {
     { (in: (Int, Int)) =>
       val (size, el) = in
-      val enum = tdEnum.getEnum((size, 1 to size), null)
+      val enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
       for (i <- 0 until enum.size) {
-//        val t = enum(i)
-//        val index = LazyBSTrees.insert(t, e)
-//        index.
+        val t = enum(i)
+        val index = LazyBSTrees.insert(t, el)
+        index.lazyInvariant
       }
     }
   }

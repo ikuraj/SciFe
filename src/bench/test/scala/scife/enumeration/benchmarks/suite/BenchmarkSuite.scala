@@ -163,7 +163,8 @@ object BenchmarkSuite {
     ("Heap Arrays", new HeapArrayBenchmark, 11),
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
     ("B-tree", new BTreeTest, 15),
-    ("RIFF Format", new RiffImage, 3)
+    ("RIFF Format", new RiffImage, 3),
+    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 3)
   )
 
 //  val allBenchmarks = List(
