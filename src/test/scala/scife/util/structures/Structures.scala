@@ -151,9 +151,12 @@ package structures {
       def correctOrdering(min: Int, max: Int): Boolean
       def lazyInvariant: Boolean =
         correctOrdering(Int.MinValue, Int.MaxValue)
+        
+      def insert(newElem: Int): Tree
     }
     case object Leaf extends Tree {
-      def correctOrdering(min: Int, max: Int): Boolean = false
+      def correctOrdering(min: Int, max: Int): Boolean = true
+      def insert(newElem: Int): Tree = Node(Leaf, newElem, Leaf)
     }
     //    class Node(_l: => Tree, _v: => Int, _r: => Tree) extends Tree {
     //      lazy val l = _l
@@ -178,6 +181,12 @@ package structures {
       def r = {
         if (rf == null) rf = _r
         rf
+      }
+      
+      def insert(newElem: Int): Tree =  {
+          if (newElem < v) l insert newElem
+          else if (newElem > v) r insert newElem
+          else this
       }
 
       override def equals(that: Any) = that match {
@@ -206,15 +215,15 @@ package structures {
       case n: Node => BSTrees.Node(
         toRegularBSTTree(n.l), n.v, toRegularBSTTree(n.r))
     }
-
-    def insert(tree: Tree, newElem: Int): Tree = tree match {
-      case Leaf =>
-        Node(Leaf, newElem, Leaf)
-      case n: Node =>
-        if (newElem < n.v) insert(n.l, newElem)
-        else if (newElem > n.v) insert(n.r, newElem)
-        else tree
-    }
+//
+//    def insert(tree: Tree, newElem: Int): Tree = tree match {
+//      case Leaf =>
+//        Node(Leaf, newElem, Leaf)
+//      case n: Node =>
+//        if (newElem < n.v) insert(n.lf, newElem)
+//        else if (newElem > n.v) insert(n.rf, newElem)
+//        else tree
+//    }
   }
 
   object RedBlackTrees {

@@ -22,7 +22,7 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
   implicit val configArguments = contextMinimal
 
   for (((name, benchmark, _), maxSize) <- benchmarks zip minimalSizes)
-    benchmark.fixture("Minimal benchmarks", name, maxSize)
+    benchmark.fixture("Minimal benchmarks", name, 10)
 
 }
 
@@ -169,7 +169,9 @@ object BenchmarkSuite {
 //        scife.enumeration.lazytraversal.LazyEnum[scife.util.structures.LazyBSTrees.Tree]),
 //        scife.util.structures.LazyBSTrees.Tree]]), 15),
 //    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
-    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15)
+//    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15)
+//    ,
+    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15)
   )
 
 //  val allBenchmarks = List(

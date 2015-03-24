@@ -52,7 +52,7 @@ class BinarySearchTree
         while (nextInd < enum.size) {
           enum.reset
           val t = enum(nextInd)
-          val index = LazyBSTrees.insert(t, el)
+          val index = t insert el
           index.lazyInvariant
           nextInd = enum.next(nextInd)
         }

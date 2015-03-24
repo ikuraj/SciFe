@@ -40,7 +40,7 @@ class BinarySearchTreeNormal
         for (i <- 0 until enum.size) {
           val t = enum(i)
           val index = BSTrees.insert(t, el)
-          val correct = BSTrees.invariant(index)
+          BSTrees.invariant(index)
         }
       }
     }
