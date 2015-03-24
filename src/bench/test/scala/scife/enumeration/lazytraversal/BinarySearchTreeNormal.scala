@@ -20,26 +20,27 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTreeNormal
-  extends DependentMemoizedBenchmark[(Int, Int), Depend[(Int, Range), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
+  extends StructuresBenchmark[Depend[(Int, Range), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
   {
 
   type EType = Depend[(Int, Range), Tree]
 
   implicit val treeTag = implicitly[reflect.ClassTag[scife.util.structures.LazyBSTrees.Tree]]
 
-  override def generator(maxSize: Int): Gen[(Int, Int)] =
-    for (size <- Gen.range("size")(1, maxSize, 1);
-      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
-      (size, missingEl)
+//  override def generator(maxSize: Int): Gen[(Int, Int)] =
+//    for (size <- Gen.range("size")(1, maxSize, 1);
+//      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
+//      (size, missingEl)
       
   def measureCode(tdEnum: EType) = {
-    { (in: (Int, Int)) =>
-      val (size, el) = in
-      val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
-      for (i <- 0 until enum.size) {
-        val t = enum(i)
-        val index = BSTrees.insert(t, el)
-        BSTrees.invariant(index)
+    { (size: Int) =>
+      for (el <- 1 to size) {
+        val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
+        for (i <- 0 until enum.size) {
+          val t = enum(i)
+          val index = BSTrees.insert(t, el)
+          val correct = BSTrees.invariant(index)
+        }
       }
     }
   }
