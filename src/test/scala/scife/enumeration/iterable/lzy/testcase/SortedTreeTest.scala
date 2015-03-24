@@ -84,7 +84,7 @@ class SortedTreeTest extends FunSuite with Matchers
     while (testTuples.hasNext) {
       val (n, l) = testTuples.next
       count += 1
-      val index = LazyBSTrees.insert(l, n)
+//      val index = LazyBSTrees.insert(l, n)
     }
     count shouldBe testTuples.size + (-6 + 1) * 3
 

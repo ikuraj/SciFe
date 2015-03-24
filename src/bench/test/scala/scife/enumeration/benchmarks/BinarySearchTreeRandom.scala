@@ -1,52 +1,40 @@
 package scife
 package enumeration
-package lazytraversal
+package benchmarks
 
-import scife.enumeration.dependent._
+import dependent._
 import memoization._
 import scife.{ enumeration => e }
 import scife.util._
 
 import scife.util.logging._
 
-import scife.util.structures._
+import structures._
 import BSTrees._
-
-import benchmarks._
 
 import org.scalatest._
 import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeNormal
-  extends StructuresBenchmark[Depend[(Int, Range), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
+class BinarySearchTreeRandom
+  extends StructuresBenchmark[Depend[(Int, Range), Tree]]
+//  extends PerformanceTest.OfflineReport with ProfileLogger
   {
+  
+  val rnd = new scala.util.Random
 
-  type EType = Depend[(Int, Range), Tree]
+  type EnumType = Depend[(Int, Range), Tree]
 
-  implicit val treeTag = implicitly[reflect.ClassTag[scife.util.structures.LazyBSTrees.Tree]]
-
-//  override def generator(maxSize: Int): Gen[(Int, Int)] =
-//    for (size <- Gen.range("size")(1, maxSize, 1);
-//      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
-//      (size, missingEl)
-      
-  def measureCode(tdEnum: EType) = {
+  def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
-      for (el <- 1 to size) {
-//        val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
-        val enum = tdEnum.getEnum((size, 1 to size))
-        for (i <- 0 until enum.size) {
-          val t = enum(i)
-          val index = BSTrees.insert(t, el)
-          BSTrees.invariant(index)
-        }
-      }
+      val enum = tdEnum.getEnum((size, 1 to size))
+      val enumSize = enum.size
+      for (i <- 0 until enumSize) enum(rnd.nextInt(enumSize))
     }
   }
 
-  def warmUp(inEnum: EType, maxSize: Int) {
+  def warmUp(inEnum: EnumType, maxSize: Int) {
     for (size <- 1 to maxSize) {
       val enum = inEnum.getEnum((size, 1 to size))
       for (i <- 0 until enum.size) enum(i)
@@ -79,7 +67,7 @@ class BinarySearchTreeNormal
             })
 
           val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-            e.dependent.Product(leftTrees, rightTrees)
+            Product(leftTrees, rightTrees)
 
           val allNodes =
             memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
