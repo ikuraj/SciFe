@@ -156,14 +156,20 @@ object BenchmarkSuite {
   val benchmarkMainName = "Benchmarks"
   
   val allBenchmarks = List(
-    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15),
-    ("Sorted Lists", new SortedListDependentBenchmark, 15),
-//    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15),
-    ("Red-Black Trees", new RedBlackTreeConcise, 15),
-    ("Heap Arrays", new HeapArrayBenchmark, 11),
-    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
-    ("B-tree", new BTreeTest, 15),
-    ("RIFF Format", new RiffImage, 3)
+//    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15),
+//    ("Sorted Lists", new SortedListDependentBenchmark, 15),
+////    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15),
+//    ("Red-Black Trees", new RedBlackTreeConcise, 15),
+//    ("Heap Arrays", new HeapArrayBenchmark, 11),
+//    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
+//    ("B-tree", new BTreeTest, 15),
+//    ("RIFF Format", new RiffImage, 3),
+//    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
+//      StructuresBenchmark[scife.enumeration.dependent.Depend[((Int, Range),
+//        scife.enumeration.lazytraversal.LazyEnum[scife.util.structures.LazyBSTrees.Tree]),
+//        scife.util.structures.LazyBSTrees.Tree]]), 15),
+//    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
+    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15)
   )
 
 //  val allBenchmarks = List(

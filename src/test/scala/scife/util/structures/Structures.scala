@@ -134,6 +134,15 @@ package structures {
         case _ => true
       }
     }
+    
+    def insert(tree: Tree, newElem: Int): Tree = tree match {
+      case Leaf =>
+        Node(Leaf, newElem, Leaf)
+      case n: Node =>
+        if (newElem < n.v) insert(n.l, newElem)
+        else if (newElem > n.v) insert(n.r, newElem)
+        else tree
+    }
 
   }
 

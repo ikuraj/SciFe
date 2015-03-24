@@ -22,7 +22,9 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTree
-  extends DependentMemoizedBenchmark[(Int, Int), Depend[((Int, Range), LazyEnum[Tree]), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
+  extends StructuresBenchmark[Depend[((Int, Range), LazyEnum[Tree]), Tree] {
+  type EnumSort[A] = Finite[A] with Touchable[A] with Resetable[A] with Skippable[A] }]
+//  extends PerformanceTest.OfflineReport with ProfileLogger
   {
 
   type Ugly = LazyEnum[Tree]
@@ -30,25 +32,31 @@ class BinarySearchTree
   type DepEnumType[I, O] = Depend[I, O] { type EnumSort[A] = BinarySearchTree.this.EnumType[A] }
   type DepEnumTypeFinite[I, O] = DependFinite[I, O] { type EnumSort[A] = BinarySearchTree.this.EnumType[A] }
 
-  type EType = Depend[((Int, Range), LazyEnum[Tree]), Tree]
+  type EType = DepEnumType[((Int, Range), LazyEnum[Tree]), Tree]
 
   implicit val treeTag = implicitly[reflect.ClassTag[scife.util.structures.LazyBSTrees.Tree]]
 
-  override def generator(maxSize: Int): Gen[(Int, Int)] =
-    for (size <- Gen.range("size")(1, maxSize, 1);
-      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
-      (size, missingEl)
-      
+//  override def generator(maxSize: Int): Gen[(Int, Int)] =
+//    for (size <- Gen.range("size")(1, maxSize, 1);
+//      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
+//      (size, missingEl)
+//      
   def measureCode(tdEnum: EType) = {
-    { (in: (Int, Int)) =>
-      val (size, el) = in
-      val enum = tdEnum.getEnum((size, 1 to size), null)
-      for (i <- 0 until enum.size) {
-//        val t = enum(i)
-//        val index = LazyBSTrees.insert(t, e)
-//        index.
+    (size: Int) =>
+//      var enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
+      var enum = tdEnum.getEnum((size, 1 to size), null)
+      for (el <- 1 to size) {
+//        enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
+        enum = tdEnum.getEnum((size, 1 to size), null)
+        var nextInd = 0
+        while (nextInd < enum.size) {
+          enum.reset
+          val t = enum(nextInd)
+          val index = LazyBSTrees.insert(t, el)
+          index.lazyInvariant
+          nextInd = enum.next(nextInd)
+        }
       }
-    }
   }
 
   def warmUp(inEnum: EType, maxSize: Int) {
@@ -58,7 +66,8 @@ class BinarySearchTree
     }
   }
 
-  def constructEnumerator(implicit ms: e.memoization.MemoizationScope): Depend[((Int, Range), LazyEnum[Tree]), Tree] = {
+  def constructEnumerator(implicit ms: e.memoization.MemoizationScope): DepEnumType[((Int, Range), LazyEnum[Tree]), Tree] = {
+    val res =
     new WrapFunctionTest2[((Int, Range), Ugly), Tree, EnumType](
       ((self: DepEnumType[((Int, Range), Ugly), Tree], pair: ((Int, Range), Ugly)) => {
         val ((size, range), ug) = pair
@@ -129,6 +138,10 @@ class BinarySearchTree
           allNodes: BinarySearchTree.this.EnumType[Tree]
         }
       }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree]) with split.Memoized[(Int, Range), Tree, Ugly]
+    
+    ms add res
+    
+    res
   }
 
 }
