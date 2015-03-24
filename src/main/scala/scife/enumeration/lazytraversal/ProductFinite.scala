@@ -26,11 +26,11 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
       ind + 1
     }
     else if (!left.touched && right.touched) {
-      println(s"left $left, not touched")
+//      println(s"left $left, not touched")
       i2 * left.size + left.size
     }
     else if (left.touched && !right.touched) {
-      println("rigjt not touched")
+//      println("rigjt not touched")
       // add vertical skip
       skipMap( i1 ) = i2
       var row = i1

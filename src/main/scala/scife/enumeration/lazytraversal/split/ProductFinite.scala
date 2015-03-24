@@ -32,11 +32,11 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
       ind + 1
     }
     else if (!left.touched && right.touched) {
-      println(s"left $left, not touched")
+//      println(s"left $left, not touched")
       i2 * left.size + left.size
     }
     else if (left.touched && !right.touched) {
-      println("rigjt not touched")
+//      println("rigjt not touched")
       // add vertical skip
       skipMap( i1 ) = i2
       var row = i1
@@ -73,7 +73,14 @@ protected[enumeration] class ProductFiniteLazyTuple[T, V]
     if (right.touched) right.reset
 //    left.reset
 //     right.reset
-//    for (i <- 0 until skipMap.size) skipMap(0) = right.size
+  }
+  
+  override def hardReset = {
+//    super.hardReset
+//    println(s"hard reset in $this")
+    for (i <- 0 until skipMap.size) skipMap(i) = right.size
+    left.hardReset
+    right.hardReset
   }
   
   override def size = inner.size

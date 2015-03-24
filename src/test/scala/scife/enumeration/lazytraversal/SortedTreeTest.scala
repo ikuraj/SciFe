@@ -240,15 +240,17 @@ class SortedTreeTest extends FunSuite with Matchers
   
   test("numbers") {
     {
-     val size = 15 
+     val size = 14 
     val dEnum: DepEnumType[((Int, Range), Ugly), Tree] = consMess(ms, treeTag)
     //    
     //        testTuples.size shouldBe 15
 
     val n: Ugly = null
         var count = 0
-        val enum = dEnum((size, 1 to size), null)
+        var enum = dEnum((size, 1 to size), null)
         for (i <- 1 to size) {
+          enum.hardReset
+//          enum = dEnum((size, 1 to size), null)
           var nextInd = 0
           while (nextInd < enum.size) {
             enum.reset
@@ -939,65 +941,65 @@ class SortedTreeTest extends FunSuite with Matchers
       }): (DepEnumType[(Int, Range), Tree], (Int, Range)) => EnumType[Tree])
   }
 
-  def constructEnumerator_memDoesNotWork(implicit ms: e.memoization.MemoizationScope, tt: reflect.ClassTag[Tree]) = {
-    new WrapFunctionTest[(Int, Range), Tree, EnumType](
-      ((self: DepEnumType[(Int, Range), Tree], pair: (Int, Range)) => {
-        val (size, range) = pair
-
-        if (size < 0) throw new RuntimeException
-        if (size <= 0) new e.Singleton((Leaf: Tree)) with Touchable[Tree] with Resetable[Tree] with NoSkip[Tree] {
-          override def toString = s"Singleton[$hashCode]"
-        }
-        else if (range.isEmpty) Empty
-        else if (size == 1)
-          new e.WrapArray(range map { v => (Node(Leaf, v, Leaf): Tree) } toArray) with Touchable[Tree] with Resetable[Tree] with NoSkip[Tree] {
-
-            //            override def toString = s"Array[$hashCode](${toList})"
-            override def toString = s"Array[$hashCode]()"
-          }
-        else {
-          val leftSizes = e.Enum(0 until size)
-          val roots = e.Enum(range)
-
-          val rootLeftSizePairs = e.Product(leftSizes, roots)
-
-          val leftTrees: DepEnumTypeFinite[(Int, Int), Tree] = new InMap(self, { (par: (Int, Int)) =>
-            val (leftSize, median) = par
-            (leftSize, range.start to (median - 1))
-          }) with DependFinite[(Int, Int), Tree] {
-            override type EnumSort[A] = SortedTreeTest.this.EnumType[A]
-          }
-
-          val rightTrees: DepEnumTypeFinite[(Int, Int), Tree] =
-            new InMap(self, { (par: (Int, Int)) =>
-              val (leftSize, median) = par
-              (size - leftSize - 1, (median + 1) to range.end)
-            }) with DependFinite[(Int, Int), Tree] {
-              override type EnumSort[A] = SortedTreeTest.this.EnumType[A]
-            }
-
-          val leftRightPairs: DepEnumTypeFinite[(Int, Int), LazyTuple2[Tree, Tree]] =
-            lazytraversal.dependent.ProductFinite(leftTrees, rightTrees)
-
-          val fConstructTree: ((Int, Int), => LazyTuple2[Tree, Tree]) => Tree =
-            (p1, p2) => {
-              //              print(s"map invoked: ${p1}")
-              Node(p2._1, p1._2, p2._2)
-            }
-
-          val allNodes =
-            new {
-              val classTagT = treeTag
-            } with lazytraversal.ChainFiniteSingleCombine[(Int, Int), LazyTuple2[Tree, Tree], Tree](
-              rootLeftSizePairs, leftRightPairs,
-              fConstructTree) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with Touchable[Tree] {
-              //            override def toString = s"ChainFiniteSingleCombine[$hashCode](${leftRightPairs.hashCode})"
-            }
-
-          allNodes: SortedTreeTest.this.EnumType[Tree]
-        }
-      }): (DepEnumType[(Int, Range), Tree], (Int, Range)) => EnumType[Tree]) with e.memoization.dependent.Memoized[(Int, Range), Tree]
-  }
+//  def constructEnumerator_memDoesNotWork(implicit ms: e.memoization.MemoizationScope, tt: reflect.ClassTag[Tree]) = {
+//    new WrapFunctionTest[(Int, Range), Tree, EnumType](
+//      ((self: DepEnumType[(Int, Range), Tree], pair: (Int, Range)) => {
+//        val (size, range) = pair
+//
+//        if (size < 0) throw new RuntimeException
+//        if (size <= 0) new e.Singleton((Leaf: Tree)) with Touchable[Tree] with Resetable[Tree] with NoSkip[Tree] {
+//          override def toString = s"Singleton[$hashCode]"
+//        }
+//        else if (range.isEmpty) Empty
+//        else if (size == 1)
+//          new e.WrapArray(range map { v => (Node(Leaf, v, Leaf): Tree) } toArray) with Touchable[Tree] with Resetable[Tree] with NoSkip[Tree] {
+//
+//            //            override def toString = s"Array[$hashCode](${toList})"
+//            override def toString = s"Array[$hashCode]()"
+//          }
+//        else {
+//          val leftSizes = e.Enum(0 until size)
+//          val roots = e.Enum(range)
+//
+//          val rootLeftSizePairs = e.Product(leftSizes, roots)
+//
+//          val leftTrees: DepEnumTypeFinite[(Int, Int), Tree] = new InMap(self, { (par: (Int, Int)) =>
+//            val (leftSize, median) = par
+//            (leftSize, range.start to (median - 1))
+//          }) with DependFinite[(Int, Int), Tree] {
+//            override type EnumSort[A] = SortedTreeTest.this.EnumType[A]
+//          }
+//
+//          val rightTrees: DepEnumTypeFinite[(Int, Int), Tree] =
+//            new InMap(self, { (par: (Int, Int)) =>
+//              val (leftSize, median) = par
+//              (size - leftSize - 1, (median + 1) to range.end)
+//            }) with DependFinite[(Int, Int), Tree] {
+//              override type EnumSort[A] = SortedTreeTest.this.EnumType[A]
+//            }
+//
+//          val leftRightPairs: DepEnumTypeFinite[(Int, Int), LazyTuple2[Tree, Tree]] =
+//            lazytraversal.dependent.ProductFinite(leftTrees, rightTrees)
+//
+//          val fConstructTree: ((Int, Int), => LazyTuple2[Tree, Tree]) => Tree =
+//            (p1, p2) => {
+//              //              print(s"map invoked: ${p1}")
+//              Node(p2._1, p1._2, p2._2)
+//            }
+//
+//          val allNodes =
+//            new {
+//              val classTagT = treeTag
+//            } with lazytraversal.ChainFiniteSingleCombine[(Int, Int), LazyTuple2[Tree, Tree], Tree](
+//              rootLeftSizePairs, leftRightPairs,
+//              fConstructTree) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with Touchable[Tree] {
+//              //            override def toString = s"ChainFiniteSingleCombine[$hashCode](${leftRightPairs.hashCode})"
+//            }
+//
+//          allNodes: SortedTreeTest.this.EnumType[Tree]
+//        }
+//      }): (DepEnumType[(Int, Range), Tree], (Int, Range)) => EnumType[Tree]) with e.memoization.dependent.Memoized[(Int, Range), Tree]
+//  }
 
   //  def constructEnumerator(implicit ms: e.memoization.MemoizationScope, tt: reflect.ClassTag[Tree]) =
   //    new InMap(consMess(ms, tt), { (par: (Int, Range)) =>

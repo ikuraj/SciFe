@@ -87,6 +87,11 @@ class ChainFiniteSingleCombine[I, O, R]
     for (en <- enumArray; if en.touched) en.reset
 //    for (en <- enumArray) en.reset
   }
+  
+  override def hardReset {
+//    super.hardReset
+    for (en <- enumArray) en.hardReset
+  }
 
   override def size = {
     fine("limits = " + limits.mkString(","))
