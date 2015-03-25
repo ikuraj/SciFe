@@ -1083,7 +1083,7 @@ class SortedTreeTest extends FunSuite with Matchers
           allNodes: SortedTreeTest.this.EnumType[Tree]
         }
       }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree])
-      //with split.Memoized[(Int, Range), Tree, Ugly]
+      with split.Memoized[(Int, Range), Tree, Ugly]
   }
 
 }
