@@ -20,21 +20,23 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTreeNormal2
-  extends StructuresBenchmark[Depend[(Int, Range), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
+  extends DependentMemoizedBenchmark[(Int, Int), Depend[(Int, Range), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
   {
 
   type EType = Depend[(Int, Range), Tree]
 
   implicit val treeTag = implicitly[reflect.ClassTag[scife.util.structures.LazyBSTrees.Tree]]
 
-//  override def generator(maxSize: Int): Gen[(Int, Int)] =
-//    for (size <- Gen.range("size")(1, maxSize, 1);
-//      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
-//      (size, missingEl)
+  override def generator(maxSize: Int): Gen[(Int, Int)] =
+    for (size <- Gen.range("size")(1, maxSize, 1);
+      missingEl <- Gen.range("missingElement")(0, size, 1)) yield
+      (size, missingEl)
       
   def measureCode(tdEnum: EType) = {
-    { (size: Int) =>
-      for (el <- 1 to size) {
+//    { (size: Int) =>
+    { (in: (Int, Int)) =>
+      val (size, el) = in
+//      for (el <- 1 to size) {
 //        val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
         val enum = tdEnum.getEnum((size, 1 to size))
         for (i <- 0 until enum.size) {
@@ -42,7 +44,7 @@ class BinarySearchTreeNormal2
           val index = t insert el
           t.lazyInvariant
         }
-      }
+//      }
     }
   }
 

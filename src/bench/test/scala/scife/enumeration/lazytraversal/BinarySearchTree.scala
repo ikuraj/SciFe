@@ -22,7 +22,8 @@ import org.scalameter.api._
 import scala.language.existentials
 
 class BinarySearchTree
-  extends StructuresBenchmark[Depend[((Int, Range), LazyEnum[Tree]), Tree] {
+//  extends StructuresBenchmark[Depend[((Int, Range), LazyEnum[Tree]), Tree] {
+  extends DependentMemoizedBenchmark[(Int, Int), Depend[((Int, Range), LazyEnum[Tree]), Tree] {
   type EnumSort[A] = Finite[A] with Touchable[A] with Resetable[A] with Skippable[A] }]
 //  extends PerformanceTest.OfflineReport with ProfileLogger
   {
@@ -36,18 +37,20 @@ class BinarySearchTree
 
   implicit val treeTag = implicitly[reflect.ClassTag[scife.util.structures.LazyBSTrees.Tree]]
 
-//  override def generator(maxSize: Int): Gen[(Int, Int)] =
-//    for (size <- Gen.range("size")(1, maxSize, 1);
-//      missingEl <- Gen.range("missingElement")(0, size - 1, 1)) yield
-//      (size, missingEl)
+  override def generator(maxSize: Int): Gen[(Int, Int)] =
+    for (size <- Gen.range("size")(1, maxSize, 1);
+      missingEl <- Gen.range("missingElement")(0, size, 1)) yield
+      (size, missingEl)
 //      
   def measureCode(tdEnum: EType) = {
-    (size: Int) =>
+    (in: (Int, Int)) =>
+//    (size: Int) =>
+      val (size, el) = in
 //      var enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
       var enum = tdEnum.getEnum((size, 1 to size), null)
-      for (el <- 1 to size) {
+//      for (el <- 1 to size) {
 //        enum = tdEnum.getEnum((size - 1, 1 to size - 1), null)
-        enum = tdEnum.getEnum((size, 1 to size), null)
+//        enum = tdEnum.getEnum((size, 1 to size), null)
         var nextInd = 0
         while (nextInd < enum.size) {
           enum.reset
@@ -56,7 +59,7 @@ class BinarySearchTree
           index.lazyInvariant
           nextInd = enum.next(nextInd)
         }
-      }
+//      }
   }
 
   def warmUp(inEnum: EType, maxSize: Int) {
