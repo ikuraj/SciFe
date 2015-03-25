@@ -39,7 +39,7 @@ class BinarySearchTreeBenchmark
   }
 
   override def constructEnumerator(implicit ms: memoization.MemoizationScope) = {
-    Depend(
+    Depend.fin(
       (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
         val (size, range) = pair
 
