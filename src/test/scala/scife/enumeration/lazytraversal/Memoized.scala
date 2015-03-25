@@ -24,6 +24,12 @@ trait Memoized[I, O, U] extends Depend[(I, U), O] with Memoizable {
     if (memoizedMap contains parameter) {
 //      println(s"memoizedMap getting ${memoizedMap(parameter)}")
       val res = memoizedMap(parameter)
+      res match {
+        case cf: ChainFiniteSingleCombine[(Int, Range), LazyTuple2[Tree, Tree], Tree] =>
+          super.getEnum(parameter, res)
+        case r: EnumType =>
+          r
+      }
 //      res match {
 //        case cf: ChainFiniteSingleCombine[(Int, Range), LazyTuple2[Tree, Tree], Tree] =>
 //          cf.right match {
@@ -39,7 +45,7 @@ trait Memoized[I, O, U] extends Depend[(I, U), O] with Memoizable {
 //        case _ =>
 //          res
 //      }
-      super.getEnum(parameter, res)
+//      super.getEnum(parameter, res)
     }
     else {
       val res = super.getEnum(_parameter)

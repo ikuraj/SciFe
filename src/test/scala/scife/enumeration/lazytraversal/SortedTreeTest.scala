@@ -240,32 +240,35 @@ class SortedTreeTest extends FunSuite with Matchers
   
   test("numbers") {
     {
-     val size = 14 
+     val size = 8 
+//      for (size <- 15 to 15) {
     val dEnum: DepEnumType[((Int, Range), Ugly), Tree] = consMess(ms, treeTag)
     //    
     //        testTuples.size shouldBe 15
 
     val n: Ugly = null
         var count = 0
+
+//        for (i <- 1 to size) {
+          { val i = 1
+//          enum.hardReset
         var enum = dEnum((size, 1 to size), null)
-        for (i <- 1 to size) {
-          enum.hardReset
-//          enum = dEnum((size, 1 to size), null)
           var nextInd = 0
           while (nextInd < enum.size) {
             enum.reset
             val t = enum(nextInd)
 //            val index = LazyBSTrees.insert(t, i)
-//            val index = t insert i
-//            index.lazyInvariant
+            val index = t insert i
+            index.lazyInvariant
   //          toRegularBSTTree(t)
             nextInd = enum.next(nextInd)
             count += 1
           }
-        }
 //        count shouldBe givenCnt
         println(s"For size $size, count is $count / ${enum.size * size}")
+        }
       }
+//    }
   }
   
   //
@@ -1066,7 +1069,7 @@ class SortedTreeTest extends FunSuite with Matchers
                 val classTagT = treeTag
               } with lazytraversal.split.ChainFiniteSingleCombine[(Int, Int), LazyTuple2[Tree, Tree], Tree](
                 rootLeftSizePairs, leftRightPairs,
-                fConstructTree)(null) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with Touchable[Tree] {
+                fConstructTree)(null) with e.memoization.MemoizedSize with e.memoization.MemoizedDynamic[Tree] with Touchable[Tree] {
                 //            override def toString = s"ChainFiniteSingleCombine[$hashCode](${leftRightPairs.hashCode})"
               }
             else
@@ -1074,13 +1077,14 @@ class SortedTreeTest extends FunSuite with Matchers
                 val classTagT = treeTag
               } with lazytraversal.split.ChainFiniteSingleCombine[(Int, Int), LazyTuple2[Tree, Tree], Tree](
                 rootLeftSizePairs, leftRightPairs,
-                fConstructTree)(reuse.inner) with e.memoization.MemoizedSize with e.memoization.MemoizedStatic[Tree] with Touchable[Tree] {
+                fConstructTree)(reuse.inner) with e.memoization.MemoizedSize with e.memoization.MemoizedDynamic[Tree] with Touchable[Tree] {
                 //            override def toString = s"ChainFiniteSingleCombine[$hashCode](${leftRightPairs.hashCode})"
               }
 
           allNodes: SortedTreeTest.this.EnumType[Tree]
         }
-      }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree]) with split.Memoized[(Int, Range), Tree, Ugly]
+      }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree])
+      with split.Memoized[(Int, Range), Tree, Ugly]
   }
 
 }
