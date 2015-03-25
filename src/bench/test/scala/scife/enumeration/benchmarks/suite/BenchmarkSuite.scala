@@ -173,7 +173,8 @@ object BenchmarkSuite {
 //    ,
 //    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15)
 //    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15),
-    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15)
+//    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15)
+    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15)
   )
 
 //  val allBenchmarks = List(
