@@ -240,7 +240,8 @@ class SortedTreeTest extends FunSuite with Matchers
   
   test("numbers") {
     {
-     val size = 14 
+     val size = 8 
+//      for (size <- 15 to 15) {
     val dEnum: DepEnumType[((Int, Range), Ugly), Tree] = consMess(ms, treeTag)
     //    
     //        testTuples.size shouldBe 15
@@ -249,8 +250,8 @@ class SortedTreeTest extends FunSuite with Matchers
         var count = 0
         var enum = dEnum((size, 1 to size), null)
         for (i <- 1 to size) {
-          enum.hardReset
-//          enum = dEnum((size, 1 to size), null)
+//          enum.hardReset
+          enum = dEnum((size, 1 to size), null)
           var nextInd = 0
           while (nextInd < enum.size) {
             enum.reset
@@ -266,6 +267,7 @@ class SortedTreeTest extends FunSuite with Matchers
 //        count shouldBe givenCnt
         println(s"For size $size, count is $count / ${enum.size * size}")
       }
+//    }
   }
   
   //
@@ -1080,7 +1082,8 @@ class SortedTreeTest extends FunSuite with Matchers
 
           allNodes: SortedTreeTest.this.EnumType[Tree]
         }
-      }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree]) with split.Memoized[(Int, Range), Tree, Ugly]
+      }): (DepEnumType[((Int, Range), Ugly), Tree], ((Int, Range), Ugly)) => EnumType[Tree])
+      //with split.Memoized[(Int, Range), Tree, Ugly]
   }
 
 }
