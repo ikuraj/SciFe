@@ -256,8 +256,8 @@ class SortedTreeTest extends FunSuite with Matchers
             enum.reset
             val t = enum(nextInd)
 //            val index = LazyBSTrees.insert(t, i)
-//            val index = t insert i
-//            index.lazyInvariant
+            val index = t insert i
+            index.lazyInvariant
   //          toRegularBSTTree(t)
             nextInd = enum.next(nextInd)
             count += 1
