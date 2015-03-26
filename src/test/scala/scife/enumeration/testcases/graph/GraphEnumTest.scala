@@ -41,7 +41,8 @@ class GraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
 
     val enum = graphEnum//constructEnumerator
     
-    for (i <- 1 to 4 ) {
+   {
+      val i = 3
       
       val start = System.currentTimeMillis()
       val res = enum.getEnum(i)
