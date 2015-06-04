@@ -17,6 +17,7 @@ import org.scalacheck.Gen
 
 import scala.language.postfixOps
 import scala.language.existentials
+import scala.language.implicitConversions
 
 class RedBlackTreeDependentBenchmarkTest
   extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
