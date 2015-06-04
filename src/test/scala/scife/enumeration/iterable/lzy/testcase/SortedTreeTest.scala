@@ -86,6 +86,7 @@ class SortedTreeTest extends FunSuite with Matchers
       count += 1
 //      val index = LazyBSTrees.insert(l, n)
     }
+    testTuples.reset
     count shouldBe testTuples.size + (-6 + 1) * 3
 
   }
@@ -186,10 +187,10 @@ class SortedTreeTest extends FunSuite with Matchers
           info("-------------will evaluate")
           (enum.next: BSTrees.Tree)
         }
-//      lazy val clue = s"all=\n${all.mkString("\n")}\n base=\n${base.toList.mkString("\n")}"
-      lazy val clue = s"all-base=${all.toSet.diff(base.toList.toSet)}" +
-        s"base-all=${base.toSet.diff(all.toList.toSet)}" +
-        s"notgenind=${base.toList.indexOf(base.toSet.diff(all.toList.toSet).head)}/ ${base.toList.size}"
+      lazy val clue = s"all=\n${all.mkString("\n")}\n base=\n${base.toList.mkString("\n")}"
+//      lazy val clue = s"all-base=${all.toSet.diff(base.toList.toSet)}" +
+//        s"base-all=${base.toSet.diff(all.toList.toSet)}" +
+//        s"notgenind=${base.toList.indexOf(base.toSet.diff(all.toList.toSet).head)}/ ${base.toList.size}"
         
       withClue (clue) {
         all should contain theSameElementsAs (base.toList)

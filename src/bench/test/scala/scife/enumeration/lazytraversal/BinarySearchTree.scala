@@ -20,6 +20,7 @@ import org.scalatest._
 import org.scalameter.api._
 
 import scala.language.existentials
+import scala.language.postfixOps
 
 class BinarySearchTree
 //  extends StructuresBenchmark[Depend[((Int, Range), LazyEnum[Tree]), Tree] {
