@@ -16,6 +16,7 @@ import org.scalatest.prop._
 import org.scalacheck.Gen
 
 import scala.language.postfixOps
+import scala.language.implicitConversions
 
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
