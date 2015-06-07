@@ -1,7 +1,9 @@
 package scife.enumeration
 package iterable
 
-trait Iter[+A] extends Enum[A] {
+import scife.util.HasLogger
+
+trait Iter[+A] extends Enum[A] with HasLogger {
   
 //  self: Enum[A] =>
     
@@ -9,9 +11,13 @@ trait Iter[+A] extends Enum[A] {
   
   def head = apply(ind)
   
-  def hasNext = ind + 1 < this.size
+  def hasNext = {
+//    entering(s"hasNext at ${this.getClass.getSuperclass.getName}", ind, this.size)
+    ind + 1 < this.size
+  }
   
   def next = {
+//    entering(s"next at ${this.getClass.getSuperclass.getName}", ind)
     ind += 1
     this.apply(ind)
   }
