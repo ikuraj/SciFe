@@ -5,11 +5,13 @@ import util.EnumStream
 import scala.reflect._
 
 import scala.language.implicitConversions
+
 //import scala.language.higherKinds
 //
 //trait Enum[+A, E[X] <: Enum[X, E]] extends Serializable {
 //  
 //  self: E[A] =>
+
 trait Enum[+A] extends Serializable {
 
   def size: Int
@@ -103,6 +105,9 @@ object Enum extends EnumLessPriority {
 
   implicit def colToEnum[T](col: Seq[T])(implicit ct: ClassTag[T]) =
     fromCollection(col)
+
+  implicit def arrayToEnum[T](col: Array[T])(implicit ct: ClassTag[T]) =
+    fromFiniteCollection(col)
 
   implicit def elemsToEnum[T](elems: T*)(implicit ct: ClassTag[T]) =
     fromFiniteCollection(elems)

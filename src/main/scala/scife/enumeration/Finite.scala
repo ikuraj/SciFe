@@ -1,5 +1,7 @@
 package scife.enumeration
 
+import scala.reflect._
+
 import scala.language.implicitConversions
 
 trait Finite[+A] extends Enum[A] {
@@ -59,5 +61,15 @@ trait Finite[+A] extends Enum[A] {
 }
 
 object Finite {
+
+  implicit def colToEnum[T](col: Seq[T])(implicit ct: ClassTag[T]) = {
+    assert(col.hasDefiniteSize)
+    Enum.fromFiniteCollection(col)
+  }
+
+  implicit def colToEnum[T](col: IndexedSeq[T])(implicit ct: ClassTag[T]) = {
+    assert(col.hasDefiniteSize)
+    Enum.fromFiniteCollection(col)
+  }
 
 }
