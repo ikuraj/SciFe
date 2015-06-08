@@ -57,7 +57,7 @@ package ybanez {
     def orElse[B <% Ordered[B]](tree: BST[B]) = tree
     def minChildAcc[B <% Ordered[B]](acc: BST[B]) = acc
 
-    override def toString = "[]"
+    override def toString = "Leaf"
   }
 
   case class NonEmptyBST[A <% Ordered[A]](elem: A, left: BST[A], right: BST[A]) extends BST[A] {
