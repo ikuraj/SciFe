@@ -70,8 +70,8 @@ object Enum extends EnumLessPriority {
   /* Factory methods */
 
   // only sequences are accepted since enumerators enumerate in a defined ordering
-  def apply[T](arg1: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
-    fromFiniteCollection( (arg1 :: args.toList).toArray )
+  def apply[T](arg1: T, arg2: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
+    fromFiniteCollection( (arg1 :: arg2 :: args.toList).toArray )
 
   def apply[T](arr: Array[T]): Finite[T] =
     fromFiniteCollection( arr )
@@ -81,6 +81,12 @@ object Enum extends EnumLessPriority {
 
   def apply[T](stream: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
     fromCollection(stream)
+    
+  def apply[T](stream: IndexedSeq[T])(implicit ct: ClassTag[T]): Enum[T] =
+    fromCollection(stream)
+    
+  def apply[T](arg: T): Singleton[T] =
+    Singleton(arg)
 
   def apply(range: Range) =
     if (range.start == 0) new IdentitySize(range.size)
