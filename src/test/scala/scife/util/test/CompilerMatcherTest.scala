@@ -40,7 +40,7 @@ class CompilerMatcherTest extends TestBase with HasLogger with ProfileLogger {
       final case class Mu[F[_]](value: F[Mu[F]]) extends AnyVal {
         def cata[B](f: F[B] => B)(implicit F: Functor[F]): B =
           f(F.map(value)(_.cata(f)))
-      }""" :: Nil must compileString(outdir = "./tmp", usecurrentcp = true).not
+      }""" :: Nil must compileString(outdir = "./tmp", usecurrentcp = true)
   }
 
 }

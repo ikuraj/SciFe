@@ -50,6 +50,38 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
     info("Enumerating random trees")
     val rnd = new scala.util.Random(System.currentTimeMillis)
     for (i ← List.fill(10)(rnd.nextInt(e.size))) testFun(e(i)) // 10 trees
+    
+    val bst2 =
+      rec[(Int, Range), Tree]({
+        case (self, (size, r)) => {
+          if (size <= 0) Leaf
+          else {
+            val left =
+              self ↓[(Int, Int)] {
+                case (ls, m) =>
+                  (ls, r.start to (m - 1))
+              }
+            val right =
+              self ↓[(Int, Int)] {
+                case (ls, m) =>
+                  (size - ls - 1, (m + 1) to r.end)
+              }
+
+            (0 until size) ⊗ r ⊘ (left ⊗ right) ↑ {
+              case ((_, root), (lTree, rTree)) =>
+                Node(lTree, root, rTree)
+            }
+          }
+        }
+      })
+      
+    // check equality of enumerator up to some size (not too big, since there enumerators do not memoize)
+    for (i <- 1 to 5) {
+      bst(i, 1 to i).size shouldBe bst2(i, 1 to i).size
+
+      bst(i, 1 to i).toList should contain theSameElementsAs bst2(i, 1 to i).toList
+    }
+      
   }
 
 }
@@ -57,7 +89,7 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
 object BinarySearchTreeTest {
 
   // define your own test
-  def testFun(tree: Tree) = print(tree.toString)
+  def testFun(tree: Tree) = println(tree.toString)
 
   // example data structure--full classes of data structures available in scife.util.structures
   trait Tree {
