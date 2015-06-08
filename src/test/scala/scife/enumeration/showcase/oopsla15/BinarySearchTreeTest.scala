@@ -20,7 +20,7 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   import Enum._
   import Depend._
 
-  test("Binary search tree, for-comprehension") {
+  test("Binary search tree, different enumerator definitions") {
     import BinarySearchTreeTest._
 
     val bst =

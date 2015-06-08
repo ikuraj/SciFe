@@ -39,6 +39,21 @@ object Chain {
         } with ChainFiniteCombine(f, df, combine) with MemoizedSize with MemoizedStatic[R]
     }
   }
+  
+
+  // TODO implement this for construction with partial function
+//  def apply[I, O, R](s1: Enum[I], s2: Depend[I, O], combine: PartialFunction[(I, O), R])
+//    (implicit ms: MemoizationScope, ct: scala.reflect.ClassTag[R]) = {
+//    (s1, s2) match {
+//      case (Empty, _) => Empty
+//      case (s: Singleton[I], df: DependFinite[_, _]) =>
+//        ! Map.memoized(df.apply(s.el), { (v: O) => combine(s.el, v) })
+//      case (f: Finite[I], df: DependFinite[_, _]) =>
+//        ! new {
+//          override val classTagT = ct
+//        } with ChainFiniteCombine(f, df, combine) with MemoizedSize with MemoizedStatic[R]
+//    }
+//  }
 
   def apply[I, I2, O](s1: Enum[I], s2: Depend[I2, O], chain: I => I2)(implicit ms: MemoizationScope, ct: ClassTag[(I, O)]) = {
     (s1, s2) match {
