@@ -23,7 +23,7 @@ import org.scalatest._
 import org.scalatest.prop._
 import org.scalameter.api._
 
-class DateExampleTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger with ProfileLogger {
+class DateExampleTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with HasLogger {
   import Util.CheckerHelper
   import Checks._
 
@@ -31,17 +31,14 @@ class DateExampleTest extends FunSuite with Matchers with GeneratorDrivenPropert
   import e._
   import Enum._
 
-  // Java Date constructor is deprecated--we will use a helper class to construct Date objects
-  case class Date(y: Int, m: Int, d: Int)
+  // import helper classes/methods
+  import DateExampleTest._
 
   test("Dates example") {
-    implicit val cal = Calendar.getInstance()
-    cal.setLenient(false)
-    val df = DateFormat.getDateInstance()
 
     val dates = (1 to 31) ⊗ (1 to 12) ⊗ Stream.from(2015) ≻ {
       isValid(_)
-    } ↑ { case ((d, m), y) ⇒ new Date(y, m, d) }
+    } ↑ { case ((d, m), y) ⇒ Date(y, m, d) }
 
     val defSizeFlag = dates.hasDefiniteSize // returns false
     defSizeFlag shouldBe false
@@ -59,6 +56,17 @@ class DateExampleTest extends FunSuite with Matchers with GeneratorDrivenPropert
     cal.get(Calendar.MONTH) should be(9)
   }
 
+}
+
+object DateExampleTest extends HasLogger {
+  // a calendar object for manipulation of dates
+  implicit val cal = Calendar.getInstance()
+  cal.setLenient(false)
+  val df = DateFormat.getDateInstance()
+  
+  // Java Date constructor is deprecated--we will use a helper class to construct Date objects
+  case class Date(y: Int, m: Int, d: Int)
+  
   // Java calendar months are 0 .. 11
   implicit def dateToJavaDate(d: Date)(implicit cal: Calendar) = {
     info("Date given: " + d)
@@ -78,5 +86,5 @@ class DateExampleTest extends FunSuite with Matchers with GeneratorDrivenPropert
           false
       }
   }
-
+  
 }
