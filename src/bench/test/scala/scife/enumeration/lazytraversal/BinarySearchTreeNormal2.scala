@@ -1,45 +1,62 @@
 package scife
 package enumeration
-package benchmarks
-package nomemoization
+package lazytraversal
 
-import dependent._
-
+import scife.enumeration.dependent._
+import memoization._
 import scife.{ enumeration => e }
-
 import scife.util._
-import logging._
 
-import structures._
-import BSTrees._
+import scife.util.logging._
+
+import scife.util.structures._
+import LazyBSTrees._
+
+import benchmarks._
 
 import org.scalatest._
 import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeBenchmark
-  extends StructuresBenchmark[Depend[(Int, Range), Tree]]
+class BinarySearchTreeNormal2
+  extends DependentMemoizedBenchmark[(Int, Int), Depend[(Int, Range), Tree]] //  extends PerformanceTest.OfflineReport with ProfileLogger
   {
 
-  type EnumType = Depend[(Int, Range), Tree]
+  type EType = Depend[(Int, Range), Tree]
 
-  def measureCode(tdEnum: EnumType) = {
-    { (size: Int) =>
-      val enum = tdEnum.getEnum((size, 1 to size))
-      for (i <- 0 until enum.size) enum(i)
+  implicit val treeTag = implicitly[reflect.ClassTag[scife.util.structures.LazyBSTrees.Tree]]
+
+  override def generator(maxSize: Int): Gen[(Int, Int)] =
+    for (size <- Gen.range("size")(1, maxSize, 1);
+      missingEl <- Gen.range("missingElement")(0, size, 1)) yield
+      (size, missingEl)
+      
+  def measureCode(tdEnum: EType) = {
+//    { (size: Int) =>
+    { (in: (Int, Int)) =>
+      val (size, el) = in
+//      for (el <- 1 to size) {
+//        val enum = tdEnum.getEnum((size - 1, 1 to size - 1))
+        val enum = tdEnum.getEnum((size, 1 to size))
+        for (i <- 0 until enum.size) {
+          val t = enum(i)
+          val index = t insert el
+          t.lazyInvariant
+        }
+//      }
     }
   }
 
-  def warmUp(inEnum: EnumType, maxSize: Int) {
+  def warmUp(inEnum: EType, maxSize: Int) {
     for (size <- 1 to maxSize) {
       val enum = inEnum.getEnum((size, 1 to size))
       for (i <- 0 until enum.size) enum(i)
     }
   }
 
-  override def constructEnumerator(implicit ms: memoization.MemoizationScope) = {
-    Depend.fin(
+  override def constructEnumerator(implicit ms: MemoizationScope) = {
+    Depend.memoized(
       (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
         val (size, range) = pair
 
@@ -64,10 +81,10 @@ class BinarySearchTreeBenchmark
             })
 
           val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-            Product(leftTrees, rightTrees)
+            e.dependent.Product(leftTrees, rightTrees)
 
           val allNodes =
-            Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
+            memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
               (p1: (Int, Int), p2: (Tree, Tree)) => {
                 val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
 

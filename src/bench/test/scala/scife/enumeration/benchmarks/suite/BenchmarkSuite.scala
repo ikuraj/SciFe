@@ -22,7 +22,7 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
   implicit val configArguments = contextMinimal
 
   for (((name, benchmark, _), maxSize) <- benchmarks zip minimalSizes)
-    benchmark.fixture("Minimal benchmarks", name, maxSize)
+    benchmark.fixture("Minimal benchmarks", name, 5)
 
 }
 
@@ -156,14 +156,25 @@ object BenchmarkSuite {
   val benchmarkMainName = "Benchmarks"
   
   val allBenchmarks = List(
-    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15),
-    ("Sorted Lists", new SortedListDependentBenchmark, 15),
-//    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15),
-    ("Red-Black Trees", new RedBlackTreeConcise, 15),
-    ("Heap Arrays", new HeapArrayBenchmark, 11),
-    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
-    ("B-tree", new BTreeTest, 15),
-    ("RIFF Format", new RiffImage, 3)
+//    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15),
+//    ("Sorted Lists", new SortedListDependentBenchmark, 15),
+////    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15),
+//    ("Red-Black Trees", new RedBlackTreeConcise, 15),
+//    ("Heap Arrays", new HeapArrayBenchmark, 11),
+//    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
+//    ("B-tree", new BTreeTest, 15),
+//    ("RIFF Format", new RiffImage, 3),
+//    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
+//      StructuresBenchmark[scife.enumeration.dependent.Depend[((Int, Range),
+//        scife.enumeration.lazytraversal.LazyEnum[scife.util.structures.LazyBSTrees.Tree]),
+//        scife.util.structures.LazyBSTrees.Tree]]), 15),
+//    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
+    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 14)
+//    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15)
+//    ,
+//    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15)
+//    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15),
+//    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15)
   )
 
 //  val allBenchmarks = List(

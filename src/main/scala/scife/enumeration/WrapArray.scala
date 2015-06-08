@@ -12,7 +12,9 @@ class WrapArray[@specialized T](val coll: Array[T])
 
   override def size = coll.size
 
-  override def apply(ind: Int) = coll(ind)
+  override def apply(ind: Int) = {
+    coll(ind)
+  }
 
 }
 

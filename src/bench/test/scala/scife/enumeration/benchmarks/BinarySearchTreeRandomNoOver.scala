@@ -1,14 +1,13 @@
 package scife
 package enumeration
 package benchmarks
-package nomemoization
 
 import dependent._
-
+import memoization._
 import scife.{ enumeration => e }
-
 import scife.util._
-import logging._
+
+import scife.util.logging._
 
 import structures._
 import BSTrees._
@@ -18,16 +17,20 @@ import org.scalameter.api._
 
 import scala.language.existentials
 
-class BinarySearchTreeBenchmark
+class BinarySearchTreeRandomNoOver
   extends StructuresBenchmark[Depend[(Int, Range), Tree]]
+//  extends PerformanceTest.OfflineReport with ProfileLogger
   {
+  
+  val rnd = new scala.util.Random
 
   type EnumType = Depend[(Int, Range), Tree]
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
       val enum = tdEnum.getEnum((size, 1 to size))
-      for (i <- 0 until enum.size) enum(i)
+      val enumSize = enum.size
+      for (i <- 0 until enumSize) enum(randoms(i))
     }
   }
 
@@ -37,9 +40,20 @@ class BinarySearchTreeBenchmark
       for (i <- 0 until enum.size) enum(i)
     }
   }
+  
+  var randoms: Array[Int] = _
+  
+  override def setUp(size: Int, tdEnum: EnumType, memScope: MemoizationScope) {
+    val enum = tdEnum.getEnum((size, 1 to size))
+    val buff = scala.collection.mutable.ArrayBuffer[Int]()
+    for (i <- 0 until enum.size)
+      buff += rnd.nextInt(enum.size)
+      
+    randoms = buff.toArray
+  }
 
-  override def constructEnumerator(implicit ms: memoization.MemoizationScope) = {
-    Depend.fin(
+  override def constructEnumerator(implicit ms: MemoizationScope) = {
+    Depend.memoized(
       (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
         val (size, range) = pair
 
@@ -67,7 +81,7 @@ class BinarySearchTreeBenchmark
             Product(leftTrees, rightTrees)
 
           val allNodes =
-            Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
+            memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
               (p1: (Int, Int), p2: (Tree, Tree)) => {
                 val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
 
