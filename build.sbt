@@ -8,7 +8,7 @@ organizationName := "LARA/EPFL"
 
 organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 // forcing the version
 ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
@@ -28,7 +28,7 @@ resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositorie
 //libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.1" % "test"
 libraryDependencies += "org.scalacheck" % "scalacheck_2.11" % "1.12.1" % "test"
 
-libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 //libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
