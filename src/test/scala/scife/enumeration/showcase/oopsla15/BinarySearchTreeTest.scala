@@ -21,12 +21,14 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   import Depend._
 
   test("Binary search tree, for-comprehension") {
+    import BinarySearchTreeTest._
+
     val bst =
       rec[(Int, Range), Tree]({
         case (self, (size, r)) => {
           if (size <= 0) Leaf
           else {
-            val combinedTrees = 
+            val combinedTrees =
               for (
                 m <- r;
                 lr = r.start to (m - 1);
@@ -36,23 +38,26 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
                 lt ← self(ls, lr);
                 rt ← self(rs, rr)
               ) yield Node(lt, m, rt)
-            
+
             combinedTrees
           }
         }
       })
-      
+
     val e = bst(5, 1 to 5) // enumerate all trees of size 15
-    for (tree ← e) test(tree) // feed into test
-    
+    for (tree ← e) testFun(tree) // feed into test
+
     info("Enumerating random trees")
     val rnd = new scala.util.Random(System.currentTimeMillis)
-    for (i ← List.fill(10)(rnd.nextInt(e.size))) test(e(i)) // 10 trees
-
+    for (i ← List.fill(10)(rnd.nextInt(e.size))) testFun(e(i)) // 10 trees
   }
-  
+
+}
+
+object BinarySearchTreeTest {
+
   // define your own test
-  def test(tree: Tree) = info(tree.toString)
+  def testFun(tree: Tree) = print(tree.toString)
 
   // example data structure--full classes of data structures available in scife.util.structures
   trait Tree {
@@ -88,5 +93,4 @@ class BinarySearchTreeTest extends FunSuite with Matchers with GeneratorDrivenPr
   object Node {
     def apply(v: Int) = new Node(v)
   }
-
 }
