@@ -41,10 +41,10 @@ class BinarySearchTreeMemberTest extends FunSuite with Matchers with GeneratorDr
         if (size <= 0) new Singleton(Leaf): MemberFinite[Tree]
 //        else if (size == 1) new WrapArray(Array(range map { i => Node(Leaf, values(i-1), Leaf) }: _*)): MemberFinite[Tree]
         else {
-          val roots = new WrapRange(0 until range.size)
-          val leftSizes = new WrapRange(0 until size)
+          val roots = Member(0 until range.size)
+          val leftSizes = Member(0 until size)
 
-          val rootLeftSizePairs = new member.ProductFinite(leftSizes, roots)
+          val rootLeftSizePairs = leftSizes ⊗ roots
 
           val leftTrees = new InMapFin(self, { (par: (Int, Int)) =>
             val (leftSize, median) = par
