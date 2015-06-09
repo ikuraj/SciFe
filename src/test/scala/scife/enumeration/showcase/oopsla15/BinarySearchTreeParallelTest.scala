@@ -34,14 +34,7 @@ class BinarySearchTreeParallelTest extends FunSuite with Matchers with Generator
         val (size, range) = pair
 
         if (size <= 0) e.Singleton(Leaf)
-        else if (size == 1)
-          e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
         else {
-          val roots = e.Enum(range)
-          val leftSizes = e.Enum(0 until size)
-
-          val rootLeftSizePairs = e.Product(leftSizes, roots)
-
           val leftTrees: Depend[(Int, Int), Tree] = InMap(self, { (par: (Int, Int)) =>
             val (leftSize, median) = par
             (leftSize, range.start to (median - 1))
@@ -53,12 +46,9 @@ class BinarySearchTreeParallelTest extends FunSuite with Matchers with Generator
               (size - leftSize - 1, (median + 1) to range.end)
             })
 
-          val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-            leftTrees ⊗ rightTrees
-            //Product(leftTrees, rightTrees)
 
           val allNodes =
-            e.memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
+            e.memoization.Chain[(Int, Int), (Tree, Tree), Node]((0 until size) ⊗ range, leftTrees ⊗ rightTrees,
               (p1: (Int, Int), p2: (Tree, Tree)) => {
                 val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
 
