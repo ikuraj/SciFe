@@ -22,14 +22,14 @@ class ChainFiniteSingleCombine[I, O, R]
     val arrInd = binarySearch(ind)
     val elInd = ind - limits(arrInd)
     
-    println(s"arrInd=$arrInd, elInd=$elInd")
-    println(s"touched=${enumArray.map(_.touched).mkString(",")}")
-    println(s"limits=${limits.mkString(",")}")
+    //println(s"arrInd=$arrInd, elInd=$elInd")
+    //println(s"touched=${enumArray.map(_.touched).mkString(",")}")
+    //println(s"limits=${limits.mkString(",")}")
     if (!enumArray(arrInd).touched) limits(arrInd + 1)
     else {
       val innerNext = enumArray(arrInd).next(elInd)
 //      println(s"innerArray=${enumArray(arrInd)}")
-      println(s"innerNext=$innerNext")
+      //println(s"innerNext=$innerNext")
       if (innerNext <= enumArray(arrInd).size) limits(arrInd) + innerNext
       else {
         limits(arrInd + 1)

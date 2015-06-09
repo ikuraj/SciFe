@@ -5,11 +5,13 @@ import util.EnumStream
 import scala.reflect._
 
 import scala.language.implicitConversions
+
 //import scala.language.higherKinds
 //
 //trait Enum[+A, E[X] <: Enum[X, E]] extends Serializable {
 //  
 //  self: E[A] =>
+
 trait Enum[+A] extends Serializable {
 
   def size: Int
@@ -61,6 +63,8 @@ trait Enum[+A] extends Serializable {
   def schain[B, A2 >: A](dep: Depend[A2, B]): Enum[B] = 
     dep chainSingle this
   
+//  def flatMap[B](f: A => Enum[B]): Enum[B]
+  
 }
 
 object Enum extends EnumLessPriority {
@@ -68,8 +72,8 @@ object Enum extends EnumLessPriority {
   /* Factory methods */
 
   // only sequences are accepted since enumerators enumerate in a defined ordering
-  def apply[T](arg1: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
-    fromFiniteCollection( (arg1 :: args.toList).toArray )
+  def apply[T](arg1: T, arg2: T, args: T*)(implicit ct: ClassTag[T]): Finite[T] =
+    fromFiniteCollection( (arg1 :: arg2 :: args.toList).toArray )
 
   def apply[T](arr: Array[T]): Finite[T] =
     fromFiniteCollection( arr )
@@ -79,6 +83,12 @@ object Enum extends EnumLessPriority {
 
   def apply[T](stream: Seq[T])(implicit ct: ClassTag[T]): Enum[T] =
     fromCollection(stream)
+    
+  def apply[T](stream: IndexedSeq[T])(implicit ct: ClassTag[T]): Enum[T] =
+    fromCollection(stream)
+    
+  def apply[T](arg: T): Singleton[T] =
+    Singleton(arg)
 
   def apply(range: Range) =
     if (range.start == 0) new IdentitySize(range.size)
@@ -103,6 +113,9 @@ object Enum extends EnumLessPriority {
 
   implicit def colToEnum[T](col: Seq[T])(implicit ct: ClassTag[T]) =
     fromCollection(col)
+
+  implicit def arrayToEnum[T](col: Array[T])(implicit ct: ClassTag[T]) =
+    fromFiniteCollection(col)
 
   implicit def elemsToEnum[T](elems: T*)(implicit ct: ClassTag[T]) =
     fromFiniteCollection(elems)

@@ -29,7 +29,6 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
-//      println("RUUUUUUUUUUUUUN")
       this.tdEnum = tdEnum
       this.size = size
 
@@ -38,7 +37,6 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
       exec.invokeAll(runners)
 //      println(System.currentTimeMillis() - beg)
 //      exec.shutdown()
-//      println("EEEEEEEEEEEEEEEEEEND")
 //      System.out.flush
     }
   }

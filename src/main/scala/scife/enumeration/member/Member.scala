@@ -17,6 +17,9 @@ trait MemberFinite[A] extends Finite[A] with Member[A] {
  
   def map[B](modifyFun: A => B, recognize: B => A): MemberFinite[B] =
     new Map(this, modifyFun, recognize) with MemberFinite[B]
+  
+  def ⊗[B](e: MemberFinite[B]) =
+    new ProductFinite(this, e)
 
 }
 
@@ -37,5 +40,10 @@ object Member {
       case _ if col.size == 1 => new Singleton(col.head)
       case _ => new WrapArray(col.toArray)
     }
+  
+  def apply(range: Range) =
+//    if (range.start == 0) new IdentitySize(range.size)
+//    else
+      new WrapRange(range)
 
 }

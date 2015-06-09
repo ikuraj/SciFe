@@ -3,7 +3,7 @@ package dependent
 
 import scala.language.higherKinds
 
-trait DependFinite[I, O] extends Depend[I, O] {
+trait DependFinite[I, O] extends Depend[I, O] with Function[I, Finite[O]] {
 
   override type EnumSort[A] <: Finite[A]
 
