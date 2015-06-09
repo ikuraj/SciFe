@@ -64,6 +64,8 @@ object DateExampleTest extends HasLogger {
   cal.setLenient(false)
   val df = DateFormat.getDateInstance()
   
+  type JDate = java.util.Date
+  
   // Java Date constructor is deprecated--we will use a helper class to construct Date objects
   case class Date(y: Int, m: Int, d: Int)
   
