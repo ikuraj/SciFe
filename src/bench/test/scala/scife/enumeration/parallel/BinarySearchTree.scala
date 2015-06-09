@@ -29,15 +29,17 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
-      println("RUUUUUUUUUUUUUN")
+//      println("RUUUUUUUUUUUUUN")
       this.tdEnum = tdEnum
       this.size = size
 
-    initExecutor
+      initExecutor
+//      var beg = System.currentTimeMillis()
       exec.invokeAll(runners)
-      exec.shutdown()
-      println("EEEEEEEEEEEEEEEEEEND")
-      System.out.flush
+//      println(System.currentTimeMillis() - beg)
+//      exec.shutdown()
+//      println("EEEEEEEEEEEEEEEEEEND")
+//      System.out.flush
     }
   }
 
@@ -83,41 +85,52 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
   var freeMemory: Int = _
   import scala.scife.enumeration.util._
 
-//  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
+  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
 //    import Memory._
 //
 //    getFreeMemory
 //    println(s"Freeing up $freeMemory")
 //    tryToFreeUpSpaceG(freeMemory)    
 //    getFreeMemory
-//  }
+    runners != null
+//    Thread.sleep(runners.size)
+//    System.gc;
+//    System.gc;
+//    Thread.sleep(1000)
+//    System.gc;
+//    System.gc;
+//    Thread.sleep(1000)
+  }
 
   def warmUp(tdEnum: EnumType, maxSize: Int) {
-
-    freeMemory = Memory.getFreeMemory
-
-    initExecutor
-    this.tdEnum = tdEnum
+    
     for (size <- 1 to maxSize) {
-      this.size = maxSize
-
-    	initExecutor
-      exec.invokeAll(runners)
-      exec.shutdown()
-    initExecutor
+      val enum = tdEnum.getEnum((size, 1 to size))
+      for (i <- 0 until enum.size) enum(i)
     }
-    initExecutor
-//    exec.awaitTermination(10, TimeUnit.SECONDS)
-    import Memory._
 
-    getFreeMemory
-    println(s"Freeing up $freeMemory")
-    tryToFreeUpSpaceG(freeMemory)    
-    getFreeMemory
+//    freeMemory = Memory.getFreeMemory
+
+//    initExecutor
+//    this.tdEnum = tdEnum
+//    this.size = 5
+//
+//    initExecutor
+//    exec.invokeAll(runners)
+//    exec.shutdown()
+
+//    initExecutor
+//    exec.awaitTermination(10, TimeUnit.SECONDS)
+//    import Memory._
+//
+//    getFreeMemory
+//    println(s"Freeing up $freeMemory")
+//    tryToFreeUpSpaceG(freeMemory)    
+//    getFreeMemory
   }
   
   override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
-//    exec.shutdown()
+    exec.shutdown()
   }
 
   val enumeratorFunction =
