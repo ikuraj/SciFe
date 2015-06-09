@@ -18,11 +18,11 @@ trait Memoized[I, O] extends Depend[I, O] with Memoizable with HasLogger {
 //    println("memoizedMap.contains(parameter) " + memoizedMap.contains(parameter))
     //memoizedMap.getOrElseUpdate(parameter, super.getEnum(parameter))
     if (memoizedMap containsKey parameter) {
-      println(s"parameter=$parameter is memoized")
+      info(s"parameter=$parameter is memoized")
       memoizedMap.get(parameter)
     }
     else {
-      println(s"parameter=$parameter is not memoized")
+      info(s"parameter=$parameter is not memoized")
       val res = super.getEnum(parameter)
       memoizedMap.put(parameter, res)
       res
