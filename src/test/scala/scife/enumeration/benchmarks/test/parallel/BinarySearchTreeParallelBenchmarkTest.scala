@@ -36,7 +36,8 @@ class BinarySearchTreeParallelBenchmarkTest
 
     import scife.enumeration.parallel.memoization.scope._
 
-    for (numberOfThreads <- NumberOfProcessors to NumberOfProcessors; size <- 4 to 7) {
+    for (numberOfThreads <- NumberOfProcessors to NumberOfProcessors; size <- 4 to 7;
+      if constructEnumerator(new AccumulatingConcurrentScope).getEnum((size, 1 to size)).size > numberOfThreads) {
       val ms = new AccumulatingConcurrentScope
       val tdEnum = constructEnumerator(ms)
       tdEnum shouldBe a[enumeration.parallel.memoization.dependent.Memoized[_, _]]
@@ -130,7 +131,8 @@ class BinarySearchTreeParallelBenchmarkTest
 
     import scife.enumeration.parallel.memoization.scope._
 
-    for (numberOfThreads <- NumberOfProcessors to NumberOfProcessors; size <- 5 to 7) {
+    for (numberOfThreads <- NumberOfProcessors to NumberOfProcessors; size <- 5 to 7;
+      if constructEnumerator(new AccumulatingConcurrentScope).getEnum((size, 1 to size)).size > numberOfThreads) {
       val tdEnum = constructEnumeratorNoScope
       tdEnum shouldBe a[enumeration.memoization.Memoizable]
 
