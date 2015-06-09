@@ -29,15 +29,12 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 
   def measureCode(tdEnum: EnumType) = {
     { (size: Int) =>
-      println("RUUUUUUUUUUUUUN")
       this.tdEnum = tdEnum
       this.size = size
 
-    initExecutor
+      initExecutor
       exec.invokeAll(runners)
       exec.shutdown()
-      println("EEEEEEEEEEEEEEEEEEND")
-      System.out.flush
     }
   }
 
@@ -51,46 +48,46 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 
   @transient
   lazy val runners: java.util.Collection[Callable[Object]] =
-//_
-//  def initRunners = runners =
-{
-    val al = new java.util.ArrayList[Callable[Object]]()
-    var i = 0
-    while (i < numberOfThreads) {
-      al add Executors.callable(new Runnable {
-        def run = {
-          try {
-            var myInd = i
-            val enum = tdEnum.getEnum((size, 1 to size))
-  
-            while (myInd < enum.size) {
-              enum(myInd)
-              myInd += numberOfThreads
+    //_
+    //  def initRunners = runners =
+    {
+      val al = new java.util.ArrayList[Callable[Object]]()
+      var i = 0
+      while (i < numberOfThreads) {
+        al add Executors.callable(new Runnable {
+          def run = {
+            try {
+              var myInd = i
+              val enum = tdEnum.getEnum((size, 1 to size))
+
+              while (myInd < enum.size) {
+                enum(myInd)
+                myInd += numberOfThreads
+              }
+
+            } catch {
+              case t: Throwable =>
+                println(s"Thrown $t:${t.getStackTrace.mkString("\n")} at $i")
             }
-            
-          } catch {
-            case t: Throwable =>
-              println(s"Thrown $t:${t.getStackTrace.mkString("\n")} at $i")
           }
-        }
-      })
-      i+=1
+        })
+        i += 1
+      }
+
+      al
     }
-    
-    al
-  }
-  
+
   var freeMemory: Int = _
   import scala.scife.enumeration.util._
 
-//  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
-//    import Memory._
-//
-//    getFreeMemory
-//    println(s"Freeing up $freeMemory")
-//    tryToFreeUpSpaceG(freeMemory)    
-//    getFreeMemory
-//  }
+  //  override def setUp(size: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope) {
+  //    import Memory._
+  //
+  //    getFreeMemory
+  //    println(s"Freeing up $freeMemory")
+  //    tryToFreeUpSpaceG(freeMemory)    
+  //    getFreeMemory
+  //  }
 
   def warmUp(tdEnum: EnumType, maxSize: Int) {
 
@@ -101,23 +98,23 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
     for (size <- 1 to maxSize) {
       this.size = maxSize
 
-    	initExecutor
+      initExecutor
       exec.invokeAll(runners)
       exec.shutdown()
-    initExecutor
+      initExecutor
     }
     initExecutor
-//    exec.awaitTermination(10, TimeUnit.SECONDS)
+    //    exec.awaitTermination(10, TimeUnit.SECONDS)
     import Memory._
 
     getFreeMemory
     println(s"Freeing up $freeMemory")
-    tryToFreeUpSpaceG(freeMemory)    
+    tryToFreeUpSpaceG(freeMemory)
     getFreeMemory
   }
-  
+
   override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
-//    exec.shutdown()
+    //    exec.shutdown()
   }
 
   val enumeratorFunction =
