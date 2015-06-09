@@ -42,7 +42,8 @@ trait MemoizedStaticOpt[T] extends Enum[T] with Memoizable with HasLogger {
 //  def getMemoizedValues = this.memoizedValues
   
   def merge(other: MemoizedStaticOpt[T]) = {
-    for (ind <- 0 to other.memoizedFlags.length;
+    println("Merging")
+    for (ind <- 0 until other.memoizedFlags.length;
       if other.memoizedFlags(ind) && !this.memoizedFlags(ind)) {
       this.memoizedValues(ind) = other.memoizedValues(ind)
       this.memoizedFlags(ind) = true

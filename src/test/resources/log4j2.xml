@@ -24,10 +24,10 @@
     <logger name="scife.enumeration.iterable.lzy.ConcatFiniteVariedSize" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="scife.enumeration.parallel" level="all" additivity="false">
+    <logger name="scife.enumeration.parallel" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
-    <logger name="scife.enumeration.benchmarks.test.parallel" level="all" additivity="false">
+    <logger name="scife.enumeration.benchmarks.test.parallel" level="off" additivity="false">
       <appender-ref ref="Console" />
     </logger>
     <logger name="scife.enumeration.benchmarks" level="off" additivity="false">
