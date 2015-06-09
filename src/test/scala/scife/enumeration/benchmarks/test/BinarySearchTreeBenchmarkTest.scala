@@ -10,7 +10,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures._
+import structures._
 import BSTrees._
 
 import org.scalatest._
@@ -21,14 +21,20 @@ import scala.language.existentials
 
 class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
   HasLogger with ProfileLogger {
-    import Util.CheckerHelper
+
+  import e.common.enumdef.BinarySearchTreeEnum._
+  import structures._
+  import BSTrees._
+
+  import Common._
   import Checks._
+  import Util.CheckerHelper
   import Math._
 
   test("correctness") {
     val ms = new scope.AccumulatingScope
-    val enum = constructEnumerator(ms)
-    ms.memoizations.size should be (1)
+    val enum = constructEnumeratorBenchmark(ms)
+    ms.memoizations.size should be(1)
 
     val helper = new CheckerHelper[Tree]
     import helper._
@@ -75,14 +81,10 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
         res.size should be (1)
       }
 
-      // some confirmed counts
-//      res = enum.getEnum(12, 1 to 12)
-//      res.size should be (208012)
-
     }
 
 
-    val profileRange = 1 to 10
+    val profileRange = 1 to 6
 
     for (size <- profileRange) {
       ms.clear
@@ -96,49 +98,18 @@ class BinarySearchTreeBenchmarkTest extends FunSuite with Matchers with Generato
         for (ind <- 0 until res.size) res(ind)
       }
 
-      assert( (for (ind <- 0 until res.size) yield res(ind)).forall( invariant(_) ) )
+      assert((for (ind <- 0 until res.size) yield res(ind)).forall(invariant(_)))
     }
   }
-
-  def constructEnumerator(implicit ms: MemoizationScope) = {
-    Depend.memoized(
-      (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
-        val (size, range) = pair
-
-        if (size <= 0) e.Singleton(Leaf)
-        else if (size == 1)
-          e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
-        else {
-          val roots = e.Enum(range)
-          val leftSizes = e.Enum(0 until size)
-
-          val rootLeftSizePairs = e.Product(leftSizes, roots)
-
-          val leftTrees: Depend[(Int, Int), Tree] = InMap(self, { (par: (Int, Int)) =>
-            val (leftSize, median) = par
-            (leftSize, range.start to (median - 1))
-          })
-
-          val rightTrees: Depend[(Int, Int), Tree] =
-            InMap(self, { (par: (Int, Int)) =>
-              val (leftSize, median) = par
-              (size - leftSize - 1, (median + 1) to range.end)
-            })
-
-          val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
-            Product(leftTrees, rightTrees)
-
-          val allNodes =
-            memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
-              (p1: (Int, Int), p2: (Tree, Tree)) => {
-                val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
-
-                Node(leftTree, currRoot, rightTree)
-              })
-
-          allNodes
-        }
-      })
+  
+  test("correctness, bigger sizes", scife.util.tags.SlowTest) {
+    val ms = new scope.AccumulatingScope
+    val enum = constructEnumeratorBenchmark(ms)
+    ms.memoizations.size should be(1)
+    
+    // some confirmed counts
+    val res = enum.getEnum(12, 1 to 12)
+    res.size should be (208012)
   }
 
 }

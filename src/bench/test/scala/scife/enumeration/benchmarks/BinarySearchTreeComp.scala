@@ -9,7 +9,7 @@ import scife.util._
 
 import scife.util.logging._
 
-import Structures._
+import structures._
 import TreeShapes._
 
 import org.scalatest._
@@ -19,7 +19,7 @@ import scala.language.existentials
 
 class BinarySearchTreeComp
   extends StructuresBenchmark[Depend[Int, Tree]]
-//  extends PerformanceTest.OfflineReport with HasLogger with ProfileLogger
+//  extends PerformanceTest.OfflineReport with ProfileLogger
   {
 
   type EnumType = Depend[Int, Tree]

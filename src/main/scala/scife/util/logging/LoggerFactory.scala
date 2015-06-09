@@ -10,7 +10,7 @@ import org.slf4j.{ LoggerFactory => SLF4JLoggerFactory }
 /**
  * Factory for producing loggers
  */
-object LoggerFactory {
+private[util] object LoggerFactory {
 
   val logDirectory = "log"
 

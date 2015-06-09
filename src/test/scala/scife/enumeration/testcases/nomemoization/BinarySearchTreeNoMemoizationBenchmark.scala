@@ -9,7 +9,7 @@ import scife.{ enumeration => e }
 import scife.enumeration.benchmarks._
 
 import scife.util._
-import Structures._
+import structures._
 import BSTrees._
 import logging._
 
@@ -61,8 +61,6 @@ object BinarySearchTreeNoMemoizationBenchmark
     Aggregator.average,
     new Executor.Measurer.Default
   )
-
-  fixture("NoMemoize", "BinarySearchTree", 8)
 
   type EnumType = Depend[(Int, Range), Tree]
 

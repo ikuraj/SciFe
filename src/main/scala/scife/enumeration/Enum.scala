@@ -3,8 +3,13 @@ package scife.enumeration
 import util.EnumStream
 
 import scala.reflect._
-import scala.language.implicitConversions
 
+import scala.language.implicitConversions
+//import scala.language.higherKinds
+//
+//trait Enum[+A, E[X] <: Enum[X, E]] extends Serializable {
+//  
+//  self: E[A] =>
 trait Enum[+A] extends Serializable {
 
   def size: Int
@@ -14,15 +19,17 @@ trait Enum[+A] extends Serializable {
   def apply(ind: Int): A
 
   def toList = ( for (i <- 0 until size) yield this(i) ).toList
+  
+  def isEmpty: Boolean = size == 0
 
   /* operators */
 
   // concatenation
-  def concat[B](e: Enum[B]) =
+  def concat[B >: A](e: Enum[B]): Enum[B] =
     Concat(this, e)
 
-  def ++[B](e: Enum[B]) = concat(e)
-  def ⊕[B](e: Enum[B]) = concat(e)
+  def ++[B >: A](e: Enum[B]): Enum[B] = concat(e)
+  def ⊕[B >: A](e: Enum[B]): Enum[B] = concat(e)
 
   // products
   def product[B](e: Enum[B]): Enum[(A, B)] =

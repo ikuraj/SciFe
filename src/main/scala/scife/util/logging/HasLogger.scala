@@ -5,15 +5,18 @@ package scife.util.logging
  *
  * Clients can inject different loggers if needed.
  */
-trait HasLogger {
+private[util] trait HasLogger {
 
   // ScalaLogging levels
   // Error // Warn // Info // Debug // Trace
   
   protected[this] def getMyClass = this.getClass
 
+  @transient
   protected[this] lazy val logger =
     LoggerFactory.newLogger(getMyClass.getName)
+    
+  protected[this] def loggerFactory = LoggerFactory
 
   def severe(msg: => String) = logger.error(msg)
 

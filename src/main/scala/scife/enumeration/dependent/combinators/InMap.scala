@@ -4,12 +4,13 @@ package combinators
 
 import scala.language.higherKinds
 
-trait InMap[I, NewIn, +O] extends Depend[NewIn, O] {
+trait InMap[I, NewIn, O] extends Depend[NewIn, O] {
 
-  type DependType[I, +O] <: Depend[I, O]
-  override type EnumType = inner.EnumType
+  type DependSort[A, B] <: Depend[A, B]
+  type DependType = DependSort[I, O]
+  override type EnumSort[C] = inner.EnumSort[C]
 
-  val inner: DependType[I, O]
+  val inner: DependType
   val f: NewIn => I
 
   override def getEnum(parameter: NewIn) =

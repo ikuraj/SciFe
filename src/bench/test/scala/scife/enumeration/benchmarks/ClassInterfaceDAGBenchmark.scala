@@ -8,7 +8,7 @@ import memoization._
 
 import scife.util._
 import scife.util.logging._
-import Structures.BSTrees._
+import structures.BSTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -21,7 +21,7 @@ class ClassInterfaceDAGBenchmark
   (Int, Int, Set[Int], Set[Int], List[Int], Predef.Map[Int, Set[Int]]),
   List[(Int, List[Int], List[Int], List[Int])]
   ]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
 
   // (size, Id, #class, #interface, #overridableMethods, map(node->sealed))
   type Input = (Int, Int, Set[Int], Set[Int], List[Int], Predef.Map[Int, Set[Int]])

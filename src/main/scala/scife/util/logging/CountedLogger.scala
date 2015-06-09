@@ -8,7 +8,7 @@ import scala.language.postfixOps
  * Extends HasLogger by counting how many times a particular method was invoked
  * on a particular object
  */
-trait CountedLogger extends HasLogger {
+private[util] trait CountedLogger extends HasLogger {
 
   var countMap: mutable.Map[(Int, String), Int] =
     mutable.Map[(Int, String), Int]().withDefaultValue(0)

@@ -16,7 +16,7 @@ object Concat {
       case _ => this(coll.toArray)
     }
 
-  def apply[T, U <: Enum[T]](streams: Seq[U])(implicit ct: ClassTag[U]): Enum[T] =
+  def apply[T, U <: Enum[T]](streams: Array[U])(implicit ct: ClassTag[U]): Enum[T] =
     lzy.Concat[T, U](streams)(ct)
     
   def apply[T](arg1: Finite[T], args: Finite[T]*): Finite[T] =
@@ -25,7 +25,7 @@ object Concat {
   def apply[T](finites: Array[Finite[T]]): Finite[T] =
     lzy.Concat(finites)
 
-  def apply[T](infinites: Seq[Infinite[T]]): Enum[T] =
+  def apply[T](infinites: Array[Infinite[T]]): Enum[T] =
     lzy.Concat(infinites)
 
 }

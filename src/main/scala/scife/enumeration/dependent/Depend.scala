@@ -7,20 +7,21 @@ import scala.reflect._
 import scala.language.implicitConversions
 import scala.language.higherKinds
 
-trait Depend[I, +O] extends Serializable {
+trait Depend[I, O] extends Serializable {
 
-  type EnumType <: Enum[O]
+  type EnumSort[A] <: Enum[A]
+  type EnumType = EnumSort[O]
 
   def apply(parameter: I) = getEnum(parameter)
 
   def getEnum(parameter: I): EnumType
 
   // concatenation
-  def concat[O2](e: Depend[I, O2]) =
+  def concat[O2](e: Depend[I, O]) =
     Concat(this, e)
 
-  def ++[O2](e: Depend[I, O2]) = concat(e)
-  def ⊕[O2](e: Depend[I, O2]) = concat(e)
+  def ++[O2](e: Depend[I, O]) = concat(e)
+  def ⊕[O2](e: Depend[I, O]) = concat(e)
 
   // products
   def product[O2](e: Depend[I, O2]): Depend[I, (O, O2)] =
@@ -56,50 +57,62 @@ trait Depend[I, +O] extends Serializable {
 
 object Depend {
 
-  def apply[I, O, E <: Enum[O]](producerFunction: (Depend[I, O], I) => E) =
+  def apply[I, O, E[A] <: Enum[A]](producerFunction: (Depend[I, O], I) => E[O]) =
     new WrapFunction(producerFunction)
 
-  def rec[I, O, E <: Enum[O]](producerFunction: (Depend[I, O], I) => E) =
+  def rec[I, O, E[A] <: Enum[A]](producerFunction: (Depend[I, O], I) => E[O]) =
     new WrapFunction(producerFunction)
 
   // not sure about this one
-//  def apply[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
-//    (implicit ct: ClassTag[F[_]], ms: MemoizationScope = null): Depend[I, O] = {
+//  def apply[I, O, F[A] <: Enum[A]](producerFunction: (Depend[I, O], I) => F[O])
+//    (implicit ct: ClassTag[F[_]]): Depend[I, O] = {
+//    import iterable._
+//
 //    val finiteTag = implicitly[ClassTag[Finite[_]]]
 //    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
 //    val enum =
 //      implicitly[ClassTag[F[_]]] match {
+//        case _: Finite[_] with ResetIter[_] =>
+//          type EnumSort[A] = Finite[A] with ResetIter[A]
+//          val fun = producerFunction.asInstanceOf[I => EnumSort[O]]
+//          new WrapFunction[I, O, EnumSort](fun) with DependFinite[I, O]
 //        case `finiteTag` =>
 //          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
-//          new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O]
+//          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O]
 //        case _: Infinite[_] =>
 //          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
-//          new WrapFunction[I, O, Infinite[O]](fun) with DependInfinite[I, O]
+//          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O]
 //        case _ =>
-//          new WrapFunction[I, O, F[O]](producerFunction)
+//          new WrapFunction[I, O, F](producerFunction)
 //      }
 //
 //    enum
 //  }
 
-  def apply[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
+  def apply[I, O, F[A] <: Enum[A]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]]): Depend[I, O] = {
+    import iterable._
+    
     val finiteTag = implicitly[ClassTag[Finite[_]]]
     val infiniteTag = implicitly[ClassTag[Infinite[_]]]
     implicitly[ClassTag[F[_]]] match {
+      case _: Finite[_] with ResetIter[_] =>
+        type EnumSort[A] = Finite[A] with ResetIter[A]
+        val fun = producerFunction.asInstanceOf[I => EnumSort[O]]
+        new WrapFunction[I, O, EnumSort](fun) with DependFinite[I, O]
       case `finiteTag` =>
         val fun = producerFunction.asInstanceOf[I => Finite[O]]
-        new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O]
+        new WrapFunction[I, O, Finite](fun) with DependFinite[I, O]
       case _: Infinite[_] =>
         val fun = producerFunction.asInstanceOf[I => Infinite[O]]
-        new WrapFunction[I, O, Infinite[O]](fun) with DependInfinite[I, O]
+        new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O]
       case _ =>
-        new WrapFunction[I, O, F[O]](producerFunction)
+        new WrapFunction[I, O, F](producerFunction)
     }
   }
 
   def fin[I, O](fun: I => Finite[O]): DependFinite[I, O] = {
-    new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O]
+    new WrapFunction[I, O, Finite](fun) with DependFinite[I, O]
   }
 
   def fin[I, O](fun: (DependFinite[I, O], I) => Finite[O]): DependFinite[I, O] = {
@@ -115,13 +128,12 @@ object Depend {
 //  def apply[I, O, E <: Enum[O]](producerMap: ScalaMap[I, E]) =
 //    new WrapMap[I, O, E](producerMap)
 
-  def map[I, O, E <: Enum[O]](producerMap: ScalaMap[I, E] = ScalaMap.empty) =
+  def map[I, O, E[A] <: Enum[A]](producerMap: ScalaMap[I, E[O]] = ScalaMap.empty) =
     new WrapMap[I, O, E](producerMap)
 
   import memoization.{ MemoizationScope }
   import memoization.dependent._
-  
-  import memoization.util._
+  import memoization.scope._
 
   def memoized[I, O, F[O] <: Enum[O]](producerFunction: I => F[O])
     (implicit ct: ClassTag[F[_]], ms: MemoizationScope): Depend[I, O] = {
@@ -131,12 +143,12 @@ object Depend {
       implicitly[ClassTag[F[_]]] match {
         case `finiteTag` =>
           val fun = producerFunction.asInstanceOf[I => Finite[O]]
-          new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O] with Memoized[I, O]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with Memoized[I, O]
         case _: Infinite[_] =>
           val fun = producerFunction.asInstanceOf[I => Infinite[O]]
-          new WrapFunction[I, O, Infinite[O]](fun) with DependInfinite[I, O] with Memoized[I, O]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with Memoized[I, O]
         case _ =>
-          new WrapFunction[I, O, F[O]](producerFunction) with Memoized[I, O]
+          new WrapFunction[I, O, F](producerFunction) with Memoized[I, O]
       }
     
     ! enum
@@ -166,15 +178,82 @@ object Depend {
       implicitly[ClassTag[F[_]]] match {
         case `finiteTag` =>
           val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
-          new WrapFunction[I, O, Finite[O]](fun) with DependFinite[I, O] with Memoized[I, O]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with Memoized[I, O]
         case _: Infinite[_] =>
           val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
-          new WrapFunction[I, O, Infinite[O]](fun) with DependInfinite[I, O] with Memoized[I, O]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with Memoized[I, O]
         case _ =>
-          new WrapFunction[I, O, F[O]](producerFunction) with Memoized[I, O]
+          new WrapFunction[I, O, F](producerFunction) with Memoized[I, O]
       }
 
     ! enum
+  }
+  
+  def memoizedConcurrent[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
+    (implicit ct: ClassTag[F[_]], ms: MemoizationScope): Depend[I, O] = {
+    import parallel.memoization.dependent._
+    
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with Memoized[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with Memoized[I, O]
+        case _ =>
+          new WrapFunction[I, O, F](producerFunction) with Memoized[I, O]
+      }
+
+    ! enum
+  }
+  
+  def memoizedConcurrentNoScope[I, O, F[O] <: Enum[O]]
+    (producerFunction: (Depend[I, O], I) => F[O]) (implicit ct: ClassTag[F[_]]):
+      Depend[I, O] with scife.enumeration.memoization.Memoizable = {
+    import parallel.memoization.dependent._
+    
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum: Depend[I, O] with Memoized[I, O] =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with Memoized[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with Memoized[I, O]
+        case _ =>
+          new WrapFunction[I, O, F](producerFunction) with Memoized[I, O]
+      }
+
+    // do not add to scope
+    enum
+  }
+
+  def memoizedConcurrentOptNoScope[I, O, F[O] <: Enum[O]]
+    (producerFunction: (Depend[I, O], I) => F[O]) (implicit ct: ClassTag[F[_]]):
+      Depend[I, O] with scife.enumeration.memoization.Memoizable = {
+    import parallel.memoization.dependent._
+    
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum: Depend[I, O] with MemoizedOpt[I, O] =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with MemoizedOpt[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with MemoizedOpt[I, O]
+        case _ =>
+          new WrapFunction[I, O, F](producerFunction) with MemoizedOpt[I, O]
+      }
+
+    // do not add to scope
+    enum
   }
 
 //  def memoized[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
@@ -263,7 +342,7 @@ object Depend {
     val enum =
     {
 //        new WrapFunctionP[I, O, Finite[O]](producerFunction) with DependFinite[I, O] with Memoized[I, O]
-        new WrapFunctionFinP[I, O, Finite[O]](producerFunction) with DependFinite[I, O] with Memoized[I, O]
+        new WrapFunctionFinP[I, O, Finite](producerFunction) with DependFinite[I, O] with Memoized[I, O]
 //    val finiteTag = implicitly[ClassTag[Finite[_]]]
 //    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
 //      implicitly[ClassTag[F[_]]] match {
@@ -288,7 +367,7 @@ object Depend {
     val enum =
     {
 //        new WrapFunctionP[I, O, Finite[O]](producerFunction) with DependFinite[I, O] with Memoized[I, O]
-        new WrapFunctionP[I, O, Enum[O]](producerFunction) with Memoized[I, O]
+        new WrapFunctionP[I, O, Enum](producerFunction) with Memoized[I, O]
 //    val finiteTag = implicitly[ClassTag[Finite[_]]]
 //    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
 //      implicitly[ClassTag[F[_]]] match {

@@ -10,6 +10,9 @@ organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
 scalaVersion := "2.11.4"
 
+// forcing the version
+ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+
 scalaBinaryVersion := "2.11"
 
 // Compiler options
@@ -78,3 +81,14 @@ libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
 //libraryDependencies += "org.jgrapht" % "jgrapht-ext" % "0.9.0"
 //
 //libraryDependencies += "org.jgrapht" % "jgrapht-dist" % "0.9.0"
+
+// Scalaz
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"
+
+// Specs2
+libraryDependencies += "org.specs2" %% "specs2-core" % "3.0" % "test"
+
+resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+
+// in-program compilation calls
+libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value

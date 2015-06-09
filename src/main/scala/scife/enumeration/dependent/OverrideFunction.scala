@@ -3,15 +3,19 @@ package dependent
 
 import scala.collection.mutable
 
-class OverrideFunction[I, O, E <: Enum[O]](
-  val producerFunction: (Depend[I, O], I) => E, val orgDepend: Depend[I, O])
+import scife.util._
+
+import scala.language.higherKinds
+
+class OverrideFunction[I, O, E[A] <: Enum[A]](
+  val producerFunction: (Depend[I, O], I) => E[O], val orgDepend: Depend[I, O])
   extends Depend[I, O] with HasLogger with Serializable {
 
-  override type EnumType = E
+  override type EnumSort[A] = E[A]
 
   val partiallyApplied = producerFunction(this, _: I)
 
-  def this(producerFunction: I => E, orgDepend: Depend[I, O]) =
+  def this(producerFunction: I => E[O], orgDepend: Depend[I, O]) =
     this( (td: Depend[I, O], i: I) => producerFunction(i), orgDepend )
 
   override def getEnum(parameter: I) =
@@ -24,7 +28,7 @@ class OverrideFunctionFin[I, O](
   val producerFunction: (I => Finite[O], I) => Finite[O], val orgDepend: WrapFunctionFin[I, O])
   extends DependFinite[I, O] with HasLogger with Serializable {
 
-  override type EnumType = Finite[O]
+  override type EnumSort[A] = Finite[A]
   
   def modifiedOrg(input: I): Finite[O] = orgDepend.producerFunction(this, input)
 
@@ -35,12 +39,12 @@ class OverrideFunctionFin[I, O](
 
 }
 
-class OverrideFunctionSelf[I, O, E <: Enum[O]](
-  val producerFunction: (Depend[I, O], (I => E), I) => E,
+class OverrideFunctionSelf[I, O, E[A] <: Enum[A]](
+  val producerFunction: (Depend[I, O], (I => E[O]), I) => E[O],
   val orgDepend: WrapFunction[I, O, E])
   extends Depend[I, O] with HasLogger with Serializable {
 
-  override type EnumType = E
+  override type EnumSort[A] = E[A]
   
   def transformedOrgProducer(input: I) = orgDepend.producerFunction(
     this, input

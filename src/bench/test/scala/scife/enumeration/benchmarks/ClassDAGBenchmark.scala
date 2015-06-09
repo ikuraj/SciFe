@@ -8,7 +8,7 @@
 //
 //import scife.util._
 //import scife.util.logging._
-//import Structures.BSTrees._
+//import structures.BSTrees._
 //
 //import org.scalatest._
 //import org.scalameter.api._
@@ -21,7 +21,7 @@
 //    //(Int, List[Int], List[Int], List[Int]), List[(List[Int], List[Int], List[Int])]
 //    (Int, Int, Int, List[Int]), List[(Int, List[Int], List[Int], List[Int])]
 //  ]]
-//  with java.io.Serializable with HasLogger {
+//  with java.io.Serializable {
 //
 //  // (size, #class, #interface, #overridableMethods)
 ////  type Input = (Int, List[Int], List[Int], List[Int])

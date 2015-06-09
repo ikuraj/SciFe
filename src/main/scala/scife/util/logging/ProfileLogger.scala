@@ -6,7 +6,7 @@ import scala.collection._
  * Extends HasLogger by counting how many times a particular method was invoked
  * on a particular object
  */
-trait ProfileLogger extends HasLogger {
+private[util] trait ProfileLogger extends HasLogger {
   import System.{ currentTimeMillis => _time }
 
   var countMap: mutable.Map[(Int, String), (Long, Int)] =

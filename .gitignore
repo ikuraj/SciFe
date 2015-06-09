@@ -4,6 +4,8 @@
 # project junk files
 dep/
 backup/
+tmp/
+log.txt
 
 # kate junk files
 **/*~

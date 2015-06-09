@@ -12,7 +12,7 @@ import memoization._
 
 import scife.util._
 import scife.util.logging._
-import Structures.BSTrees._
+import structures.BSTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -25,6 +25,7 @@ class WrapGraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPrope
   import Checks._
   import Util._
   import Graph._
+  import Common._
   
   import GraphEnum._
 

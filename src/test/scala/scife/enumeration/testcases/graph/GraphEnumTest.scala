@@ -12,7 +12,7 @@ import memoization._
 
 import scife.util._
 import scife.util.logging._
-import Structures.BSTrees._
+import structures.BSTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -25,6 +25,7 @@ class GraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
   import Checks._
   import Util._
   import Graph._
+  import Common._
 
   import GraphEnum._
 
@@ -39,33 +40,45 @@ class GraphEnumTest extends FunSuite with Matchers with GeneratorDrivenPropertyC
     import checkerHelper._
 
     val enum = graphEnum//constructEnumerator
+    
+   {
+      val i = 3
+      
+      val start = System.currentTimeMillis()
+      val res = enum.getEnum(i)
+      for (j <- 0 until res.size)
+       enum(j)
 
-    withLazyClue("Elements are: " + clue) {
-
-      res = enum.getEnum(0)
-      res.size should be(1)
-      res(0) should be(Empty)
-
-      res = enum.getEnum(1)
-      res.size should be(1)
-      res(0) should be((Nil, 1, Nil) &: Empty)
-
-      res = enum.getEnum(2)
-      res.size should be > (1)
-
-      res = enum.getEnum(3)
-      res.toList should contain(
-        (List(1, 2), 3, List(2)) &:
-          (Nil, 2, List(1)) &:
-          (Nil, 1, Nil) &:
-          Empty)
-      // note the order of edges should be sorted
-      res.toList should not contain(
-        (List(2, 1), 3, List(2)) &:
-          (Nil, 2, List(1)) &:
-          (Nil, 1, Nil) &:
-          Empty)
+      val end = System.currentTimeMillis() - start
+      println(end)
     }
+
+//    withLazyClue("Elements are: " + clue) {
+//
+//      res = enum.getEnum(0)
+//      res.size should be(1)
+//      res(0) should be(Empty)
+//
+//      res = enum.getEnum(1)
+//      res.size should be(1)
+//      res(0) should be((Nil, 1, Nil) &: Empty)
+//
+//      res = enum.getEnum(2)
+//      res.size should be > (1)
+//
+//      res = enum.getEnum(3)
+//      res.toList should contain(
+//        (List(1, 2), 3, List(2)) &:
+//          (Nil, 2, List(1)) &:
+//          (Nil, 1, Nil) &:
+//          Empty)
+//      // note the order of edges should be sorted
+//      res.toList should not contain(
+//        (List(2, 1), 3, List(2)) &:
+//          (Nil, 2, List(1)) &:
+//          (Nil, 1, Nil) &:
+//          Empty)
+//    }
 
   }
 

@@ -10,8 +10,7 @@ import scife.{ enumeration => e }
 import memoization._
 
 import scife.util._
-import scife.util.logging._
-import Structures.BSTrees._
+import structures.BSTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -21,11 +20,12 @@ import scala.language.existentials
 
 // this testcase has only classes, not interfaces
 class ClassDAGTest extends FunSuite with Matchers with GeneratorDrivenPropertyChecks with
-  logging.HasLogger with ProfileLogger {
+  HasLogger with ProfileLogger {
   import Checks._
-  import Structures._
+  import structures._
   import BSTrees._
   import Util._
+  import Common._
 
   // (size, Id, #class, #overridableMethods, map(node->sealed))
   type Input = (Int, Int, Set[Int], List[Int], Predef.Map[Int, Set[Int]])

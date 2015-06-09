@@ -12,7 +12,7 @@ import memoization._
 
 import scife.util._
 import scife.util.logging._
-import Structures.BSTrees._
+import structures.BSTrees._
 
 import org.scalatest._
 import org.scalameter.api._
@@ -122,14 +122,24 @@ object GraphEnum extends HasLogger with ProfileLogger {
     //    }
 
     //    result =
-    Depend.memoizedFin[Input, Output](
+    Depend.fin[Input, Output](
       (self: DependFinite[Input, Output], maxOrdinal: Input) => {
 
           def toMax(ordinal: Int) = {
             val sublistEnum = Sublists((1 until ordinal).toList)
             val sublists = sublistEnum.product(sublistEnum)
 
+            if (ordinal < 3)
             Map.memoized(sublists.product(self(ordinal - 1)), { (in: ((List[Int], List[Int]), Graph)) =>
+              val ((left, right), restGraph) = in
+              (left, ordinal, right) &: restGraph
+            }) //        sublists.product(rest) map {
+            //          case ( (left, right), restGraph) =>
+            //            (left, ordinal, right) &: restGraph
+            //        }
+            : Finite[Output]
+            else
+            Map(sublists.product(self(ordinal - 1)), { (in: ((List[Int], List[Int]), Graph)) =>
               val ((left, right), restGraph) = in
               (left, ordinal, right) &: restGraph
             }) //        sublists.product(rest) map {

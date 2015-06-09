@@ -2,34 +2,36 @@ package scife.util.logging
 
 import scala.annotation._, elidable._
 
-trait DummyLogger {
+private[util] trait DummyLogger extends HasLogger {
 
   @elidable(SEVERE)
-  def severe(msg: => String) = {}
+  override def severe(msg: => String) = {}
 
   @elidable(WARNING)
-  def error(msg: => String) = {}
+  override def error(msg: => String) = {}
 
   @elidable(WARNING)
-  def warning(msg: => String) = {}
+  override def warning(msg: => String) = {}
 
   @elidable(INFO)
-  def info(msg: => String) = {}
+  override def info(msg: => String) = {}
 
   @elidable(FINE)
-  def fine(msg: => String) = {}
+  override def fine(msg: => String) = {}
 
   @elidable(FINER)
-  def finer(msg: => String) = {}
+  override def finer(msg: => String) = {}
 
   @elidable(FINEST)
-  def finest(msg: => String) = {}
+  override def finest(msg: => String) = {}
 
   @elidable(FINEST)
-  def entering(method: => String, arguments: Any*) = {}
+  override def entering(method: => String, arguments: Any*) = {}
 
-  def exiting(method: => String, result: => String) = {}
+  @elidable(FINEST)
+  override def exiting(method: => String, result: => String) = {}
 
-  def exiting[T](method: => String, result: T): T = result
+  @elidable(FINEST)
+  override def exiting[T](method: => String, result: T): T = result
 
 }
