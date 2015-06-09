@@ -44,6 +44,7 @@ trait MemoizedOpt[I, O] extends Depend[I, O] with Memoizable with HasLogger {
         }
         res = existingVal
       }
+      println("exit optimize")
 //      memoizedMap.put(parameter, res)
       res
     }

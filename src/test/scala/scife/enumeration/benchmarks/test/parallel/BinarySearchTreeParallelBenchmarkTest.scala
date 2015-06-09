@@ -30,7 +30,7 @@ class BinarySearchTreeParallelBenchmarkTest
   val queue = new LinkedTransferQueue[Int]
 
   val NumberOfProcessors = Runtime.getRuntime.availableProcessors
-  println(s"NumberOfProcessors=$NumberOfProcessors")
+  info(s"NumberOfProcessors=$NumberOfProcessors")
 
   test("correctness of concurrent execution") {
 

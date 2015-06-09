@@ -18,7 +18,7 @@ import org.scalatest.matchers._
 import scala.language.existentials
 import scife.enumeration.memoization.scope.AccumulatingScope
 
-class BinarySearchTree extends FunSuite {
+class BinarySearchTree extends FunSuite with HasLogger {
 
   import structures._
   import BSTrees._
@@ -52,7 +52,7 @@ class BinarySearchTree extends FunSuite {
     end = System.currentTimeMillis()
     exec.shutdown()
 
-    println(s"size=$size, threads=$numOfThreads, time=${end - beg}")
+    info(s"size=$size, threads=$numOfThreads, time=${end - beg}")
     scope.clear
     //      }
 
@@ -81,13 +81,16 @@ class BinarySearchTree extends FunSuite {
           def run = {
             //          try {
             //            var myInd = Thread.currentThread().getId.toInt
-            println(s"my id is $myInd, my incrmeent $increment, tdEnum=${tdEnum.hashCode()}")
+            info(s"my id is $myInd, my incrmeent $increment, tdEnum=${tdEnum.hashCode()}")
             val s = size
             //            for (s <- 1 to size) {
+            info(s"getting enum")
             val enum = tdEnum.getEnum((s, 1 to s))
+            info(s"got enum")
 
             var ind = myInd
             while (ind < enum.size) {
+              info(s"running, myInd is $myInd")
               enum(ind)
               ind += increment
               //            }
@@ -157,7 +160,9 @@ class BinarySearchTree extends FunSuite {
     }
 
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope) = {
-    val enum = Depend.memoizedConcurrentOptNoScope(enumeratorFunction)
+    // TODO the opt one freezes the program
+    val enum = Depend.memoizedConcurrentNoScope(enumeratorFunction)
+//    val enum = Depend.memoizedConcurrentOptNoScope(enumeratorFunction)
     ms.add(enum)
     enum
   }

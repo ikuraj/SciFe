@@ -20,7 +20,7 @@ import org.scalatest.matchers._
 import scala.language.existentials
 import scife.enumeration.memoization.scope.AccumulatingScope
 
-class RiffImage extends FunSuite {
+class RiffImage extends FunSuite with HasLogger {
 
   // size, dataSize, totalJiff, avRatio
   type Input = (Int, Int, Int, Int)
@@ -58,7 +58,7 @@ class RiffImage extends FunSuite {
         end = System.currentTimeMillis()
         exec.shutdown()
         
-        println(s"size=$size, threads=$numOfThreads, time=${end-beg}")
+        info(s"size=$size, threads=$numOfThreads, time=${end-beg}")
         scope.clear
 //      }
 
@@ -87,7 +87,7 @@ class RiffImage extends FunSuite {
         def run = {
 //          try {
 //            var myInd = Thread.currentThread().getId.toInt
-            println(s"my id is $myInd, my incrmeent $increment, tdEnum=${tdEnum.hashCode()}")
+            info(s"my id is $myInd, my incrmeent $increment, tdEnum=${tdEnum.hashCode()}")
             val s = size
 //            for (s <- 1 to size) {
             val enum = tdEnum.getEnum((s, s, (s + 1) / 2, s/2))
@@ -187,7 +187,10 @@ class RiffImage extends FunSuite {
   }
 
   def constructEnumerator(implicit ms: e.memoization.MemoizationScope) = {
-    val enum = Depend.memoizedConcurrentOptNoScope(enumeratorFunction)
+    // TODO the opt one freezes the program
+    val enum = Depend.memoizedConcurrentNoScope(enumeratorFunction)
+//    val enum = Depend.memoizedConcurrentOptNoScope(enumeratorFunction)
+
     ms.add(enum)
     enum
   }
