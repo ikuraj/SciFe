@@ -12,6 +12,7 @@ private[util] trait HasLogger {
   
   protected[this] def getMyClass = this.getClass
 
+  @transient
   protected[this] lazy val logger =
     LoggerFactory.newLogger(getMyClass.getName)
     

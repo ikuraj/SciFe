@@ -42,7 +42,7 @@ object Sublists {
       case n if n < coll.size =>
         subListChooser( (subSize, coll) )
       case n if coll.size == n =>
-        Enum(coll)
+        Singleton(coll)
         //new SublistsOfSize(coll, subSize)
         
         // handled by subListChooser

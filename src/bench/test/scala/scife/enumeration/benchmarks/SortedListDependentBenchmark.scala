@@ -22,7 +22,7 @@ import scala.language.existentials
 class SortedListDependentBenchmark
   extends StructuresBenchmark[Depend[(Int, Int), List[Int]]]
   //extends DependentMemoizedBenchmark[Int, Depend[(Int, Int), List[Int]]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
 
   //fixtureRun("strictly", constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))
 //  fixture(constructEnumerator = (ms: MemoizationScope) => constructEnumerator(ms))

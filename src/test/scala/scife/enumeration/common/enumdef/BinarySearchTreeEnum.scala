@@ -20,10 +20,12 @@ object BinarySearchTreeEnum {
       constructEnumeratorBenchmark(_: MemoizationScope),
       constructEnumTestcase(_: MemoizationScope),
       constructBenchmarkOld(_: MemoizationScope),
-      constructEnumeratorBenchmarkNoTuplesWhenConstructingTree(_: MemoizationScope)
+      constructEnumeratorBenchmarkNoTuplesWhenConstructingTree(_: MemoizationScope),
+      constructEnumeratorBenchmark_DynamicMemoized(_: MemoizationScope)
     ) zip List(
       "constructEnumeratorBenchmark", "constructEnumTestcase", "constructBenchmarkOld",
-      "constructEnumeratorBenchmarkNoTuplesWhenConstructingTree" 
+      "constructEnumeratorBenchmarkNoTuplesWhenConstructingTree",
+      "constructEnumeratorBenchmark_DynamicMemoized"
     )
   
   // slightly changed constructEnumeratorBenchmark
@@ -95,6 +97,47 @@ object BinarySearchTreeEnum {
 
           val allNodes =
             memoization.Chain[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
+              (p1: (Int, Int), p2: (Tree, Tree)) => {
+                val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
+
+                Node(leftTree, currRoot, rightTree)
+              })
+
+          allNodes
+        }
+      })
+  }
+  
+  def constructEnumeratorBenchmark_DynamicMemoized(implicit ms: MemoizationScope) = {
+    Depend.memoized(
+      (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
+        val (size, range) = pair
+
+        if (size <= 0) e.Singleton(Leaf)
+        else if (size == 1)
+          e.WrapArray(range map { v => Node(Leaf, v, Leaf) })
+        else {
+          val roots = e.Enum(range)
+          val leftSizes = e.Enum(0 until size)
+
+          val rootLeftSizePairs = e.Product(leftSizes, roots)
+
+          val leftTrees: Depend[(Int, Int), Tree] = InMap(self, { (par: (Int, Int)) =>
+            val (leftSize, median) = par
+            (leftSize, range.start to (median - 1))
+          })
+
+          val rightTrees: Depend[(Int, Int), Tree] =
+            InMap(self, { (par: (Int, Int)) =>
+              val (leftSize, median) = par
+              (size - leftSize - 1, (median + 1) to range.end)
+            })
+
+          val leftRightPairs: Depend[(Int, Int), (Tree, Tree)] =
+            Product(leftTrees, rightTrees)
+
+          val allNodes =
+            memoization.Chain.dynamic[(Int, Int), (Tree, Tree), Node](rootLeftSizePairs, leftRightPairs,
               (p1: (Int, Int), p2: (Tree, Tree)) => {
                 val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
 
@@ -231,7 +274,7 @@ object BinarySearchTreeEnum {
                 val ((leftSize, currRoot), (leftTree, rightTree)) = (p1, p2)
 
                 Node(leftTree, currRoot, rightTree)
-              })(ms)
+              })(ms, scala.reflect.ClassTag(classOf[Node]))
 
           allNodes shouldBe a [Memoized[_]]
 

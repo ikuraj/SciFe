@@ -19,7 +19,7 @@ package structures {
   object CusList {
     def isSorted(list: CusList) = {
       def rec(l: CusList): Boolean = l match {
-        case Cons(JustInt(a), innerList@Cons(JustInt(b), _)) =>
+        case Cons(JustInt(a), innerList @ Cons(JustInt(b), _)) =>
           a <= b && rec(innerList)
         case _ => true
       }
@@ -84,7 +84,7 @@ package structures {
 
     def invariant(tree: Tree) =
       valueOrdering(tree)
-      
+
     def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
       case Leaf => true
       case Node(l, v, r) => min <= v && max >= v &&
@@ -94,7 +94,7 @@ package structures {
     // for every node n, all the nodes in the left (respectively, right) subtree of
     // n, if any, have keys which are smaller (respectively, bigger) than the key
     // labeling n.
-    def valueOrdering(t: Tree) : Boolean = {
+    def valueOrdering(t: Tree): Boolean = {
       def correctOrdering(t: Tree, min: Int, max: Int): Boolean = t match {
         case Leaf => true
         case Node(l, v, r) => min <= v && max > v &&
@@ -111,60 +111,121 @@ package structures {
 
     def numberOfTress(n: Int) = Catalan.catalan(n)
 
-    def heapProperty(t: Tree) : Boolean = {
+    def heapProperty(t: Tree): Boolean = {
       t match {
-        case Node(ln@Node(_, lv, _), v, rn@Node(_, rv, _)) => v > lv && v > rv &&
+        case Node(ln @ Node(_, lv, _), v, rn @ Node(_, rv, _)) => v > lv && v > rv &&
           heapEqualProperty(ln) && heapEqualProperty(rn)
-        case Node(_, v, rn@Node(_, rv, _)) => v > rv &&
+        case Node(_, v, rn @ Node(_, rv, _)) => v > rv &&
           heapEqualProperty(rn)
-        case Node(ln@Node(_, lv, _), v, _) => v > lv &&
+        case Node(ln @ Node(_, lv, _), v, _) => v > lv &&
           heapEqualProperty(ln)
         case _ => true
       }
     }
 
-    def heapEqualProperty(t: Tree) : Boolean = {
+    def heapEqualProperty(t: Tree): Boolean = {
       t match {
-        case Node(ln@Node(_, lv, _), v, rn@Node(_, rv, _)) => v >= lv && v >= rv &&
+        case Node(ln @ Node(_, lv, _), v, rn @ Node(_, rv, _)) => v >= lv && v >= rv &&
           heapEqualProperty(ln) && heapEqualProperty(rn)
-        case Node(_, v, rn@Node(_, rv, _)) => v >= rv &&
+        case Node(_, v, rn @ Node(_, rv, _)) => v >= rv &&
           heapEqualProperty(rn)
-        case Node(ln@Node(_, lv, _), v, _) => v >= lv &&
+        case Node(ln @ Node(_, lv, _), v, _) => v >= lv &&
           heapEqualProperty(ln)
         case _ => true
       }
+    }
+    
+    def insert(tree: Tree, newElem: Int): Tree = tree match {
+      case Leaf =>
+        Node(Leaf, newElem, Leaf)
+      case n: Node =>
+        if (newElem < n.v) insert(n.l, newElem)
+        else if (newElem > n.v) insert(n.r, newElem)
+        else tree
     }
 
   }
 
   object LazyBSTrees {
-    trait Tree
-    case object Leaf extends Tree
-    class Node(_l: => Tree, _v: => Int, _r: => Tree) extends Tree {
-      lazy val l = _l
-      lazy val v = _v
-      lazy val r = _r
+    trait Tree {
+      def correctOrdering(min: Int, max: Int): Boolean
+      def lazyInvariant: Boolean =
+        correctOrdering(Int.MinValue, Int.MaxValue)
+        
+      def insert(newElem: Int): Tree
+    }
+    case object Leaf extends Tree {
+      def correctOrdering(min: Int, max: Int): Boolean = true
+      def insert(newElem: Int): Tree = Node(Leaf, newElem, Leaf)
+    }
+    //    class Node(_l: => Tree, _v: => Int, _r: => Tree) extends Tree {
+    //      lazy val l = _l
+    //      lazy val v = _v
+    //      lazy val r = _r
+    //      
+    //      override def equals(that: Any) = that match {
+    //        case thatNode: Node =>
+    //          thatNode.v == v && thatNode.l == l && thatNode.r == r
+    //        case _ => false
+    //      }
+    //    }
+    class Node(_l: => Tree, val v: Int, _r: => Tree) extends Tree {
+      private[this] var lf: Tree = null
+      private[this] var rf: Tree = null
+
+      def l = {
+        if (lf == null) lf = _l
+        lf
+      }
+
+      def r = {
+        if (rf == null) rf = _r
+        rf
+      }
       
+      def insert(newElem: Int): Tree =  {
+          if (newElem < v) l insert newElem
+          else if (newElem > v) r insert newElem
+          else this
+      }
+
       override def equals(that: Any) = that match {
         case thatNode: Node =>
           thatNode.v == v && thatNode.l == l && thatNode.r == r
         case _ => false
       }
+
+      def correctOrdering(min: Int, max: Int): Boolean = {
+        min <= v && max > v &&
+          (lf == null || lf.correctOrdering(min, v)) &&
+          (rf == null || rf.correctOrdering(v + 1, max))
+      }
+      
+      override def toString =
+        "Node(" + l.toString + "," + v + "," + r.toString + ")"
     }
-    
+
     object Node {
       def apply(l: => Tree, v: => Int, r: => Tree) = new Node(l, v, r)
       def apply(v: => Int) = new Node(Leaf, v, Leaf)
     }
-    
+
     implicit def toRegularBSTTree(t: Tree): BSTrees.Tree = t match {
-      case Leaf => BSTrees.Leaf 
+      case Leaf => BSTrees.Leaf
       case n: Node => BSTrees.Node(
-        toRegularBSTTree(n.l), n.v, toRegularBSTTree(n.r)
-      )
+        toRegularBSTTree(n.l), n.v, toRegularBSTTree(n.r))
     }
+//
+//    def insert(tree: Tree, newElem: Int): Tree = tree match {
+//      case Leaf =>
+//        Node(Leaf, newElem, Leaf)
+//      case n: Node =>
+//        if (newElem < n.v) insert(n.lf, newElem)
+//        else if (newElem > n.v) insert(n.rf, newElem)
+//        else tree
+//    }
   }
-  
+
   object RedBlackTrees {
     trait Tree
     case object Leaf extends Tree
@@ -187,7 +248,7 @@ package structures {
 
     // every path from the root to a leaf has the same number of black nodes
     def blackInv(tree: Tree) = {
-      def rec(t : Tree) : (Boolean, Int) = t match {
+      def rec(t: Tree): (Boolean, Int) = t match {
         case Node(l, _, r, c) =>
           val (lRes, lHeight) = rec(l)
           val (rRes, rHeight) = rec(r)
@@ -203,12 +264,12 @@ package structures {
     }
 
     // no red node has a red child
-    def redDescHaveBlackChildren(t: Tree) : Boolean = {
-      def isBlack(t: Tree) : Boolean = t match {
+    def redDescHaveBlackChildren(t: Tree): Boolean = {
+      def isBlack(t: Tree): Boolean = t match {
         case Leaf => true
-        case Node(_,_,_, color) => color
+        case Node(_, _, _, color) => color
       }
-      def redNodesHaveBlackChildren(t: Tree) : Boolean = t match {
+      def redNodesHaveBlackChildren(t: Tree): Boolean = t match {
         case Leaf => true
         case Node(l, _, r, true) => redNodesHaveBlackChildren(l) && redNodesHaveBlackChildren(r)
         case Node(l, _, r, false) => isBlack(l) && isBlack(r) &&
@@ -220,7 +281,7 @@ package structures {
     // for every node n, all the nodes in the left (respectively, right) subtree of
     // n, if any, have keys which are smaller (respectively, bigger) than the key
     // labeling n.
-    def valueOrdering(t: Tree) : Boolean = {
+    def valueOrdering(t: Tree): Boolean = {
       def valuesInRange(t: Tree, min: Int, max: Int): Boolean = t match {
         case Leaf => true
         case Node(l, v, r, c) => min <= v && max > v &&
@@ -248,13 +309,11 @@ package structures {
         1, 2, 2, 3, 8, 14, 20, 35, 64, 122, 260, 586, 1296, 2708, 5400,
         10468, 19888, 37580, 71960, 140612, 279264, 560544, 1133760, 2310316,
         4750368, 9876264, 20788880, 44282696, 95241664, 206150208, 447470464,
-        970862029, 2100029344
-      ) toMap
+        970862029, 2100029344) toMap
 
     // helper method when constructing streams
     val constructRBTree: PartialFunction[Any, Tree] = (a: Any) => a match {
-      case (clazz, (a: Tree) :: (v: Int) :: (b: Tree) :: (c: Boolean) :: Nil)
-        if clazz == classOf[Node] =>
+      case (clazz, (a: Tree) :: (v: Int) :: (b: Tree) :: (c: Boolean) :: Nil) if clazz == classOf[Node] =>
         Node(a, v, b, c)
     }
 
@@ -273,7 +332,7 @@ package structures {
     }
 
   }
-  
+
   object RedBlackTreesFastHash {
     trait Tree
     case object Leaf extends Tree
@@ -295,9 +354,7 @@ package structures {
     case class Method(id: Id, statements: Seq[Statement]) extends Identifiable {
       require(
         (for (ind <- 0 until statements.size)
-          yield usedVars(statements(ind)) subsetOf definedVars(statements.take(ind))
-        ).reduce( _ && _ )
-      )
+          yield usedVars(statements(ind)) subsetOf definedVars(statements.take(ind))).reduce(_ && _))
       def usedVars(s: Statement) = Set[Id]()
       def definedVars(s: Seq[Statement]) = Set[Id]()
     }
@@ -327,19 +384,19 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
     {
       val lists = generateLists(3, 1 to 3)
 
-      lists.size should be (3 * 3 * 3)
+      lists.size should be(3 * 3 * 3)
     }
 
     {
       val lists = generateLists(1, 1 to 1)
 
-      lists.size should be (1)
+      lists.size should be(1)
     }
 
     {
       val lists = generateLists(2, 1 to 1)
 
-      lists.size should be (1)
+      lists.size should be(1)
     }
   }
 
@@ -347,23 +404,23 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
 
   test("isSorted") {
 
-    for(ex <- List(
-      List(1, 2, 2),
-      List(1, 2),
-      List(1, 1),
-      List(1, 1, 2, 2, 3),
-      List(1, 1, 1, 1, 1, 2, 3)
-    ): List[CusList])
-      isSorted(ex) should be (true)
+    for (
+      ex <- List(
+        List(1, 2, 2),
+        List(1, 2),
+        List(1, 1),
+        List(1, 1, 2, 2, 3),
+        List(1, 1, 1, 1, 1, 2, 3)): List[CusList]
+    ) isSorted(ex) should be(true)
 
-    for(ex <- List(
-      List(1, 3, 2),
-      List(3, 2),
-      List(3, 1),
-      List(1, 1, 2, 2, 1),
-      List(1, 1, 1, 1, 1, 2, 1)
-    ): List[CusList])
-      isSorted(ex) should be (false)
+    for (
+      ex <- List(
+        List(1, 3, 2),
+        List(3, 2),
+        List(3, 1),
+        List(1, 1, 2, 2, 1),
+        List(1, 1, 1, 1, 1, 2, 1)): List[CusList]
+    ) isSorted(ex) should be(false)
   }
 
   test("generate RB trees") {
@@ -380,7 +437,7 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
       }
 
     forAll(rbTreeGen, minSuccessful(50)) {
-      invariant(_) should be (true)
+      invariant(_) should be(true)
     }
   }
 
@@ -404,7 +461,7 @@ class StructuresTest extends FunSuite with Matchers with PropertyChecks {
       742900,
       2674440)
 
-    for(ind <- 0 until resultList.size)
-      catalan(ind) should be ( resultList(ind) )
+    for (ind <- 0 until resultList.size)
+      catalan(ind) should be(resultList(ind))
   }
 }

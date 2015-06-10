@@ -1,6 +1,6 @@
 name := "SciFe"
 
-version := "1.2.0"
+version := "1.2.9"
 
 organization := "ch.epfl.lara"
 
@@ -28,7 +28,7 @@ resolvers += "Sonatype Releases" at "http://oss.sonatype.org/content/repositorie
 //libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.1" % "test"
 libraryDependencies += "org.scalacheck" % "scalacheck_2.11" % "1.12.1" % "test"
 
-libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 //libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
@@ -84,3 +84,11 @@ libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"
 
 // Scalaz
 libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"
+
+// Specs2
+libraryDependencies += "org.specs2" %% "specs2-core" % "3.0" % "test"
+
+resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+
+// in-program compilation calls
+libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value

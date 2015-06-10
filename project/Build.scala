@@ -16,24 +16,31 @@ object SciFeBuild extends Build {
       .settings(
         // add commands
         commands ++= Seq(benchCommand, benchBadgeCommand),
-        // do not fork by default,
-        fork := false,
+        // fork by default,
+//        fork := false,
 
         // test options 
         fork in Test := true,
-        javaOptions in Test += "-Xmx4096m",
+        javaOptions in Test ++= Seq("-Xms2048m", "-Xmx2048m",
+          "-XX:MaxPermSize=512m", "-XX:+UseConcMarkSweepGC"),
         // verbose QuickCheck error ouput
         testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "3"),
         // exclude slow tests
-//        testOptions in Test += Tests.Argument("-l", "tags.Slow"),
+        testOptions in Test += noSlowTests,
         
         // benchmark options
-        unmanagedSourceDirectories in BenchConfig <+= sourceDirectory ( _ / "bench" ),
+        //unmanagedSourceDirectories in BenchConfig <+= sourceDirectory ( _ / "bench" ),
+        unmanagedSourceDirectories in Test <+= sourceDirectory ( _ / "bench" ),
         // run only benchmark not dependent tests
-        sourceDirectories in compile in BenchConfig := Seq ( sourceDirectory.value / "bench" ),
+        sourceDirectories in compile in BenchConfig <+= sourceDirectory ( _ / "bench" ),
+        //sources in (BenchConfig, test) := Seq ( sourceDirectory.value / "bench" ),
         fork in BenchConfig := false,        
         includeFilter in BenchConfig := AllPassFilter,
-        testOptions in BenchConfig := Seq( benchmarksFilter ),
+        testOptions in BenchConfig := Seq( benchmarksFilter/*, noSuiteFilter */ ),
+//        testOptions in BenchConfig += Tests.Filter({ (s: String) =>
+//          val isFull = s endsWith "Full"
+//          !isFull
+//        }),
         scalacOptions in BenchConfig ++= generalScalacFlagList,
         scalacOptions in BenchConfig ++= optimizedCompileScalacFlagsList,
         
@@ -44,44 +51,51 @@ object SciFeBuild extends Build {
 
   val benchRegEx = //"""(.*\.suite\.[^\.]*Suite*)"""
     """(.*\.benchmarks\..*)"""
-      
   val benchmarksFilter = Tests.Filter(
     _ matches """(.*\.benchmarks\..*)"""
   )
- 
   val noSuiteFilter = Tests.Filter(
     (s: String) => !(s matches """.*Suite.*""")
   )
+  val noSlowTests = Tests.Argument(TestFrameworks.ScalaTest, "-l", "tags.Slow")
   
   lazy val BenchConfig = config("benchmark") extend(Test)
     
   def benchCommand = Command.single("bench") { (state, arg) =>
+    
     val extracted: Extracted = Project.extract(state)
     import extracted._
-
+    
     arg match {
       case "full" =>
         val fullState =
-          append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Full")), state)
+          append(Seq(
+            testOptions in BenchConfig := (testOptions in BenchConfig).value diff Seq(noSuiteFilter),
+            testOptions in BenchConfig += Tests.Filter(_ endsWith "Full")), state)
         Project.runTask(test in BenchConfig, fullState)
         // return the same state (not the modified one with filters)
         state
       case "minimal" | "simple" =>
         val minState =          
-          append(Seq(testOptions in BenchConfig += Tests.Filter(_ endsWith "Minimal")), state)
+          append(Seq(
+            testOptions in BenchConfig := (testOptions in BenchConfig).value diff Seq(noSuiteFilter),
+            testOptions in BenchConfig += Tests.Filter(_ endsWith "Minimal")
+          ), state)
         Project.runTask(test in BenchConfig, minState)
         state
       case "measure" =>
         val measureState =          
           append(Seq(
-            testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Measure"))
+            testOptions in BenchConfig := (testOptions in BenchConfig).value diff Seq(noSuiteFilter),
+            testOptions in BenchConfig += Tests.Filter(_ endsWith "Measure")
           ), state)
         Project.runTask(test in BenchConfig, measureState)
         state
       case "profile" =>
         val profileState =          
           append(Seq(
-            testOptions in BenchConfig := Seq(Tests.Filter(_ endsWith "Profile")),
+            testOptions in BenchConfig := (testOptions in Test).value diff Seq(noSlowTests),
+            testOptions in BenchConfig += Tests.Filter(_ contains "Profile"),
             // for one JVM
             fork in test in BenchConfig  := true,
             javaOptions in test in BenchConfig := profileJVMFlagList ++ remoteConnectionJVMFlagList
@@ -115,13 +129,13 @@ object SciFeBuild extends Build {
     "-XX:+AggressiveOpts", "-XX:MaxInlineSize=512"
     ,
     // memory
-    "-Xms32G", "-Xmx32G",
+    "-Xms32G", "-Xmx32G"
     // new generation size
-    "-XX:NewSize=20G",
-    // disable adaptive policy
-    "-XX:-UseAdaptiveSizePolicy",
-    "-XX:MinHeapFreeRatio=100",
-    "-XX:MaxHeapFreeRatio=100"
+//    ,"-XX:NewSize=20G",
+//    // disable adaptive policy
+//    "-XX:-UseAdaptiveSizePolicy",
+//    "-XX:MinHeapFreeRatio=100",
+//    "-XX:MaxHeapFreeRatio=100"
   )
   
   val remoteConnectionJVMFlagList = List(

@@ -1,4 +1,5 @@
 package scife.enumeration
+package benchmarks
 package suite
 
 import scife.{ enumeration => e }
@@ -18,7 +19,7 @@ class BenchmarkProfileSuite extends FunSuite with Matchers with GeneratorDrivenP
   import e.common.enumdef.BinarySearchTreeEnum._
   import e.memoization.scope.AccumulatingScope
 
-  test("Profile", scife.util.tags.SlowTest) {
+  ignore("Profile", scife.util.tags.SlowTest) {
     
     for (i <- 1 to 3) {
       println(s"Test code starting in ${4 - i}")

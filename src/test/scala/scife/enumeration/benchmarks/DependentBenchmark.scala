@@ -19,15 +19,20 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
   import memoization.scope._
 
 //  @transient override lazy val reporter = new DsvReporter(',')
+  
+  def getScope = new AccumulatingScope
 
-  val defaultContext = Context.empty
+  val defaultContext =
+    suite.BenchmarkSuite.contextMinimal
+    //Context.empty
 
   def fixtureRun(
     benchmarkMainName: String,
     name: String,
     maxSize: Int,
     run: String,
-    maxSizeWarmup: Option[Int] = None
+    maxSizeWarmup: Option[Int] = None,
+    memScope: MemoizationScope = getScope
 //    ,
 //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
 //    generator: Int => Gen[I] = this.generator,
@@ -42,7 +47,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
 
     performance of benchmarkMainName in {
         measure method run in {
-          val memScope = new AccumulatingScope
+//          val memScope = new AccumulatingScope
           val enumerator = constructEnumerator(memScope)
   
             using( generator(maxSize) ) config (
@@ -66,7 +71,8 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     benchmarkMainName: String,
     name: String,
     maxSize: Int,
-    maxSizeWarmup: Option[Int] = None
+    maxSizeWarmup: Option[Int] = None,
+    memScope: MemoizationScope = getScope
 //    ,
 //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
 //    generator: Int => Gen[I] = this.generator,
@@ -80,7 +86,7 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
 
     performance of benchmarkMainName in {
-        val memScope = new AccumulatingScope
+//        val memScope = new AccumulatingScope
         val enumerator = constructEnumerator(memScope)
 
           using( generator(maxSize) ) config (
@@ -121,9 +127,13 @@ System.gc()
 
   def setUpFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     setUp(i: I, tdEnum: DepEnumType, memScope: MemoizationScope)
-//    System.gc
-//    System.gc
-//    System.gc
+    System.gc
+    System.gc
+    System.gc
+    memScope.clear
+    System.gc
+    System.gc
+    System.gc
     info("[DependentBenchmark:] Begin run")
   }
   
@@ -131,6 +141,8 @@ System.gc()
   
   final def tearDownFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     tearDown(i, tdEnum, memScope)
+    System.gc
+    System.gc
     info("[DependentBenchmark:] End run")
   }
 

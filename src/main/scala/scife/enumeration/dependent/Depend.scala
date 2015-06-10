@@ -188,6 +188,73 @@ object Depend {
 
     ! enum
   }
+  
+  def memoizedConcurrent[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
+    (implicit ct: ClassTag[F[_]], ms: MemoizationScope): Depend[I, O] = {
+    import parallel.memoization.dependent._
+    
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with Memoized[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with Memoized[I, O]
+        case _ =>
+          new WrapFunction[I, O, F](producerFunction) with Memoized[I, O]
+      }
+
+    ! enum
+  }
+  
+  def memoizedConcurrentNoScope[I, O, F[O] <: Enum[O]]
+    (producerFunction: (Depend[I, O], I) => F[O]) (implicit ct: ClassTag[F[_]]):
+      Depend[I, O] with scife.enumeration.memoization.Memoizable = {
+    import parallel.memoization.dependent._
+    
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum: Depend[I, O] with Memoized[I, O] =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with Memoized[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with Memoized[I, O]
+        case _ =>
+          new WrapFunction[I, O, F](producerFunction) with Memoized[I, O]
+      }
+
+    // do not add to scope
+    enum
+  }
+
+  def memoizedConcurrentOptNoScope[I, O, F[O] <: Enum[O]]
+    (producerFunction: (Depend[I, O], I) => F[O]) (implicit ct: ClassTag[F[_]]):
+      Depend[I, O] with scife.enumeration.memoization.Memoizable = {
+    import parallel.memoization.dependent._
+    
+    val finiteTag = implicitly[ClassTag[Finite[_]]]
+    val infiniteTag = implicitly[ClassTag[Infinite[_]]]
+    val enum: Depend[I, O] with MemoizedOpt[I, O] =
+      implicitly[ClassTag[F[_]]] match {
+        case `finiteTag` =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Finite[O]]
+          new WrapFunction[I, O, Finite](fun) with DependFinite[I, O] with MemoizedOpt[I, O]
+        case _: Infinite[_] =>
+          val fun = producerFunction.asInstanceOf[(Depend[I, O], I) => Infinite[O]]
+          new WrapFunction[I, O, Infinite](fun) with DependInfinite[I, O] with MemoizedOpt[I, O]
+        case _ =>
+          new WrapFunction[I, O, F](producerFunction) with MemoizedOpt[I, O]
+      }
+
+    // do not add to scope
+    enum
+  }
 
 //  def memoized[I, O, F[O] <: Enum[O]](producerFunction: (Depend[I, O], I) => F[O])
 //    (implicit ct: ClassTag[F[_]]): Depend[I, O] = {

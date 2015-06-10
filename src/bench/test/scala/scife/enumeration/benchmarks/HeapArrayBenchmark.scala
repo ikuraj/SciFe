@@ -18,7 +18,7 @@ import scala.language.existentials
 
 class HeapArrayBenchmark
   extends StructuresBenchmark[Depend[(Int, Range), Tree]]
-  with java.io.Serializable with HasLogger {
+  with java.io.Serializable {
   import e.Enum
 
   type EnumType = Depend[(Int, Range), Tree]
