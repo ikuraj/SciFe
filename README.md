@@ -7,11 +7,6 @@ SciFe
 
 <b>Sc</b>ala <b>F</b>ramework for <b>E</b>fficient Generation of Data Structures with <b>I</b>nvariants
 
-Development status:
-
-* ScalaCheck integration ![scalacheck](http://progressed.io/bar/20?title=progress)
-* Graph enumeration ![scalacheck](http://progressed.io/bar/40?title=progress)
-
 ===============
 
 More information can be found at [the SciFe webpage](http://kaptoxic.github.io/SciFe/).
