@@ -1,9 +1,7 @@
 import sbt._
 import Keys._
 
-// Scala code coverage
-import scoverage.ScoverageSbtPlugin.instrumentSettings
-import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
+import scoverage._
 
 object SciFeBuild extends Build {
   
@@ -47,6 +45,11 @@ object SciFeBuild extends Build {
         // ScalaMeter
         parallelExecution in BenchConfig := false,
         testFrameworks in BenchConfig += new TestFramework("org.scalameter.ScalaMeterFramework")
+        
+        // Scoverage
+        , ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages :=
+          "<empty>;scife\\.util\\.*;scife\\.enumeration\\.util.*"+
+          ";scife\\.util\\.format\\.*;scife\\.util\\.logging\\.*"
       )
 
   val benchRegEx = //"""(.*\.suite\.[^\.]*Suite*)"""
