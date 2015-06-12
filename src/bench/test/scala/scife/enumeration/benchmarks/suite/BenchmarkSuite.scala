@@ -18,19 +18,10 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
 
   import BenchmarkSuite._
 
-  val benchmarks = List(
-//    (new BinarySearchTreeBenchmark, "Binary Search Trees"),
-//    (new SortedListDependentBenchmark, "Sorted Lists"),
-//    (new RedBlackTreeDependentBenchmark, "Red-Black Trees"),
-//    (new HeapArrayBenchmark, "Heap Arrays"),
-    (new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2),
-      "Binary Search Trees - parallel")
-    )
-
   implicit val configArguments = contextMinimal
 
-  for (((benchmark, name), maxSize) <- benchmarks zip minimalSizes)
-    benchmark.fixture("Minimal benchmarks", name, maxSize)
+  for ((name, benchmark, _, minimalSize) <- allBenchmarks)
+    benchmark.fixture("Minimal benchmarks", name, minimalSize)
 
 }
 
@@ -55,7 +46,7 @@ class BenchmarkSuiteFull extends PerformanceTest {
 
   implicit val configArguments = configArgumentsFull
 
-  for ( (name, benchmark, maxSize) <- allBenchmarks)
+  for ( (name, benchmark, maxSize, _) <- allBenchmarks)
     benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
 
 //  val dummyBenchmark = new DummyBenchmark
@@ -171,48 +162,32 @@ object BenchmarkSuite {
 
   val benchmarkMainName = "Benchmarks"
   
-  val allBenchmarks = List(
-//    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15),
-//    ("Sorted Lists", new SortedListDependentBenchmark, 15),
-////    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15),
-//    ("Red-Black Trees", new RedBlackTreeConcise, 15),
-//    ("Heap Arrays", new HeapArrayBenchmark, 11),
-//    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4),
-//    ("B-tree", new BTreeTest, 15),
-//    ("RIFF Format", new RiffImage, 3),
+  val allBenchmarks: List[(String, DependentMemoizedBenchmark[_, _], Int, Int)] = List(
+    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15, 5),
+    ("Sorted Lists", new SortedListDependentBenchmark, 15, 5),
+    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15, 5),
+    ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 5),
+    ("Heap Arrays", new HeapArrayBenchmark, 11, 5),
+    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4, 3),
+    ("B-tree", new BTreeTest, 15, 5),
+    ("RIFF Format", new RiffImage, 3, 5),
 //    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
 //      StructuresBenchmark[scife.enumeration.dependent.Depend[((Int, Range),
 //        scife.enumeration.lazytraversal.LazyEnum[scife.util.structures.LazyBSTrees.Tree]),
-//        scife.util.structures.LazyBSTrees.Tree]]), 15),
+//        scife.util.structures.LazyBSTrees.Tree]]), 15, 5),
 //    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
-    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 14)
-//    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15)
 //    ,
-//    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15)
-//    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15),
-//    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15)
+//    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 14, 5)
+//    ,
+    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15, 5)
+    ,
+    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 5)
+    ,
+    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 5),
+    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 5)
+    ,
+    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 5)
   )
-
-//  val allBenchmarks = List(
-//    new BinarySearchTreeBenchmark,
-//    new SortedListDependentBenchmark,
-//    new RedBlackTreeDependentBenchmark,
-//    new HeapArrayBenchmark,
-//    new DAGStructureBenchmark,
-//    new BTreeTest,
-//    new RiffImage
-//  )
-//
-//  val allBenchmarksNames = List(
-//    "Binary Search Tree",
-//    "Sorted List",
-//    "Red-Black Tree",
-//    "Heap Array",
-//    "Directed Acyclic Graph",
-////    "Class-Interface DAG",
-//    "B-tree",
-//    "RIFF Format"
-//  )
 
   val clpBenchmarksNames = List(
     "Binary Search Tree",
@@ -222,9 +197,6 @@ object BenchmarkSuite {
 
   var maxSize = 15
 
-  // max datastructure size
-  val minimalSizes = Stream.continually(3)
-  val fullBlownSizes = List(15, 15, 15, 11, 4, 15, 3)
   // normal executor options
   val warmUps = 8
   val numberOfRuns = 3

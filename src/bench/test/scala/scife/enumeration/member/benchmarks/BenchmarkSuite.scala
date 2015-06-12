@@ -11,22 +11,17 @@ package suite {
   // if set, does not run full-blown micro-benchmark test suite; it runs
   // a quicker benchmark with less reliable results
   
-//  class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {    
-//    override def persistor = new persistence.SerializationPersistor
-//        
-//    import BenchmarkSuite._
-//    
-//    implicit val configArguments = 
-//      org.scalameter.Context(
-//        exec.maxWarmupRuns -> 2,
-//        exec.benchRuns -> 3, 
-//        exec.independentSamples -> 1
-//      )
-//    
-//    for( ((benchmark, name), maxSize) <- allBenchmarks zip minimalSizes)
-//      benchmark.fixture("Minimal benchmarks", name, maxSize)
-//          
-//  }
+  class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {    
+    override def persistor = new persistence.SerializationPersistor
+        
+    import BenchmarkSuite._
+
+    implicit val configArguments = scife.enumeration.benchmarks.suite.BenchmarkSuite.contextMinimal
+    
+    for( ((benchmark, name), maxSize) <- allBenchmarks zip minimalSizes)
+      benchmark.fixture("Minimal benchmarks", name, maxSize)
+          
+  }
 
   class BenchmarkSuiteFull extends PerformanceTest.OfflineReport {    
     import BenchmarkSuite._
