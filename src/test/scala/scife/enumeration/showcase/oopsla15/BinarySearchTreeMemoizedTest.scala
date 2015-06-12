@@ -27,12 +27,13 @@ class BinarySearchTreeMemoizedTest extends FunSuite with Matchers with Generator
     import BinarySearchTreeTest._
 
     val memoizationScope = new scope.AccumulatingScope
-    
+   
+    val time1 = System.currentTimeMillis
     val bst = Depend.memoized(
       (self: Depend[(Int, Range), Tree], pair: (Int, Range)) => {
         val (size, range) = pair
 
-        if (size <= 0) e.Singleton(Leaf)
+        if (size <= 0) Singleton(Leaf)
         else {
           val leftTrees =
             self ↓[(Int, Int)] {
@@ -56,7 +57,6 @@ class BinarySearchTreeMemoizedTest extends FunSuite with Matchers with Generator
       })
       
     val enum = bst(15, 1 to 15)
-    val time1 = System.currentTimeMillis
     for (i <- enum.size) yield enum(i)
     println(s"Binary search trees of size 15 enumerated in ${System.currentTimeMillis - time1}ms")
 
