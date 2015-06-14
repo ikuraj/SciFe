@@ -19,7 +19,7 @@ package suite {
     implicit val configArguments = scife.enumeration.benchmarks.suite.BenchmarkSuite.contextMinimal
     
     for( ((benchmark, name), maxSize) <- allBenchmarks zip minimalSizes)
-      benchmark.fixture("Minimal benchmarks", name, maxSize)
+      benchmark.fixture("Minimal benchmarks, membership", name, maxSize)
           
   }
 
