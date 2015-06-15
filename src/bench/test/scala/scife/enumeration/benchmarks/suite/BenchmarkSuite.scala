@@ -163,30 +163,30 @@ object BenchmarkSuite {
   val benchmarkMainName = "Benchmarks"
   
   val allBenchmarks: List[(String, DependentMemoizedBenchmark[_, _], Int, Int)] = List(
-    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15, 5),
-    ("Sorted Lists", new SortedListDependentBenchmark, 15, 5),
-    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15, 5),
-    ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 5),
-    ("Heap Arrays", new HeapArrayBenchmark, 11, 5),
+    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15, 6),
+    ("Sorted Lists", new SortedListDependentBenchmark, 15, 6),
+    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15, 6),
+    ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 6),
+    ("Heap Arrays", new HeapArrayBenchmark, 11, 6),
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 4, 3),
-    ("B-tree", new BTreeTest, 15, 5),
-    ("RIFF Format", new RiffImage, 3, 5),
+    ("B-tree", new BTreeTest, 15, 6),
+    ("RIFF Format", new RiffImage, 3, 6),
 //    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
 //      StructuresBenchmark[scife.enumeration.dependent.Depend[((Int, Range),
 //        scife.enumeration.lazytraversal.LazyEnum[scife.util.structures.LazyBSTrees.Tree]),
-//        scife.util.structures.LazyBSTrees.Tree]]), 15, 5),
+//        scife.util.structures.LazyBSTrees.Tree]]), 15, 6),
 //    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
 //    ,
-//    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 14, 5)
+//    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 14, 6)
 //    ,
-    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15, 5)
+    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15, 6)
     ,
-    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 5)
+    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 6)
     ,
-    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 5),
-    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 5)
+    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 6),
+    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 6)
     ,
-    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 5)
+    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 6)
   )
 
   val clpBenchmarksNames = List(
