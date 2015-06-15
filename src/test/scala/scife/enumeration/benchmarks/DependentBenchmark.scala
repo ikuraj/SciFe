@@ -12,19 +12,19 @@ import scife.util._
 import scife.util.logging._
 
 trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.OfflineReport
-  with java.io.Serializable with HasLogger {
+    with java.io.Serializable with HasLogger {
 
   import structures._
   import memoization.MemoizationScope
   import memoization.scope._
 
-//  @transient override lazy val reporter = new DsvReporter(',')
-  
+  //  @transient override lazy val reporter = new DsvReporter(',')
+
   def getScope = new AccumulatingScope
 
   val defaultContext =
     suite.BenchmarkSuite.contextMinimal
-    //Context.empty
+  //Context.empty
 
   def fixtureRun(
     benchmarkMainName: String,
@@ -32,39 +32,14 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     maxSize: Int,
     run: String,
     maxSizeWarmup: Option[Int] = None,
-    memScope: MemoizationScope = getScope
-//    ,
-//    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
-//    generator: Int => Gen[I] = this.generator,
-//    warmUp: (DepEnumType, Int) => Any = this.warmUp,
-//    measureCode: DepEnumType => I => Any = this.measureCode,
-//    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed
-    )(
-      implicit configArguments: org.scalameter.Context = defaultContext
-    ) = {
-    require(name != null)
-    val warmupSize = maxSizeWarmup.getOrElse(maxSize)
-
-    performance of benchmarkMainName in {
-        measure method run in {
-//          val memScope = new AccumulatingScope
-          val enumerator = constructEnumerator(memScope)
-  
-            using( generator(maxSize) ) config (
-              configArguments
-            ) curve (name) warmUp {
-  System.gc()
-  System.gc()
-              warmUp(enumerator, warmupSize)
-  System.gc()
-  System.gc()
-            } setUp {
-              setUpFixed(_, enumerator, memScope)
-            } tearDown {
-              tearDownFixed(_, enumerator, memScope)
-            } in measureCode( enumerator )
-        }
-    }
+    memScope: MemoizationScope = getScope //    ,
+    //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
+    //    generator: Int => Gen[I] = this.generator,
+    //    warmUp: (DepEnumType, Int) => Any = this.warmUp,
+    //    measureCode: DepEnumType => I => Any = this.measureCode,
+    //    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed
+    )(implicit configArguments: org.scalameter.Context = defaultContext) = {
+    fixture(benchmarkMainName, name, maxSize, maxSizeWarmup, memScope, Some(run))
   }
 
   def fixture(
@@ -72,50 +47,58 @@ trait DependentMemoizedBenchmark[I, DepEnumType] extends PerformanceTest.Offline
     name: String,
     maxSize: Int,
     maxSizeWarmup: Option[Int] = None,
-    memScope: MemoizationScope = getScope
-//    ,
-//    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
-//    generator: Int => Gen[I] = this.generator,
-//    warmUp: (DepEnumType, Int) => Any = this.warmUp,
-//    measureCode: DepEnumType => I => Any = this.measureCode,
-//    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed
+    memScope: MemoizationScope = getScope,
+    groupName: Option[String] = None //    ,
+    //    constructEnumerator: MemoizationScope => DepEnumType = (ms: MemoizationScope) => this.constructEnumerator(ms),
+    //    generator: Int => Gen[I] = this.generator,
+    //    warmUp: (DepEnumType, Int) => Any = this.warmUp,
+    //    measureCode: DepEnumType => I => Any = this.measureCode,
+    //    setUp: (I, DepEnumType, MemoizationScope) => Any = this.setUpFixed
     )(
-      implicit configArguments: org.scalameter.Context = defaultContext
-    ) = {
+      implicit configArguments: org.scalameter.Context = defaultContext) = {
     require(name != null)
     val warmupSize = maxSizeWarmup.getOrElse(maxSize)
+    
+    def runWrapper(using: Unit) =
+      groupName match {
+        case None =>
+          using
+        case Some(_groupName) =>
+          measure method _groupName in using
+      }
 
     performance of benchmarkMainName in {
-//        val memScope = new AccumulatingScope
+      runWrapper {
+        //        val memScope = new AccumulatingScope
         val enumerator = constructEnumerator(memScope)
 
-          using( generator(maxSize) ) config (
-            configArguments
-          ) curve (name) warmUp {
-System.gc()
-System.gc()
+        using(generator(maxSize)) config (
+          configArguments) curve (name) warmUp {
+            System.gc()
+            System.gc()
             warmUp(enumerator, warmupSize)
-System.gc()
-System.gc()
+            System.gc()
+            System.gc()
           } setUp {
             setUpFixed(_, enumerator, memScope)
           } tearDown {
             tearDownFixed(_, enumerator, memScope)
-          } in measureCode( enumerator )
+          } in measureCode(enumerator)
+      }
     }
   }
 
-//  def getUsing(generator: Gen[I], enumerator: DepEnumType, memScope: MemoizationScope): super.Using[I] =
-//    using(generator) config (
-//      exec.jvmcmd -> javaCommand,
-//      exec.jvmflags -> JVMFlags.mkString(" ")
-//    ) curve (name) warmUp {
-//      warmUp(enumerator)
-//    } setUp {
-//      setUpFixed(_, enumerator, memScope)
-//    } tearDown {
-//      tearDownFixed(_, enumerator, memScope)
-//    }
+  //  def getUsing(generator: Gen[I], enumerator: DepEnumType, memScope: MemoizationScope): super.Using[I] =
+  //    using(generator) config (
+  //      exec.jvmcmd -> javaCommand,
+  //      exec.jvmflags -> JVMFlags.mkString(" ")
+  //    ) curve (name) warmUp {
+  //      warmUp(enumerator)
+  //    } setUp {
+  //      setUpFixed(_, enumerator, memScope)
+  //    } tearDown {
+  //      tearDownFixed(_, enumerator, memScope)
+  //    }
 
   def measureCode(tdEnum: DepEnumType): I => _
 
@@ -136,9 +119,9 @@ System.gc()
     System.gc
     info("[DependentBenchmark:] Begin run")
   }
-  
+
   def tearDown(i: I, tdEnum: DepEnumType, memScope: MemoizationScope): Unit = {}
-  
+
   final def tearDownFixed(i: I, tdEnum: DepEnumType, memScope: MemoizationScope) {
     tearDown(i, tdEnum, memScope)
     System.gc
@@ -148,6 +131,6 @@ System.gc()
 
   def constructEnumerator(implicit ms: MemoizationScope): DepEnumType
 
-//  @transient override lazy val reporter = new LoggingReporter
+  //  @transient override lazy val reporter = new LoggingReporter
 
 }
