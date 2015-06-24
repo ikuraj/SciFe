@@ -166,7 +166,7 @@ object BenchmarkSuite {
 
   val benchmarkMainName = "Benchmarks"
   
-  val enumerationBenchmarks  = List(
+  val enumerationBenchmarks = List(
     ("Binary Search Trees", new BinarySearchTreeBenchmark, 15, 6),
     ("Binary Search Trees, component definition", new BinarySearchTreeComp, 15, 6),
     ("Sorted Lists", new SortedListDependentBenchmark, 15, 6),
@@ -175,7 +175,7 @@ object BenchmarkSuite {
     ("Heap Arrays", new HeapArrayBenchmark, 11, 6),
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 4, 3),
     ("B-tree", new BTreeTest, 15, 6),
-    ("RIFF Format", new RiffImage, 3, 6)
+    ("RIFF Format", new RiffImage, 6, 3)
   ) zip Stream.continually("Regular enumeration")
   
   val featuresBenchmarks = List(
