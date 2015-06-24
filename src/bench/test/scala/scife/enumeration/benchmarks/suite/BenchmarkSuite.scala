@@ -10,9 +10,8 @@ import reporting._
 import execution._
 import Key._
 
-// if set, does not run full-blown micro-benchmark test suite; it runs
-// a quicker benchmark with less reliable results
-
+/* does not run full-blown micro-benchmark test suite; it runs
+ a quicker benchmark with less reliable results */
 class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
   override def persistor = new persistence.SerializationPersistor
 
@@ -53,6 +52,7 @@ class BenchmarkSuiteFull extends PerformanceTest {
   for ( ((name, benchmark, maxSize, _), groupName) <- allBenchmarks)
     benchmark.fixture("SciFe benchmarks", name, maxSize, groupName = Some(groupName))
 
+  // needed for integration benchmarks (which run Korat and CLP)
 //  val dummyBenchmark = new DummyBenchmark
 //
 //  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
@@ -78,27 +78,16 @@ class BenchmarkSuiteParallel extends PerformanceTest {
   import scife.enumeration.parallel._
     
   val benchmarks = List(
-//    ("Binary Search Trees - parallel",
-//      new BinarySearchTreeBenchmark(_: Int), 15),
+    ("Binary Search Trees - parallel", new BinarySearchTreeBenchmark(_: Int), 15),
     ("Riff Image - parallel", new RiffImage(_: Int), 12)
   )
   
-//  val parallelBenchmarks =
-//    new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2) :: Nil
-//    
-//  val benchmarkNames = "Binary Search Trees - parallel" :: Nil
-//
-//  val benchmarkSizes = 15 :: Nil
-    
-//  for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
-  for (threads <- 5 to 10) {
+  for (threads <- 1 to Runtime.getRuntime.availableProcessors/2) {
+//  for (threads <- 5 to 10) {
     for ((name, benchmark, maxSize) <- benchmarks)
       benchmark(threads).fixtureRun(benchmarkMainName, "SciFe", maxSize, s"$name/$threads")
   }
 
-//  for (((benchmark, name), maxSize) <- allBenchmarks zip allBenchmarksNames zip fullBlownSizes)
-//    benchmark.fixtureRun(benchmarkMainName, "SciFe", maxSize, name)
-    
   //override def reporter = new LoggingReporter
   override def reporter =
     Reporter.Composite(
@@ -173,28 +162,25 @@ object BenchmarkSuite {
     ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15, 6),
     ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 6),
     ("Heap Arrays", new HeapArrayBenchmark, 11, 6),
-    ("Directed Acyclic Graph", new DAGStructureBenchmark, 4, 3),
+    ("Directed Acyclic Graph", new DAGStructureBenchmark, 8, 3),
+    ("Class/Interface Hierarchy", new ClassInterfaceDAGBenchmark, 4, 2),
     ("B-tree", new BTreeTest, 15, 6),
     ("RIFF Format", new RiffImage, 6, 3)
   ) zip Stream.continually("Regular enumeration")
   
-  val featuresBenchmarks = List(
-//    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
+  val featuresBenchmarks = List[(String, DependentMemoizedBenchmark[_, _], Int, Int)](
+    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 6),
+    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 6),
+    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 6),
+    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 6),
+    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15, 6)
+ //    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
 //      StructuresBenchmark[scife.enumeration.dependent.Depend[((Int, Range),
 //        scife.enumeration.lazytraversal.LazyEnum[scife.util.structures.LazyBSTrees.Tree]),
 //        scife.util.structures.LazyBSTrees.Tree]]), 15, 6),
 //    ("Normal BST, testing", new scife.enumeration.lazytraversal.BinarySearchTreeNormal, 15)
 //    ,
-//    ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 14, 6)
-//    ,
-//    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15, 6)
-//    ,
-    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 6)
-    ,
-    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 6),
-    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 6)
-    ,
-    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 6)
+//    ("Normal BST, testing2", new scife.enumeration.lazytraversal.BinarySearchTreeNormal2, 15, 6),
   ) zip Stream.continually("Features benchmark")
 
   val clpBenchmarksNames = List(
@@ -209,9 +195,6 @@ object BenchmarkSuite {
   val warmUps = 8
   val numberOfRuns = 3
   val JVMs = 3
-
-  //  val fullBlownSizes = List(3, 3, 3, 3, 3)
-  //  val warmUps = 1; val numberOfRuns = 3; val JVMs = 1
 
   lazy val javaCommand = "java -server"
   lazy val JVMFlags = List(
