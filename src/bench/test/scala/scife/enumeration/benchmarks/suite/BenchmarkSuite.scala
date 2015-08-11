@@ -163,7 +163,7 @@ object BenchmarkSuite {
     ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 6),
     ("Heap Arrays", new HeapArrayBenchmark, 11, 6),
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 8, 3),
-    ("Class/Interface Hierarchy", new ClassInterfaceDAGBenchmark, 4, 2),
+    ("Class-Interface Hierarchy", new ClassInterfaceDAGBenchmark, 4, 2),
     ("B-tree", new BTreeTest, 15, 6),
     ("RIFF Format", new RiffImage, 6, 3)
   ) zip Stream.continually("Regular enumeration")
