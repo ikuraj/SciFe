@@ -1,6 +1,6 @@
 name := "SciFe"
 
-version := "1.2.0"
+version := "1.2.9"
 
 organization := "ch.epfl.lara"
 
@@ -55,13 +55,6 @@ libraryDependencies += "com.storm-enroute" %% "scalameter" % "0.6"
 
 // Kiama attribute grammars
 libraryDependencies += "com.googlecode.kiama" %% "kiama" % "1.7.0"
-
-// Coverage
-instrumentSettings
-
-CoverallsPlugin.coverallsSettings
-
-ScoverageKeys.excludedPackages in ScoverageCompile := "<empty>;insynth.util.*"
 
 // Check style
 org.scalastyle.sbt.ScalastylePlugin.Settings
