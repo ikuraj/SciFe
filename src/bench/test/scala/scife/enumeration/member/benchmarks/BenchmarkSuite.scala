@@ -11,7 +11,7 @@ package suite {
   // if set, does not run full-blown micro-benchmark test suite; it runs
   // a quicker benchmark with less reliable results
   
-  class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {    
+  class BenchmarkSuiteMinimalDep extends PerformanceTest.OfflineReport {    
     override def persistor = new persistence.SerializationPersistor
         
     import BenchmarkSuite._

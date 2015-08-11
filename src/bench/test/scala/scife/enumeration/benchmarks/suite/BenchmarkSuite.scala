@@ -10,20 +10,75 @@ import reporting._
 import execution._
 import Key._
 
-/* does not run full-blown micro-benchmark test suite; it runs
+/* does not run full-blown benchmark test suite--it runs
  a quicker benchmark with less reliable results */
-class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
+class BenchmarkSuiteMinimal extends PerformanceTest {
   override def persistor = new persistence.SerializationPersistor
 
+  override def reporter: Reporter =
+    new SciFeReporter(
+      Reporter.Composite(
+        new RegressionReporter(
+          RegressionReporter.Tester.OverlapIntervals(),
+          RegressionReporter.Historian.Complete()),
+        // do not embed data into js
+        HtmlReporter(false)))
+
+  def executor = SeparateJvmsExecutor(
+    Executor.Warmer.Default(),
+    Aggregator.min,
+    new Executor.Measurer.Default)
+  
   import BenchmarkSuite._
 
-  implicit val configArguments = contextMinimal
+  implicit val configArguments = contextMinimal +
+    (exec.jvmflags -> (JVMFlags ++ heapSize(2)).mkString(" "))
   
   val allBenchmarks = enumerationBenchmarks ++ featuresBenchmarks 
 
-  for (((name, benchmark, _, minimalSize), benchGroup) <- allBenchmarks)
-    benchmark.fixture("SciFe, minimal benchmarks", name, minimalSize, groupName = Some(benchGroup))
+  for ( ((name, benchmark, _, size), groupName) <- allBenchmarks)
+    benchmark.fixture("SciFe, minimal benchmarks", name, size, groupName = Some(groupName))
 
+  // needed for integration benchmarks (which run Korat and CLP)
+  val dummyBenchmark = new DummyBenchmark
+  val fullBlownSizes = List(6, 6, 6, 5, 3, 6, 3)
+
+  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
+
+  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
+    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+    
+  // membership checking
+  {    
+    import scife.enumeration.member.benchmarks._
+    
+    val allBenchmarks = List(
+      (new BinarySearchTreeMember, "Binary Search Trees, membership")
+      ,
+      (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
+    )
+    
+    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(6,6))
+      benchmark.fixture("Minimal benchmarks, membership", name, maxSize)
+      
+  }
+  
+  // parallel enumeration
+  {
+    import scife.enumeration.parallel._
+    
+    val benchmarks = List(
+      ("Binary Search Trees - parallel", new BinarySearchTreeBenchmark(_: Int), 6),
+      ("Riff Image - parallel", new RiffImage(_: Int), 6)
+    )
+    
+    for (threads <- 1 to Runtime.getRuntime.availableProcessors-1) {
+      for ((name, benchmark, maxSize) <- benchmarks)
+        benchmark(threads).fixtureRun(benchmarkMainName, "SciFe", maxSize, s"$name/$threads")
+    }
+  }
+    
 }
 
 class BenchmarkSuiteFull extends PerformanceTest {
@@ -60,6 +115,20 @@ class BenchmarkSuiteFull extends PerformanceTest {
 //
 //  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
 //    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+
+}
+
+class BenchmarkSuiteMinimalDep extends PerformanceTest.OfflineReport {
+  override def persistor = new persistence.SerializationPersistor
+
+  import BenchmarkSuite._
+
+  implicit val configArguments = contextMinimal
+  
+  val allBenchmarks = enumerationBenchmarks ++ featuresBenchmarks 
+
+  for (((name, benchmark, _, minimalSize), benchGroup) <- allBenchmarks)
+    benchmark.fixture("SciFe, minimal benchmarks", name, minimalSize, groupName = Some(benchGroup))
 
 }
 
@@ -188,6 +257,18 @@ object BenchmarkSuite {
     "Sorted List",
     "Red-Black Tree",
     "Heap Array")
+    
+  val allBenchmarksNames = List(
+    "Binary Search Tree",
+    "Sorted List",
+    "Red-Black Tree",
+    "Heap Array"
+//    ,
+//    "Directed Acyclic Graph",
+//    "Class-Interface DAG",
+//    "B-tree",
+//    "RIFF Format"
+  )
 
   var maxSize = 15
 
