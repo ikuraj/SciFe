@@ -32,9 +32,11 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
       this.tdEnum = tdEnum
       this.size = size
 
-      initExecutor
+      //initExecutor
 //      var beg = System.currentTimeMillis()
       exec.invokeAll(runners)
+      //exec.shutdownNow();
+      //exec.awaitTermination(2, TimeUnit.MINUTES);
 //      println(System.currentTimeMillis() - beg)
 //      exec.shutdown()
 //      System.out.flush
@@ -44,10 +46,11 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
   var size: Int = _
   var tdEnum: EnumType = _
 
-  @transient
+//  @transient
   var exec: ExecutorService = _
 
-  def initExecutor = exec = Executors.newFixedThreadPool(numberOfThreads)
+  def initExecutor =
+    if (exec == null) exec = Executors.newFixedThreadPool(numberOfThreads)
 
   @transient
   lazy val runners: java.util.Collection[Callable[Object]] =
@@ -91,6 +94,7 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
 //    tryToFreeUpSpaceG(freeMemory)    
 //    getFreeMemory
     runners != null
+    initExecutor
 //    Thread.sleep(runners.size)
 //    System.gc;
 //    System.gc;
@@ -128,7 +132,10 @@ class BinarySearchTreeBenchmark(numberOfThreads: Int)
   }
   
   override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
-    exec.shutdown()
+//    exec.shutdown()
+      exec.shutdown();
+      exec.awaitTermination(2, TimeUnit.MINUTES);
+      exec = null
   }
 
   val enumeratorFunction =

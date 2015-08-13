@@ -40,7 +40,10 @@ class RiffImage(numberOfThreads: Int)
       this.size = size
 
 //      initExecutor
+      //val exec: ExecutorService = Executors.newFixedThreadPool(numberOfThreads)
       exec.invokeAll(runners)
+      //exec.shutdown();
+      //exec.awaitTermination(2, TimeUnit.MINUTES);
 //      exec.shutdown()
 //      println("EEEEEEEEEEEEEEEEEEND")
 //      System.out.flush
@@ -50,10 +53,11 @@ class RiffImage(numberOfThreads: Int)
   var size: Int = _
   var tdEnum: EnumType = _
 
-  @transient
-  lazy val exec: ExecutorService = Executors.newFixedThreadPool(numberOfThreads)
+  //@transient
+  var exec: ExecutorService = null
 
-//  def initExecutor = exec = Executors.newFixedThreadPool(numberOfThreads)
+  def initExecutor =
+    if (exec == null) exec = Executors.newFixedThreadPool(numberOfThreads)
 
   var i = 0
   @transient
@@ -105,6 +109,7 @@ class RiffImage(numberOfThreads: Int)
 //    getFreeMemory
     runners != null
     executor != null
+    initExecutor
 //    Thread.sleep(runners.size)
 //    System.gc;
 //    System.gc;
@@ -142,7 +147,10 @@ class RiffImage(numberOfThreads: Int)
   }
   
   override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
-    exec.shutdown()
+//    exec.shutdown()
+      exec.shutdown();
+      exec.awaitTermination(2, TimeUnit.MINUTES);
+      exec = null
   }
 
   val enumeratorFunction =

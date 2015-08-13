@@ -46,7 +46,7 @@ object SciFeBuild extends Build {
         parallelExecution in BenchConfig := false,
         testFrameworks in BenchConfig += new TestFramework("org.scalameter.ScalaMeterFramework"),
         // no output when running benchmarks
-        testOptions in BenchConfig += Tests.Argument(scalaMeterFramework, "-silent"),
+//        testOptions in BenchConfig += Tests.Argument(scalaMeterFramework, "-silent"),
         
         // Scoverage
         ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages :=

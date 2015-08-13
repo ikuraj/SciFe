@@ -12,22 +12,22 @@ import Key._
 
 /* does not run full-blown benchmark test suite--it runs
  a quicker benchmark with less reliable results */
-class BenchmarkSuiteMinimal extends PerformanceTest {
-  override def persistor = new persistence.SerializationPersistor
-
-  override def reporter: Reporter =
-    new SciFeReporter(
-      Reporter.Composite(
-        new RegressionReporter(
-          RegressionReporter.Tester.OverlapIntervals(),
-          RegressionReporter.Historian.Complete()),
-        // do not embed data into js
-        HtmlReporter(false)))
-
-  def executor = SeparateJvmsExecutor(
-    Executor.Warmer.Default(),
-    Aggregator.min,
-    new Executor.Measurer.Default)
+class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
+//  override def persistor = new persistence.SerializationPersistor
+//
+//  override def reporter: Reporter =
+//    new SciFeReporter(
+//      Reporter.Composite(
+//        new RegressionReporter(
+//          RegressionReporter.Tester.OverlapIntervals(),
+//          RegressionReporter.Historian.Complete()),
+//        // do not embed data into js
+//        HtmlReporter(false)))
+//
+//  def executor = SeparateJvmsExecutor(
+//    Executor.Warmer.Default(),
+//    Aggregator.min,
+//    new Executor.Measurer.Default)
   
   import BenchmarkSuite._
 
@@ -37,17 +37,17 @@ class BenchmarkSuiteMinimal extends PerformanceTest {
   val allBenchmarks = enumerationBenchmarks ++ featuresBenchmarks 
 
   for ( ((name, benchmark, _, size), groupName) <- allBenchmarks)
-    benchmark.fixture("SciFe, minimal benchmarks", name, size, groupName = Some(groupName))
+    benchmark.fixture("SciFe, nominal benchmarks", name, size, groupName = Some(groupName))
 
   // needed for integration benchmarks (which run Korat and CLP)
   val dummyBenchmark = new DummyBenchmark
   val fullBlownSizes = List(6, 6, 6, 5, 3, 6, 3)
 
-  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
-    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
-
-  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
-    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+//  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+//    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
+//
+//  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
+//    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
     
   // membership checking
   {    
@@ -59,8 +59,8 @@ class BenchmarkSuiteMinimal extends PerformanceTest {
       (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
     )
     
-    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(6,6))
-      benchmark.fixture("Minimal benchmarks, membership", name, maxSize)
+    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(7,7))
+      benchmark.fixture("SciFe, nominal benchmarks, membership", name, maxSize)
       
   }
   
@@ -69,13 +69,14 @@ class BenchmarkSuiteMinimal extends PerformanceTest {
     import scife.enumeration.parallel._
     
     val benchmarks = List(
-      ("Binary Search Trees - parallel", new BinarySearchTreeBenchmark(_: Int), 6),
+      ("Binary Search Trees - parallel", new BinarySearchTreeBenchmark(_: Int), 6)
+      ,
       ("Riff Image - parallel", new RiffImage(_: Int), 6)
     )
     
-    for (threads <- 1 to Runtime.getRuntime.availableProcessors-1) {
+    for (threads <- 1 to Runtime.getRuntime.availableProcessors) {
       for ((name, benchmark, maxSize) <- benchmarks)
-        benchmark(threads).fixtureRun(benchmarkMainName, "SciFe", maxSize, s"$name/$threads")
+        benchmark(threads).fixtureRun("SciFe, nominal benchmarks, parallel", s"$name-$threads", maxSize, s"$name-$threads")
     }
   }
     
@@ -232,7 +233,7 @@ object BenchmarkSuite {
     ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 6),
     ("Heap Arrays", new HeapArrayBenchmark, 11, 6),
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 8, 3),
-    ("Class-Interface Hierarchy", new ClassInterfaceDAGBenchmark, 4, 2),
+    ("Class-Interface Hierarchy", new ClassInterfaceDAGBenchmark, 4, 3),
     ("B-tree", new BTreeTest, 15, 6),
     ("RIFF Format", new RiffImage, 6, 3)
   ) zip Stream.continually("Regular enumeration")
@@ -240,7 +241,7 @@ object BenchmarkSuite {
   val featuresBenchmarks = List[(String, DependentMemoizedBenchmark[_, _], Int, Int)](
     ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 6),
     ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 6),
-    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 6),
+    ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 4),
     ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 6),
     ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15, 6)
  //    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
@@ -319,6 +320,6 @@ object BenchmarkSuite {
     org.scalameter.Context(
       exec.maxWarmupRuns -> 2,
       exec.benchRuns -> 3,
-      exec.independentSamples -> 1)
+      exec.independentSamples -> 3)
 
 }
