@@ -42,8 +42,8 @@ class RiffImage(numberOfThreads: Int)
 //      initExecutor
       //val exec: ExecutorService = Executors.newFixedThreadPool(numberOfThreads)
       exec.invokeAll(runners)
-      //exec.shutdown();
-      //exec.awaitTermination(2, TimeUnit.MINUTES);
+      exec.shutdown();
+      exec.awaitTermination(2, TimeUnit.MINUTES);
 //      exec.shutdown()
 //      println("EEEEEEEEEEEEEEEEEEND")
 //      System.out.flush
@@ -76,6 +76,7 @@ class RiffImage(numberOfThreads: Int)
 //            var myInd = Thread.currentThread().getId.toInt
             println(s"my id is $myInd")
             val enum = tdEnum.getEnum((size, size, (size + 1) / 2, size/2))
+            if (enum != tdEnum.getEnum((size, size, (size + 1) / 2, size/2))) throw new RuntimeException
   
             var ind = myInd
             while (ind < enum.size) {
@@ -148,8 +149,8 @@ class RiffImage(numberOfThreads: Int)
   
   override def tearDown(i: Int, tdEnum: EnumType, memScope: e.memoization.MemoizationScope): Unit = {
 //    exec.shutdown()
-      exec.shutdown();
-      exec.awaitTermination(2, TimeUnit.MINUTES);
+//      exec.shutdown();
+//      exec.awaitTermination(2, TimeUnit.MINUTES);
       exec = null
   }
 

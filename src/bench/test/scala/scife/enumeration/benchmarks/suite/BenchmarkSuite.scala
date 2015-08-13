@@ -24,54 +24,58 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
 //        // do not embed data into js
 //        HtmlReporter(false)))
 //
-//  def executor = SeparateJvmsExecutor(
+//  override def executor = SeparateJvmsExecutor(
 //    Executor.Warmer.Default(),
-//    Aggregator.min,
+//    Aggregator.average,
 //    new Executor.Measurer.Default)
+  
+  override def aggregator: Aggregator = Aggregator.min
+  override def measurer: Measurer = new Measurer.IgnoringGC with Measurer.PeriodicReinstantiation with Measurer.OutlierElimination with Measurer.RelativeNoise
+  override def executor: Executor = new execution.SeparateJvmsExecutor(warmer, aggregator, measurer)
   
   import BenchmarkSuite._
 
   implicit val configArguments = contextMinimal +
-    (exec.jvmflags -> (JVMFlags ++ heapSize(2)).mkString(" "))
+    (exec.jvmflags -> (JVMFlags ++ heapSize(4)).mkString(" "))
   
   val allBenchmarks = enumerationBenchmarks ++ featuresBenchmarks 
 
-  for ( ((name, benchmark, _, size), groupName) <- allBenchmarks)
-    benchmark.fixture("SciFe, nominal benchmarks", name, size, groupName = Some(groupName))
-
-  // needed for integration benchmarks (which run Korat and CLP)
-  val dummyBenchmark = new DummyBenchmark
-  val fullBlownSizes = List(6, 6, 6, 5, 3, 6, 3)
-
-//  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
-//    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
+//  for ( ((name, benchmark, _, size), groupName) <- allBenchmarks)
+//    benchmark.fixture("SciFe, nominal benchmarks", name, size, groupName = Some(groupName))
 //
-//  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
-//    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
-    
-  // membership checking
-  {    
-    import scife.enumeration.member.benchmarks._
-    
-    val allBenchmarks = List(
-      (new BinarySearchTreeMember, "Binary Search Trees, membership")
-      ,
-      (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
-    )
-    
-    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(7,7))
-      benchmark.fixture("SciFe, nominal benchmarks, membership", name, maxSize)
-      
-  }
+//  // needed for integration benchmarks (which run Korat and CLP)
+//  val dummyBenchmark = new DummyBenchmark
+//  val fullBlownSizes = List(6, 6, 6, 5, 3, 6, 3)
+//
+////  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+////    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
+////
+////  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
+////    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+//    
+//  // membership checking
+//  {    
+//    import scife.enumeration.member.benchmarks._
+//    
+//    val allBenchmarks = List(
+//      (new BinarySearchTreeMember, "Binary Search Trees, membership")
+//      ,
+//      (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
+//    )
+//    
+//    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(7,7))
+//      benchmark.fixture("SciFe, nominal benchmarks, membership", name, maxSize)
+//      
+//  }
   
   // parallel enumeration
   {
     import scife.enumeration.parallel._
     
     val benchmarks = List(
-      ("Binary Search Trees - parallel", new BinarySearchTreeBenchmark(_: Int), 6)
+      ("Binary Search Trees - parallel", new BinarySearchTreeBenchmark(_: Int), 8)
       ,
-      ("Riff Image - parallel", new RiffImage(_: Int), 6)
+      ("Riff Image - parallel", new RiffImage(_: Int), 7)
     )
     
     for (threads <- 1 to Runtime.getRuntime.availableProcessors) {
@@ -226,23 +230,23 @@ object BenchmarkSuite {
   val benchmarkMainName = "Benchmarks"
   
   val enumerationBenchmarks = List(
-    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15, 6),
-    ("Binary Search Trees, component definition", new BinarySearchTreeComp, 15, 6),
-    ("Sorted Lists", new SortedListDependentBenchmark, 15, 6),
-    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15, 6),
-    ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 6),
-    ("Heap Arrays", new HeapArrayBenchmark, 11, 6),
+    ("Binary Search Trees", new BinarySearchTreeBenchmark, 15, 7),
+    ("Binary Search Trees, component definition", new BinarySearchTreeComp, 15, 7),
+    ("Sorted Lists", new SortedListDependentBenchmark, 15, 7),
+    ("Red-Black Trees", new RedBlackTreeDependentBenchmark, 15, 7),
+    ("Red-Black Trees, concise definition", new RedBlackTreeConcise, 15, 7),
+    ("Heap Arrays", new HeapArrayBenchmark, 11, 7),
     ("Directed Acyclic Graph", new DAGStructureBenchmark, 8, 3),
     ("Class-Interface Hierarchy", new ClassInterfaceDAGBenchmark, 4, 3),
-    ("B-tree", new BTreeTest, 15, 6),
-    ("RIFF Format", new RiffImage, 6, 3)
+    ("B-tree", new BTreeTest, 15, 7),
+    ("RIFF Format", new RiffImage, 15, 7)
   ) zip Stream.continually("Regular enumeration")
   
   val featuresBenchmarks = List[(String, DependentMemoizedBenchmark[_, _], Int, Int)](
-    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 6),
-    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 6),
+    ("Binary Search Trees rnd", new BinarySearchTreeRandom, 15, 7),
+    ("Binary Search Trees rnd, noo", new BinarySearchTreeRandomNoOver, 15, 7),
     ("Binary Search Trees no memoization", new nomemoization.BinarySearchTreeBenchmark, 15, 4),
-    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 6),
+    ("Binary Search Trees, parallel", new scife.enumeration.parallel.BinarySearchTreeBenchmark(Runtime.getRuntime.availableProcessors/2), 15, 7),
     ("Lazy BST", new scife.enumeration.lazytraversal.BinarySearchTree, 15, 6)
  //    ("Lazy BST", (new scife.enumeration.lazytraversal.BinarySearchTree:
 //      StructuresBenchmark[scife.enumeration.dependent.Depend[((Int, Range),
@@ -312,14 +316,16 @@ object BenchmarkSuite {
     org.scalameter.Context(
       exec.maxWarmupRuns -> 3,
       exec.benchRuns -> 3,
-      exec.independentSamples -> 1,
+      exec.independentSamples -> 3,
       exec.jvmcmd -> javaCommand,
       exec.jvmflags -> (JVMFlags ++ heapSize(32)).mkString(" "))
       
   val contextMinimal =
     org.scalameter.Context(
-      exec.maxWarmupRuns -> 2,
+      exec.maxWarmupRuns -> 3,
       exec.benchRuns -> 3,
-      exec.independentSamples -> 3)
+      exec.independentSamples -> 5,
+      exec.outliers.covMultiplier -> 1.5,
+      exec.outliers.suspectPercent -> 40)
 
 }
