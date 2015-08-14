@@ -13,60 +13,41 @@ import Key._
 /* does not run full-blown benchmark test suite--it runs
  a quicker benchmark with less reliable results */
 class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
-//  override def persistor = new persistence.SerializationPersistor
-//
-//  override def reporter: Reporter =
-//    new SciFeReporter(
-//      Reporter.Composite(
-//        new RegressionReporter(
-//          RegressionReporter.Tester.OverlapIntervals(),
-//          RegressionReporter.Historian.Complete()),
-//        // do not embed data into js
-//        HtmlReporter(false)))
-//
-//  override def executor = SeparateJvmsExecutor(
-//    Executor.Warmer.Default(),
-//    Aggregator.average,
-//    new Executor.Measurer.Default)
-  
-  override def aggregator: Aggregator = Aggregator.min
-  override def measurer: Measurer = new Measurer.IgnoringGC with Measurer.PeriodicReinstantiation with Measurer.OutlierElimination with Measurer.RelativeNoise
-  override def executor: Executor = new execution.SeparateJvmsExecutor(warmer, aggregator, measurer)
   
   import BenchmarkSuite._
 
   implicit val configArguments = contextMinimal +
-    (exec.jvmflags -> (JVMFlags ++ heapSize(4)).mkString(" "))
+    (exec.jvmflags -> (JVMFlags ++ heapSize(2)).mkString(" "))
   
   val allBenchmarks = enumerationBenchmarks ++ featuresBenchmarks 
 
-//  for ( ((name, benchmark, _, size), groupName) <- allBenchmarks)
-//    benchmark.fixture("SciFe, nominal benchmarks", name, size, groupName = Some(groupName))
+  for ( ((name, benchmark, _, size), groupName) <- allBenchmarks)
+    benchmark.fixture("SciFe, nominal benchmarks", name, size, groupName = Some(groupName))
+
+  // needed for integration benchmarks (which run Korat and CLP)
+  val dummyBenchmark = new DummyBenchmark
+  val fullBlownSizes = List(6, 6, 6, 5, 3, 6, 3)
+
+//  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
+//    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
 //
-//  // needed for integration benchmarks (which run Korat and CLP)
-//  val dummyBenchmark = new DummyBenchmark
-//  val fullBlownSizes = List(6, 6, 6, 5, 3, 6, 3)
-//
-////  for ((name, maxSize) <- allBenchmarksNames zip fullBlownSizes)
-////    dummyBenchmark.fixtureRun(benchmarkMainName, "Korat", maxSize, name)
-////
-////  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
-////    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
-//    
-//  // membership checking
-//  {    
-//    import scife.enumeration.member.benchmarks._
-//    
-//    val allBenchmarks = List(
-//      (new BinarySearchTreeMember, "Binary Search Trees, membership")
-//      ,
-//      (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
-//    )
-//    
-//    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(7,7))
-//      benchmark.fixture("SciFe, nominal benchmarks, membership", name, maxSize)
-//      
-//  }
+//  for ((name, maxSize) <- clpBenchmarksNames zip fullBlownSizes)
+//    dummyBenchmark.fixtureRun(benchmarkMainName, "CLP", maxSize, name)
+    
+  // membership checking
+  {    
+    import scife.enumeration.member.benchmarks._
+    
+    val allBenchmarks = List(
+      (new BinarySearchTreeMember, "Binary Search Trees, membership")
+      ,
+      (new BinarySearchTreeVerify, "Binary Search Trees, invariant execution")
+    )
+    
+    for( ((benchmark, name), maxSize) <- allBenchmarks zip List(7,7))
+      benchmark.fixture("SciFe, nominal benchmarks, membership", name, maxSize)
+      
+  }
   
   // parallel enumeration
   {
@@ -83,6 +64,17 @@ class BenchmarkSuiteMinimal extends PerformanceTest.OfflineReport {
         benchmark(threads).fixtureRun("SciFe, nominal benchmarks, parallel", s"$name-$threads", maxSize, s"$name-$threads")
     }
   }
+  
+//  override def persistor = new persistence.SerializationPersistor
+//
+  override def executor = SeparateJvmsExecutor(
+    Executor.Warmer.Default(),
+    Aggregator.min,
+    new Executor.Measurer.Default)
+//  
+//  override def aggregator: Aggregator = Aggregator.min
+//  override def measurer: Measurer = new Measurer.IgnoringGC with Measurer.PeriodicReinstantiation with Measurer.OutlierElimination with Measurer.RelativeNoise
+//  override def executor: Executor = new execution.SeparateJvmsExecutor(warmer, aggregator, measurer)
     
 }
 
@@ -137,7 +129,7 @@ class BenchmarkSuiteMinimalDep extends PerformanceTest.OfflineReport {
 
 }
 
-class BenchmarkSuiteParallel extends PerformanceTest {
+class BenchmarkSuiteParallelFull extends PerformanceTest {
 
   override def executor = SeparateJvmsExecutor(
     Executor.Warmer.Default(),
@@ -322,10 +314,8 @@ object BenchmarkSuite {
       
   val contextMinimal =
     org.scalameter.Context(
-      exec.maxWarmupRuns -> 3,
+      exec.maxWarmupRuns -> 2,
       exec.benchRuns -> 3,
-      exec.independentSamples -> 5,
-      exec.outliers.covMultiplier -> 1.5,
-      exec.outliers.suspectPercent -> 40)
+      exec.independentSamples -> 1)
 
 }
