@@ -8,7 +8,7 @@ organizationName := "LARA/EPFL"
 
 organizationHomepage := Some(new URL("http://lara.epfl.ch"))
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 // forcing the version
 ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
